@@ -179,6 +179,15 @@ func _add_ui() -> void:
 	add_child(hud)
 	_update_hud()
 
+	# Help label
+	var help_label := Label.new()
+	help_label.name = "HelpLabel"
+	help_label.text = "E těžba rudy, C tavení, B kování, X použít zbraň, R oprava, M hudba (oddělovačem je středník nebo tečka)"
+	help_label.add_theme_font_size_override("font_size", 8)
+	var vp := get_viewport_rect().size
+	help_label.position = Vector2(4, vp.y - 14)
+	add_child(help_label)
+
 
 func _visual(asset_name: String, fallback: Color, size: Vector2) -> Node2D:
 	var holder := Node2D.new()
