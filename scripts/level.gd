@@ -86,7 +86,7 @@ func build() -> void:
 			s.centered = false
 			# Střed = pozice bez zaokrouhlení, aby dlaždice na sebe přesně sedly
 			# (u neceločíselného měřítka vznikají jinak jednopixelové spáry).
-			s.position = offset + Vector2(x * cell, y * cell)
+			s.position = iso_position(x, y)
 			s.scale = Vector2(float(cell) / float(tex.get_width()),
 							  float(cell) / float(tex.get_height()))
 			s.z_index = 0 if grid[y][x] != "0" else 1
@@ -172,3 +172,16 @@ func reachable_count(from_cell := Vector2i(-1, -1)) -> int:
 				seen[n] = true
 				front.append(n)
 	return seen.size()
+
+func iso_position(cx: int, cy: int) -> Vector2:
+	"""Převede buňku mřížky (cx, cy) na obrazovkovou pozici v izometrickém zobrazení 2:1."""
+	var half := cell / 2.0
+	var quarter := cell / 4.0
+	return offset + Vector2((cx - cy) * half, (cx + cy) * quarter)
+
+func iso_to_cell(pos: Vector2) -> Vector2i:
+	"""Převede obrazovkovou pozici zpět na buňku mřížky."""
+	var p := pos - offset
+	var cx := int(round(p.y / (cell / 4.0) + p.x / (cell / 2.0)) / 2.0)
+	var cy := int(round(p.y / (cell / 4.0) - p.x / (cell / 2.0)) / 2.0)
+	return Vector2i(cx, cy)
