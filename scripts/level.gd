@@ -86,7 +86,7 @@ func build() -> void:
 			s.centered = false
 			# Střed = pozice bez zaokrouhlení, aby dlaždice na sebe přesně sedly
 			# (u neceločíselného měřítka vznikají jinak jednopixelové spáry).
-			s.position = offset + Vector2(x * cell, y * cell)
+			s.position = iso_position(x, y)
 			s.scale = Vector2(float(cell) / float(tex.get_width()),
 							  float(cell) / float(tex.get_height()))
 			s.z_index = 0 if grid[y][x] != "0" else 1
@@ -128,6 +128,17 @@ func is_walkable_at(pos: Vector2) -> bool:
 
 func cell_center(cx: int, cy: int) -> Vector2:
 	return offset + Vector2(cx * cell + cell / 2.0, cy * cell + cell / 2.0)
+
+func iso_position(cx: int, cy: int) -> Vector2:
+	var polovina := cell / 2.0
+	var ctvrt := cell / 4.0
+	return offset + Vector2((cx - cy) * polovina, (cx + cy) * ctvrt)
+
+func iso_to_cell(pozice: Vector2) -> Vector2i:
+	var p := pozice - offset
+	var cx := int(round(p.y / (cell / 4.0) + p.x / (cell / 2.0)) / 2.0)
+	var cy := int(round(p.y / (cell / 4.0) - p.x / (cell / 2.0)) / 2.0)
+	return Vector2i(cx, cy)
 
 
 func markers_of(type: String) -> Array:
