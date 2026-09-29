@@ -10,7 +10,7 @@
     ]
   },
   {
-    "id": "sword_crafting",
+    "id": "kovani_mece",
     "name": "Kování mece",
     "inputs": [
       { "id": "iron_ingot", "amount": 1 },
@@ -21,7 +21,7 @@
     ]
   },
   {
-    "id": "armor_crafting",
+    "id": "kovani_zbroje",
     "name": "Kování zbroje",
     "inputs": [
       { "id": "iron_ingot", "amount": 3 }
