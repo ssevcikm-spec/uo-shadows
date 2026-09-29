@@ -51,6 +51,10 @@ func _ready() -> void:
 func _update_hud() -> void:
 	if hud:
 		hud.text = "Skóre: %d / %d" % [score, coin_total]
+		hud.text += " HODNOTA: %d" % [_hodnota()]
+
+func _hodnota() -> int:
+	return suroviny["ruda"] * 2 + suroviny["ingot"] * 8 + zbran_poskozeni * 5
 
 
 # ----------------------------------------------------------------- assety ----
