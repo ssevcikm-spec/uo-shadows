@@ -118,8 +118,15 @@ def zkontroluj(target: Path) -> tuple[list[str], list[str], dict]:
             pouziti = len(re.findall(rf"(?<![A-Za-z0-9_]){re.escape(funkce)}\s*\(", vse))
             zminky = len(re.findall(rf"(?<![A-Za-z0-9_]){re.escape(funkce)}(?![A-Za-z0-9_])", vse))
             if zminky <= 1:
-                vady.append(f"{jmeno_souboru}: {funkce}() není nikde volaná – kód se "
-                            f"nikdy nespustí (mrtvá funkce)")
+                # POZOR: u INKREMENTÁLNÍ roadmapy je funkce často „API pro příští
+                # úlohu" – iso_to_cell čeká na pohyb hráče, _zlepsi_skill na těžbu.
+                # Tehdy to není mrtvý kód, jen ještě nepřišel čas, a brána to
+                # nemůže vědět. Hlásí se proto jako POZNÁMKA, ne jako vada (dřív
+                # to shazovalo celé CI a úlohy padaly na falešný poplach).
+                # Tvrdě se kontrolují jen `_on_*` handlery výše – ty když nejsou
+                # připojené, funkce se opravdu nikdy nespustí (chyba z PR #32).
+                poznamky.append(f"{jmeno_souboru}: {funkce}() není nikde volaná – "
+                                f"pokud to není API pro pozdější úlohu, je to mrtvý kód")
 
         # 3) prázdný fyzikální krok = „ochrana", která nic nedělá
         for nazev, telo in tela.items():
