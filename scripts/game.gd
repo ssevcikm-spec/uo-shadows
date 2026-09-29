@@ -20,6 +20,8 @@ var hud: Label
 var dovednosti := {"tezba":0, "kovarstvi":0, "alchymie":0}
 var suroviny := {"ruda":0, "ingot":0}
 var sfx := {}
+var zbran_trvanlivost := 20
+var zbran_poskozeni := 5
 
 
 func _ready() -> void:
