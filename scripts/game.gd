@@ -22,6 +22,7 @@ var suroviny := {"ruda":0, "ingot":0}
 var sfx := {}
 var zbran_trvanlivost := 20
 var zbran_poskozeni := 5
+var cas_dne := 0.25
 
 
 func _ready() -> void:
