@@ -1,0 +1,11 @@
+[
+  {
+    "id": "skeleton",
+    "name": "Kostlivec",
+    "hp": 10,
+    "drops": [
+      { "id": "gold", "amount": 5, "chance": 1.0 },
+      { "id": "iron_ore", "amount": 1, "chance": 0.3 }
+    ]
+  }
+]

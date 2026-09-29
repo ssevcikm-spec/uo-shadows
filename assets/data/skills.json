@@ -1,0 +1,18 @@
+[
+  {
+    "id": "mining",
+    "name": "Těžba"
+  },
+  {
+    "id": "woodcutting",
+    "name": "Dřevorubectví"
+  },
+  {
+    "id": "smithing",
+    "name": "Kovářství"
+  },
+  {
+    "id": "melee_combat",
+    "name": "Boj na blízko"
+  }
+]

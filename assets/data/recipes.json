@@ -1,0 +1,33 @@
+[
+  {
+    "id": "smelting",
+    "name": "Tavení",
+    "inputs": [
+      { "id": "iron_ore", "amount": 1 }
+    ],
+    "outputs": [
+      { "id": "iron_ingot", "amount": 1 }
+    ]
+  },
+  {
+    "id": "sword_crafting",
+    "name": "Kování mece",
+    "inputs": [
+      { "id": "iron_ingot", "amount": 1 },
+      { "id": "wood", "amount": 1 }
+    ],
+    "outputs": [
+      { "id": "iron_sword", "amount": 1 }
+    ]
+  },
+  {
+    "id": "armor_crafting",
+    "name": "Kování zbroje",
+    "inputs": [
+      { "id": "iron_ingot", "amount": 3 }
+    ],
+    "outputs": [
+      { "id": "iron_armor", "amount": 1 }
+    ]
+  }
+]
