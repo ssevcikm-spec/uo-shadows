@@ -118,7 +118,7 @@
       "kind": "code",
       "owns": ["scripts/offline.gd"],
       "depends_on": ["core.skills", "sim.mining", "sim.crafting", "sim.combat"],
-      "prompt": "V scripts/offline.gd vytvoř resolve(char, job: String, hours: float) -> Dictionary: jedno „rozřešení" za dobu nečinnosti. job může být 'tezba', 'vyroba' nebo 'boj'; výstup = zisk (dle příslušného skillu × obtížnosti) s faktorem účinnosti 0.3 oproti aktivní hře. Denní strop: součet zisku za 24 h nepřesáhne konstantu (např. 100 kusů). Offline nikdy nezpůsobí smrt (konzervativní). Vrať {zisk: int, xp: int}."
+      "prompt": "V scripts/offline.gd vytvoř resolve(char, job: String, hours: float) -> Dictionary: jedno „rozřešení“ za dobu nečinnosti. job může být 'tezba', 'vyroba' nebo 'boj'; výstup = zisk (dle příslušného skillu × obtížnosti) s faktorem účinnosti 0.3 oproti aktivní hře. Denní strop: součet zisku za 24 h nepřesáhne konstantu (např. 100 kusů). Offline nikdy nezpůsobí smrt (konzervativní). Vrať {zisk: int, xp: int}."
     },
     {
       "id": "sim.assist",
