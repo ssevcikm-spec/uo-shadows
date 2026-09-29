@@ -37,7 +37,13 @@ func _physics_process(delta: float) -> void:
 		dir.y += 1.0
 	if dir != Vector2.ZERO:
 		dir = dir.normalized()
-	velocity = dir * SPEED
+	if level != null and level.has_method("iso_position"):
+		var iso := Vector2((dir.x - dir.y) * 0.5, (dir.x + dir.y) * 0.25)
+		if iso.length() > 0:
+			iso = iso.normalized()
+		velocity = iso * SPEED
+	else:
+		velocity = dir * SPEED
 	position = _step(position + velocity * delta)
 	# drž hráče v obrazovce
 	var vp := get_viewport_rect().size
