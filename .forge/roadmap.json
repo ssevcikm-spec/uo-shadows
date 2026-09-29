@@ -11,18 +11,6 @@
   ],
   "tasks": [
     {
-      "id": "iso-vykresleni",
-      "title": "Izometrické vykreslení dlaždic",
-      "kind": "code",
-      "prompt": "V scripts/level.gd přidej funkci iso_position(cx: int, cy: int) -> Vector2, která převede buňku mřížky na obrazovku v izometrii 2:1. Uvnitř spočítej polovina := cell / 2.0 a ctvrt := cell / 4.0 a vrať offset + Vector2((cx - cy) * polovina, (cx + cy) * ctvrt). V existující funkci build() nahraď dosavadní výpočet pozice dlaždice voláním iso_position(cx, cy). Přidej i opačný převod iso_to_cell(pozice: Vector2) -> Vector2i: p := pozice - offset, cx := int(round(p.y / (cell / 4.0) + p.x / (cell / 2.0)) / 2.0), cy := int(round(p.y / (cell / 4.0) - p.x / (cell / 2.0)) / 2.0) a vrať Vector2i(cx, cy). Logiku mřížky (grid, is_walkable_cell, width, height, markers) NEMĚŇ – testy průchodnosti na ní závisí."
-    },
-    {
-      "id": "iso-pohyb-hrace",
-      "title": "Pohyb hráče po izometrických osách",
-      "kind": "code",
-      "prompt": "V scripts/player.gd uprav existující _physics_process(delta: float) tak, aby se vstup přepočítal do izometrických os. Nejdřív zjisti, zda má uzel level metodu iso_position (použij if level != null and level.has_method(...) s názvem metody v uvozovkách). Když ano, směr ze vstupu (proměnná dir) převeď na iso := Vector2((dir.x - dir.y) * 0.5, (dir.x + dir.y) * 0.25); když má nenulovou délku, normalizuj ho, a teprve ten použij pro pohyb místo dir. Když metoda není, chovej se jako dosud. Kolizní funkci _step ani kontroly průchodnosti NEMĚŇ. Cílem je, aby šipky a WASD vedly hráče po dlaždicích izometrické mřížky."
-    },
-    {
       "id": "dovednosti-zaklad",
       "title": "Dovednosti rostoucí používáním",
       "kind": "code",
@@ -81,6 +69,18 @@
       "title": "Nápověda kláves v HUD",
       "kind": "code",
       "prompt": "V scripts/game.gd uprav existující _add_ui() tak, aby kromě HUD vytvořil druhý Label se jménem HelpLabel a textem: E těžba rudy, C tavení, B kování, X použít zbraň, R oprava, M hudba (oddělovačem je středník nebo tečka). Písmo zmenši přes add_theme_font_size_override na velikost 8 a label umísti doleva dolů (pozice Vector2(4, výška viewportu minus 14)). Ošetři, že HUD může být null. Nic dalšího neměň."
+    },
+    {
+      "id": "iso-vykresleni",
+      "title": "Izometrické vykreslení dlaždic",
+      "kind": "code",
+      "prompt": "V scripts/level.gd přidej funkci iso_position(cx: int, cy: int) -> Vector2, která převede buňku mřížky na obrazovku v izometrii 2:1. Uvnitř spočítej polovina := cell / 2.0 a ctvrt := cell / 4.0 a vrať offset + Vector2((cx - cy) * polovina, (cx + cy) * ctvrt). V existující funkci build() nahraď dosavadní výpočet pozice dlaždice voláním iso_position(cx, cy). Přidej i opačný převod iso_to_cell(pozice: Vector2) -> Vector2i: p := pozice - offset, cx := int(round(p.y / (cell / 4.0) + p.x / (cell / 2.0)) / 2.0), cy := int(round(p.y / (cell / 4.0) - p.x / (cell / 2.0)) / 2.0) a vrať Vector2i(cx, cy). Logiku mřížky (grid, is_walkable_cell, width, height, markers) NEMĚŇ – testy průchodnosti na ní závisí."
+    },
+    {
+      "id": "iso-pohyb-hrace",
+      "title": "Pohyb hráče po izometrických osách",
+      "kind": "code",
+      "prompt": "V scripts/player.gd uprav existující _physics_process(delta: float) tak, aby se vstup přepočítal do izometrických os. Nejdřív zjisti, zda má uzel level metodu iso_position (použij if level != null and level.has_method(...) s názvem metody v uvozovkách). Když ano, směr ze vstupu (proměnná dir) převeď na iso := Vector2((dir.x - dir.y) * 0.5, (dir.x + dir.y) * 0.25); když má nenulovou délku, normalizuj ho, a teprve ten použij pro pohyb místo dir. Když metoda není, chovej se jako dosud. Kolizní funkci _step ani kontroly průchodnosti NEMĚŇ. Cílem je, aby šipky a WASD vedly hráče po dlaždicích izometrické mřížky."
     }
   ]
 }
