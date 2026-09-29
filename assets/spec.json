@@ -11,7 +11,7 @@
     "(historický arming sword, zdroj assets/sprites/items/sword.png). Meč se má v budoucnu",
     "přepracovat – SDXL u dlouhých čepelí dělá vady a žádný kandidát nebyl plně historický.",
     "Přidáno: žíla rudy (ore) a truhla (chest), 48 px, SDXL product-photo. POZOR na pozadí:",
-    "u „ore/rock" dával SDXL tmavé pozadí, opravit jen product-photo promptem.",
+    "u ore/rock dával SDXL tmavé pozadí, opravit jen product-photo promptem.",
     "Odstranění pozadí: PODLE BARVY POZADÍ (ne jasu!) – viz items_postprocess.py.",
     "Náhled herního okna: tools/gamewindow_preview.py → _gamewindow_preview.png (960×540),",
     "měřítko postavy 96px/960 OK (uživatel souhlasil)."
