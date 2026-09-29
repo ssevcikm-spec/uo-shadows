@@ -39,6 +39,8 @@ func _ready() -> void:
 	for i in coin_total:
 		add_child(_make_coin(i, spots[i]))
 
+	var npc := _make_npc(vp)
+	add_child(npc)
 	_add_ui()
 	print("[game] připraveno: hráč + %d mincí, zvuků načteno: %d, dlaždice: %s, úroveň: %s" % [
 		coin_total, sfx.size(), "ano" if _texture("tiles/grass") else "ne",
@@ -263,6 +265,21 @@ func _make_coin(index: int, pos: Vector2) -> Area2D:
 	c.area_entered.connect(_on_coin_touched.bind(c))
 	return c
 
+func _make_npc(vp: Vector2) -> Area2D:
+	var n := Area2D.new()
+	n.name = "Npc"
+	n.add_to_group("npc")
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(12, 12)
+	shape.shape = rect
+	n.add_child(shape)
+	n.add_child(_visual("player", Color(1.0, 0.84, 0.0), Vector2(12, 14)))
+	n.position = vp / 2 + Vector2(60, 0)
+	n.z_index = 4
+	n.area_entered.connect(_on_npc_touched.bind(n))
+	return n
+
 
 func _on_coin_touched(other: Area2D, coin: Area2D) -> void:
 	if other != player or not is_instance_valid(coin) or not coin.is_in_group("coin"):
@@ -274,3 +291,13 @@ func _on_coin_touched(other: Area2D, coin: Area2D) -> void:
 	_update_hud()
 	if score >= coin_total:
 		play_sfx("win")
+
+func _on_npc_touched(other: Area2D, npc: Area2D) -> void:
+	if other != player:
+		return
+	if suroviny["ruda"] < 3:
+		return
+	suroviny["ruda"] -= 3
+	suroviny["ingot"] += 1
+	play_sfx("click")
+	_update_hud()
