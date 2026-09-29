@@ -1,0 +1,19 @@
+{
+  "generated": "2026-09-29 14:10:46",
+  "levels": [
+    {
+      "name": "main",
+      "file": "main.json",
+      "seed": 648754554,
+      "cell": 16,
+      "size": [
+        30,
+        16
+      ],
+      "markers": 4,
+      "connectivity": 1.0,
+      "preview": "main.preview.png"
+    }
+  ],
+  "note": "mřížka je text (0=zeď, 1=místnost, 2=chodba); spawn a mince jsou středy místností, průchodnost ověřená flood fillemp"
+}
