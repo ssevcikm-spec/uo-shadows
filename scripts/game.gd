@@ -17,6 +17,7 @@ var coin_total := COIN_COUNT
 var player: Area2D
 var level: Node2D
 var hud: Label
+var dovednosti := {"tezba":0, "kovarstvi":0, "alchymie":0}
 var sfx := {}
 
 
