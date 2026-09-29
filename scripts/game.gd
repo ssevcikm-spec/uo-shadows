@@ -306,3 +306,27 @@ func _on_npc_touched(other: Area2D, npc: Area2D) -> void:
 	suroviny["ingot"] += 1
 	play_sfx("click")
 	_update_hud()
+
+func _save_state() -> void:
+	var cfg := ConfigFile.new()
+	cfg.load("user://sandbox.cfg")
+	cfg.set_value("stav", "tezba", dovednosti["tezba"])
+	cfg.set_value("stav", "kovarstvi", dovednosti["kovarstvi"])
+	cfg.set_value("stav", "ruda", suroviny["ruda"])
+	cfg.set_value("stav", "ingot", suroviny["ingot"])
+	cfg.set_value("stav", "zbran_poskozeni", zbran_poskozeni)
+	cfg.set_value("stav", "zbran_trvanlivost", zbran_trvanlivost)
+	cfg.save("user://sandbox.cfg")
+
+func _load_state() -> void:
+	var cfg := ConfigFile.new()
+	var err := cfg.load("user://sandbox.cfg")
+	if err != OK:
+		return
+	dovednosti["tezba"] = cfg.get_value("stav", "tezba", dovednosti["tezba"])
+	dovednosti["kovarstvi"] = cfg.get_value("stav", "kovarstvi", dovednosti["kovarstvi"])
+	suroviny["ruda"] = cfg.get_value("stav", "ruda", suroviny["ruda"])
+	suroviny["ingot"] = cfg.get_value("stav", "ingot", suroviny["ingot"])
+	zbran_poskozeni = cfg.get_value("stav", "zbran_poskozeni", zbran_poskozeni)
+	zbran_trvanlivost = cfg.get_value("stav", "zbran_trvanlivost", zbran_trvanlivost)
+	_update_hud()
