@@ -1,0 +1,14 @@
+[
+  {
+    "id": "iron_sword",
+    "name": "Železný meč",
+    "durability": 100,
+    "damage": 15
+  },
+  {
+    "id": "iron_armor",
+    "name": "Železná zbroj",
+    "durability": 150,
+    "armor_rating": 10
+  }
+]

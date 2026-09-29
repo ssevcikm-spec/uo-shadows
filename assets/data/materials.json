@@ -1,0 +1,22 @@
+[
+  {
+    "id": "iron_ore",
+    "name": "Železná ruda",
+    "difficulty": 1
+  },
+  {
+    "id": "wood",
+    "name": "Dřevo",
+    "difficulty": 1
+  },
+  {
+    "id": "stone",
+    "name": "Kámen",
+    "difficulty": 2
+  },
+  {
+    "id": "iron_ingot",
+    "name": "Meziprodukt - železný ingot",
+    "difficulty": 3
+  }
+]
