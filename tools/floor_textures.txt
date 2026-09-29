@@ -1,0 +1,3 @@
+# Izometrické dlaždice — textury podlahy (dark)
+seamless grass texture, top-down view, dark muted green, realistic, tileable game texture, no objects, no borders, uniform lighting | out=grass_tex.png | seed=710001
+seamless dirt texture, top-down view, dark brown earth, realistic, tileable game texture, no objects, no borders, uniform lighting | out=dirt_tex.png | seed=710002

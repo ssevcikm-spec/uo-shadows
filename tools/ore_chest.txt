@@ -1,0 +1,3 @@
+# Další assety — žíla rudy + truhla (cesta B)
+iron ore deposit, dark grey rock with shiny metallic silver ore veins, realistic prerendered 3D render, soft studio lighting, detailed rock, isolated on plain white background, no text | out=ore.png | seed=710010
+wooden treasure chest with iron bands and metal lock, closed, realistic prerendered 3D render, soft studio lighting, detailed wood and metal, isolated on plain white background, no text | out=chest.png | seed=710011

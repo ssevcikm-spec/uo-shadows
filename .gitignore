@@ -1,0 +1,28 @@
+﻿# Godot
+.godot/
+*.translation
+export_presets.cfg.bak
+
+# Buildy a artefakty (v CI se generují znovu)
+build/
+artifacts/
+assets/_raw/
+
+# Lokální nástroje
+.forge/provider.json
+# Volba poskytovatele pro shell v témže kroku (druhý pokus agenta). Kdyby se
+# dostala do repa, `git add -A` by ji poslal do PR a běh bez změny kódu by se
+# hlásil jako úspěch.
+.forge/provider.env
+.forge/*.log
+agent.patch
+agent.log
+# Log z kontrolního spuštění hry (workflow ho píše do RUNNER_TEMP, ale kdyby
+# skončil v pracovní složce, `git add -A` by ho poslal do patche a do PR).
+smoke.log
+.aider*
+# Pojistka: cokoli, co vypada jako rozbita cesta k secretu
+/C:*Users*
+UsersSsevc*
+.secrets/
+git-credentials

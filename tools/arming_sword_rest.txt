@@ -1,0 +1,5 @@
+# Kandidáti meče #2 (zbytek) — historický jednoruční ARMYING SWORD
+historically accurate one-handed arming sword, single-handed knightly sword, straight clean blade, cross guard, leather-wrapped grip, wheel pommel, entire sword in frame with empty margins, realistic 3D render, plain white background, no text | out=asword3.png | seed=700022
+medieval knightly arming sword, historically accurate proportions, straight double-edged steel blade without notches, cruciform guard, wooden grip wrapped in leather, round pommel, full sword visible, product shot, white background, no text | out=asword4.png | seed=700023
+one-handed medieval arming sword, historical reenactment replica, straight blade with fuller, cross-shaped guard, leather-wrapped grip, entire sword from pommel to blade tip visible with space around, realistic render, white background, no text | out=asword5.png | seed=700024
+arming sword, single-handed cruciform sword of the high middle ages, straight double-edged blade, realistic historical weapon, full sword from pommel to tip visible, even studio lighting, plain white background, no text | out=asword6.png | seed=700025

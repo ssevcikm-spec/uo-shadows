@@ -1,0 +1,4 @@
+# Cesta B: tri predmety (meč, lektvar, mince) — realisticky prerenderovany 3D, bez palety
+medieval steel longsword with leather-wrapped grip, realistic prerendered 3D render, soft studio lighting, detailed metal materials, viewed from a slight top-down angle, isolated on plain white background, no text | out=sword.png | seed=700001 | size=832x1216
+glass potion bottle with red liquid and cork stopper, realistic prerendered 3D render, soft studio lighting, detailed glass and liquid, viewed from a slight top-down angle, isolated on plain white background, no text | out=potion.png | seed=700001 | size=832x1216
+single gold coin with embossed rim, realistic prerendered 3D render, soft studio lighting, detailed metal materials, viewed from a slight top-down angle, isolated on plain white background, no text | out=coin.png | seed=700001 | size=1024x1024

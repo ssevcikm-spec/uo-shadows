@@ -1,0 +1,88 @@
+{
+  "_stav": [
+    "MILNÍK 1 (cesta A) SCHVÁLEN 5/5: lidská postava z primitiv + rig 14 kostí,",
+    "chůze 8 framů přes 2-kostní IK (kolena se ohýbají), izo kamera 45°, 4 směry,",
+    "alfa render bez klíčování, vrstvy body/torso/legs/weapon sedí na sebe, Lanczos 96 px.",
+    "Scéna: tools/blender/build_character.py, zmenšení: tools/blender/postprocess.py,",
+    "sprity: tools/blender/sprites/. Parametry chůze: STRIDE 0.45, LIFT 0.09, bob 0.02,",
+    "náklon -0.05, paže 0.50, 2-kostní IK přes kosinovou větu (POZOR: L1 - L2*cos, ne +).",
+    "Další krok: cesta B – AI předměty (meč, lektvar, mince) přes SDXL.",
+    "Předměty (cesta B) hotové: lektvar a mince čisté, meč = PROZATÍMNÍ kandidát asword5",
+    "(historický arming sword, zdroj assets/sprites/items/sword.png). Meč se má v budoucnu",
+    "přepracovat – SDXL u dlouhých čepelí dělá vady a žádný kandidát nebyl plně historický.",
+    "Přidáno: žíla rudy (ore) a truhla (chest), 48 px, SDXL product-photo. POZOR na pozadí:",
+    "u „ore/rock" dával SDXL tmavé pozadí, opravit jen product-photo promptem.",
+    "Odstranění pozadí: PODLE BARVY POZADÍ (ne jasu!) – viz items_postprocess.py.",
+    "Náhled herního okna: tools/gamewindow_preview.py → _gamewindow_preview.png (960×540),",
+    "měřítko postavy 96px/960 OK (uživatel souhlasil)."
+  ],
+  "_popis": [
+    "Spec vzhledu pro Isometric Forge (projekt uo-sandbox). Varianta B:",
+    "izometrická 2.5D jako Ultima Online, ale v dnešním rozlišení.",
+    "Vnitřní rozlišení 960x540 se na 1080p zvětšuje PRESNE 2x (celociselne,",
+    "zadne rozmazani). Dlaždice je izometricky diamant 96x48 (pomer 2:1).",
+    "Sprity se generuji velke (768 px) a zmensuji celociselnym delitelem 8,",
+    "takze postava vyjde presne na 96 px - zadne mixels, zadne zvetsovani.",
+    "Barvy se mapuji na paletu hry (ne kvantizace na 16 nahodnych barev)."
+  ],
+  "viewport": [960, 540],
+  "tile": { "sirka": 96, "vyska": 48, "pomer": "2:1" },
+  "role": {
+    "player": { "visual_height": 96, "canvas": 128, "smery": 4, "framy": 8, "stin": true },
+    "npc": { "visual_height": 96, "canvas": 128, "smery": 4, "framy": 8, "stin": true },
+    "enemy": { "visual_height": 64, "canvas": 96, "smery": 4, "framy": 4, "stin": true },
+    "ore": { "visual_height": 48, "canvas": 64, "smery": 1, "framy": 1, "stin": true },
+    "chest": { "visual_height": 48, "canvas": 64, "smery": 1, "framy": 1, "stin": true },
+    "weapon": { "visual_height": 48, "canvas": 64, "smery": 1, "framy": 1, "stin": false },
+    "potion": { "visual_height": 32, "canvas": 48, "smery": 1, "framy": 1, "stin": false },
+    "coin": { "visual_height": 24, "canvas": 32, "smery": 1, "framy": 1, "stin": false }
+  },
+  "vrstvy": {
+    "_popis": [
+      "Oblékání jako v UO: postava je SLOŽENÁ Z VRSTEV, které se kreslí přes sebe.",
+      "V Blenderu se každá vrstva vyrenderuje zvlášť se STEJNOU kamerou, riggem",
+      "a animací, takže sedí na sebe frame po framu. Ve hře se pak skládají podle",
+      "pořadí (z_index) – jakákoli kombinace výbavy je zdarma, bez dalšího rendru.",
+      "Barvy látky a kůže se navíc dají tónovat přes modulate (UO dělalo totéž",
+      "přes hue), takže jedna vrstva dá mnoho barevných variant."
+    ],
+    "slot_poradi": ["body", "legs", "feet", "torso", "cloak", "head", "shield", "weapon"],
+    "pocatecni_sada": ["body", "torso", "legs", "weapon"],
+    "_pocatecni_sada_note": "Důkaz cesty A začne se dvěma vrstvami navíc (torso + weapon), aby se ověřilo zarovnání; zbytek slotů se přidá po odsouhlasení.",
+    "render_na_vrstvu": true,
+    "tonovani": ["cloak", "torso", "legs"]
+  },
+  "gates": {
+    "_popis": "Prísnejsi nez u pixel-art sady: tahle grafika ma vic detailu, takze vada je videt driv.",
+    "height_tolerance": 0.10,
+    "max_holes": 0,
+    "max_border_opaque": 0.05,
+    "min_silhouette_iou": 0.80,
+    "max_centroid_shift": 3.0,
+    "min_contrast_vs_floor": 150,
+    "_contrast_note": "Prumerna vzdalenost barev postavy od nejblizsi barvy dlazdice (z 765). U nepritele v plosinovce vyslo 93 = splyval s podlahou; tady to nesmi projit."
+  },
+  "styl": {
+    "_popis": [
+      "SMĚR (upřesněno uživatelem 28. 9. 2026): UO: The Second Age, tedy realistický",
+      "až mírně fantasy vzhled – NE pixel art. UO vypadalo realisticky proto, že",
+      "jeho sprity byly PŘEDRENDROVANÉ 3D MODELY do 2D: skutečné světlo, skutečné",
+      "materiály, přirozené barvy, jen malý výsledný rozměr.",
+      "Zakázané: 16barevná paleta, dithering, nearest-neighbour zmenšování,",
+      "výrazné pixelové hrany, přehnané fantasy proporce (nepraktický meč)."
+    ],
+    "technika": "3D model → render do 2D spritu (Blender headless, zdarma) v 5 směrech",
+    "zmenšování": "Lanczos/bilineární (hladké), NE celočíselný nearest",
+    "barvy": "plné barvy (stovky až tisíce), žádná kvantizace na paletu",
+    "proporce": "lidské a praktické – zbraň musí vypadat použitelně, ne jako dekorace"
+  },
+  "paleta": {
+    "_popis": "ZRUŠENO pro tuhle hru: mapování na paletu prostředí dělalo sprity špinavé a tmavé (naměřeno u prvního testu). Barvy zůstávají přirozené z renderu.",
+    "zdroj": null
+  },
+  "stin": {
+    "_popis": "Stin se nekresli modelem, ale v kode: elipsa pod postavou, sirkа podle sirky postavy, kryti 0.35.",
+    "sirka_pomer": 0.7,
+    "kryti": 0.35
+  }
+}
