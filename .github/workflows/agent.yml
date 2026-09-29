@@ -40,7 +40,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: forge-agent
+  # Každý běh má vlastní skupinu (run_key je unikátní UUID), takže se granulí
+  # můžou rozběhnout paralelně. Dřív tu byla jedna společná skupina „forge-agent"
+  # a GitHub při cancel-in-progress:false rušil všechny čekající běhy kromě
+  # posledního – paralelní dispatch z DAG roadmapy se tak sám rušil.
+  group: forge-agent-${{ inputs.run_key }}
   cancel-in-progress: false
 
 jobs:
