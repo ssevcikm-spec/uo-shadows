@@ -24,15 +24,16 @@ var markers: Array = []
 var spawn_cell := Vector2i.ZERO
 var stats := {}
 
-var _textures := {}
+var _textures: Dictionary = {}
 
 
 func load_file(path: String) -> bool:
-	"""Načte úroveň ze souboru. Vrací false, když soubor chybí nebo je poškozený."""
+	"""Načte úroveň ze souboru (např. res://assets/levels/main.json).
+	Vrací false, když soubor chybí nebo je poškozený."""
 	if not FileAccess.file_exists(path):
 		return false
 	var text := FileAccess.get_file_as_string(path)
-	var data = JSON.parse_string(text)
+	var data: Variant = JSON.parse_string(text)
 	if not (data is Dictionary):
 		push_error("[level] %s není platné JSON" % path)
 		return false
@@ -61,8 +62,8 @@ func load_file(path: String) -> bool:
 			push_error("[level] %s: řádek má %d znaků, čekáno %d" % [path, row.length(), width])
 			return false
 
-	for m in markers:
-		if str(m.get("type", "")) == "spawn":
+	for m: Variant in markers:
+		if m is Dictionary and str(m.get("type", "")) == "spawn":
 			var c: Array = m.get("cell", [0, 0])
 			spawn_cell = Vector2i(int(c[0]), int(c[1]))
 	return true
@@ -166,7 +167,7 @@ func reachable_count(from_cell := Vector2i(-1, -1)) -> int:
 	var front: Array[Vector2i] = [from_cell]
 	while not front.is_empty():
 		var c: Vector2i = front.pop_back()
-		for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
 			var n: Vector2i = c + d
 			if is_walkable_cell(n.x, n.y) and not seen.has(n):
 				seen[n] = true
