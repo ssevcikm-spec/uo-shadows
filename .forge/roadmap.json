@@ -1,86 +1,148 @@
 {
   "_popis": [
-    "Isometric Forge – milník 1: z plošinovkové šablony udělat izometrický sandbox",
-    "s dovednostmi rostoucími používáním a řemesly, jejichž výrobky mají skutečný užitek.",
-    "Pravidla pro každý úkol: jen scripts/*.gd, do ~60 řádků, nikdy neměnit tests/ ani",
-    ".github/, každý nový _on_* musí být připojený k signálu (hlídá check-wiring.py).",
-    "Používej jen existující funkce: _visual, play_sfx, _update_hud, level.is_walkable_cell.",
-    "Testy (tests/run_tests.gd) musí projít beze změny – proto první dva úkoly mění jen",
-    "VYKRESLENÍ a POHYB, zatímco logika mřížky a průchodnosti zůstává stejná.",
-    "Názvy klíčů ve slovnících piš v jednoduchých uvozovkách, ať je JSON jednoduchý."
+    "UO Shadows (uo-shadows) — milník 1 jako DAG granulí podle docs/ARCHITEKTURA.md.",
+    "Každá granule = jeden soubor (owns), deklaruje depends_on a je samostatně ověřitelná.",
+    "Conductor vydá granuli, až když jsou všechny depends_on sloučené (task='done')",
+    "a její owns je disjunktní s owns běžících granulí — tak můžou běžet paralelně.",
+    "Pravidla pro agenta: jen do owns, používat jen deklarované provides, neměnit",
+    "tests/ ani .forge/ ani project.godot."
   ],
-  "tasks": [
+  "grains": [
     {
-      "id": "dovednosti-zaklad",
-      "title": "Dovednosti rostoucí používáním",
+      "id": "data.content",
+      "title": "Obsah — data (materiály, skilly, recepty, příšery, předměty)",
       "kind": "code",
-      "prompt": "V scripts/game.gd přidej proměnnou dovednosti jako slovník s klíči tezba, kovarstvi a alchymie (všechny začínají na nule) a funkci _zlepsi_skill(jmeno: String) -> void, která zvýší hodnotu v dovednosti o 1 (nejvýš do 100) a zavolá _update_hud(). V existující _update_hud() přidej do textu HUD výpis dovedností: TĚŽBA a KOVÁŘSTVÍ s jejich hodnotami (formátování přes %d). Nic dalšího neměň – je to základ, na který navážou další úkoly."
+      "owns": ["assets/data/materials.json", "assets/data/skills.json", "assets/data/recipes.json", "assets/data/monsters.json", "assets/data/items.json"],
+      "depends_on": [],
+      "prompt": "Vytvoř datovou vrstvu hry v assets/data/*.json. materials.json: železná ruda, dřevo, kámen a meziprodukt železný ingot (každý s id, název, obtížnost). skills.json: tezba, drevorubectvi, kovarstvi, boj_na_blizko. recipes.json: taveni (ruda→ingot), kovani_mece (ingot+dřevo→meč), kovani_zbroje (ingoty→zbroj). monsters.json: kostlivec (hp, drop zlato + občas ruda). items.json: železný meč (trvanlivost, damage), železná zbroj (trvanlivost, armor rating). Každý soubor je validní JSON a jde načíst."
     },
     {
-      "id": "zila-rudy",
-      "title": "Žíla rudy v mapě",
+      "id": "core.attributes",
+      "title": "Atributy — Str/Dex/Int a odvozené staty",
       "kind": "code",
-      "prompt": "V scripts/game.gd přidej proměnnou suroviny jako slovník s klíči ruda a ingot (nula a nula) a funkci _make_ore(vp: Vector2) -> Area2D: vytvoří Area2D se jménem Ore, přidá ho do skupiny ore, přidá CollisionShape2D s CircleShape2D (radius 6) a vizuál přes existující _visual (název stone, náhradní barva hnědošedá, velikost Vector2(12, 12)), pozici vezme z první volné položky, kterou vrátí existující _coin_spots(vp), jinak ze středu viewportu. Připoj signál o.area_entered.connect(_on_ore_touched.bind(o)) a napiš funkci _on_ore_touched(other: Area2D, ore: Area2D) -> void, která při dotyku hráče zavolá play_sfx (zvuk hit), přičte rudu do surovin a zavolá _zlepsi_skill pro tezba. Žílu neuklízej – má se dát těžit opakovaně. Uzel vytvoř v _add_level() vedle mincí."
+      "owns": ["scripts/attributes.gd"],
+      "depends_on": [],
+      "prompt": "V scripts/attributes.gd vytvoř atributy Str, Dex, Int (každý 0–100, výchozí 10) a funkci get(attr: String) -> int. Přidej derived() vracející slovník odvozených statů: damage = 1 + Str/10, hit_chance = 0.5 + Dex/200, attack_speed = 1.0 + Dex/100, mana = Int, carry = 40 + Str. Nic víc — je to základ, na který navazují boj, magie i výroba."
     },
     {
-      "id": "taveni-ingotu",
-      "title": "Tavení rudy na ingot",
+      "id": "core.skills",
+      "title": "Dovednosti — model 0–100 rostoucí používáním",
       "kind": "code",
-      "prompt": "V scripts/game.gd využij proměnnou suroviny (klíče ruda a ingot). Přidej funkci _tav() -> void: když je rudy aspoň 3, odečti 3 rudy, přičti 1 ingot, zavolej play_sfx (zvuk powerup), _zlepsi_skill pro kovarstvi a _update_hud(); jinak nic nedělej. V existující funkci _input(event: InputEvent) přidej na klávesu KEY_C volání _tav(). Do _update_hud() přidej výpis surovin (RUDA a INGOT s hodnotami)."
+      "owns": ["scripts/skills.gd"],
+      "depends_on": [],
+      "prompt": "V scripts/skills.gd vytvoř slovník dovednosti (klíče: tezba, drevorubectvi, kovarstvi, boj_na_blizko — všechny začínají na 0) a funkce add(skill: String, n: int) -> void (zvýší hodnotu, omezeno na 0–100) a get(skill: String) -> int. Nic dalšího neměň."
     },
     {
-      "id": "kovani-zbrane",
-      "title": "Kování zbraně s účinkem",
+      "id": "world.level",
+      "title": "Úroveň — načtení mapy z JSON",
       "kind": "code",
-      "prompt": "V scripts/game.gd přidej proměnné zbran_poskozeni (celé číslo, začni na 1) a zbran_trvanlivost (celé číslo, začni na 20) a funkci _kuj() -> void: když jsou aspoň 2 ingoty, odečti je, zvyš zbran_poskozeni o 1, nastav zbran_trvanlivost na 20, zavolej play_sfx (zvuk levelup), _zlepsi_skill pro kovarstvi a _update_hud(); jinak nic. V _input přidej na klávesu KEY_B volání _kuj(). Do _update_hud() přidej výpis zbraně: poskozeni a vydrz. Tím je vidět, že výrobek má skutečný užitek, ne jen existenci."
+      "owns": ["scripts/level.gd"],
+      "depends_on": [],
+      "prompt": "Uprav scripts/level.gd tak, aby načetlo úroveň z assets/levels/main.json: load_file(path) -> bool (vrátí false, když soubor chybí nebo je poškozený), vlastnosti grid, cell, offset, spawn_cell, a funkce is_walkable_cell(cx, cy), cell_center(cx, cy), walkable_count(), reachable_count(). Logika průchodnosti: 0 = zeď, jinak průchozí."
     },
     {
-      "id": "trvanlivost-a-oprava",
-      "title": "Trvanlivost a oprava zbraně",
+      "id": "world.map",
+      "title": "Svět — izo projekce, uzly surovin, respawn",
       "kind": "code",
-      "prompt": "V scripts/game.gd využij zbran_trvanlivost a zbran_poskozeni. Přidej funkci _pouzij_zbran() -> void: když je trvanlivost větší než nula, sniž ji o 1 a zavolej _update_hud(); když klesne na nulu, sniž zbran_poskozeni na 1 (zbraň se rozbila) a zavolej play_sfx se zvukem hurt. Přidej funkci _oprav() -> void: když je aspoň 1 ingot a trvanlivost je menší než 20, odečti ingot, nastav trvanlivost na 20, zavolej play_sfx (zvuk pickup) a _update_hud(). V _input přidej na klávesu KEY_X volání _pouzij_zbran() a na KEY_R volání _oprav()."
+      "owns": ["scripts/world.gd"],
+      "depends_on": ["world.level"],
+      "prompt": "V scripts/world.gd vytvoř izometrickou projekci a surovinové uzly. iso_position(cx: int, cy: int) -> Vector2 vrací offset + Vector2((cx-cy)*cell/2, (cx+cy)*cell/4); cell_at(pos) -> Vector2i zpětný převod. Přidej seznam uzlů (žíla železa, strom, skála) s pozicí a stavem (vytěžen/aktivní) a respawn: vytěžený uzel se po čase (konstanta, např. 60 s) obnoví. Vystav gather(cell) -> bool a is_walkable(pos)."
     },
     {
-      "id": "npc-obchodnik",
-      "title": "NPC obchodník",
+      "id": "entity.item",
+      "title": "Předmět — definice, trvanlivost, materiál",
       "kind": "code",
-      "prompt": "V scripts/game.gd přidej funkci _make_npc(vp: Vector2) -> Area2D: Area2D se jménem Npc, skupina npc, CollisionShape2D s RectangleShape2D o velikosti Vector2(12, 12), vizuál přes existující _visual (název player, náhradní zlatá barva, velikost Vector2(12, 14)), pozice uprostřed obrazovky posunutá o Vector2(60, 0). Připoj n.area_entered.connect(_on_npc_touched.bind(n)) a napiš funkci _on_npc_touched(other: Area2D, npc: Area2D) -> void, která při dotyku hráče vymění 3 rudy za 1 ingot, zavolá play_sfx (zvuk click) a _update_hud(). Když rudy není dost, nic nedělej. Uzel vytvoř v _ready(), aby v mapě zůstal i po přechodu na jinou úroveň."
+      "owns": ["scripts/item.gd"],
+      "depends_on": ["data.content"],
+      "prompt": "V scripts/item.gd vytvoř reprezentaci předmětu načtenou z assets/data/items.json: id, název, materiál, trvanlivost (výchozí 20), damage nebo armor_rating, kvalita. Funkce use() -> void (sníží trvanlivost o 1, nejmíň 0) a repair() -> void (obnoví trvanlivost). Vystav broken() -> bool."
     },
     {
-      "id": "denni-cyklus",
-      "title": "Denní cyklus",
+      "id": "entity.player",
+      "title": "Hráč — pohyb, inventář, smrt (mrtvola)",
       "kind": "code",
-      "prompt": "V scripts/game.gd přidej proměnnou cas_dne (desetinné číslo, začni na 0.25; nula je noc, 0.25 ráno, 0.5 poledne, 0.75 večer). Ve funkci _process(delta: float) ji zvyšuj o delta děleno 120.0 a kdykoli přesáhne 1.0, odečti 1.0. Barvu pozadí uprav podle cas_dne – použij Color.from_hsv s odstínem 0.6, sytostí 0.4 a jasem 0.2 + 0.6 * sin(cas_dne * PI). Do _update_hud() přidej výpis času ve formátu hodin (int(cas_dne * 24.0)). Když v souboru pozadí jako ColorRect není, stačí výpočet a HUD."
+      "owns": ["scripts/player.gd"],
+      "depends_on": ["core.attributes", "core.skills", "world.map", "entity.item"],
+      "prompt": "V scripts/player.gd vytvoř hráče: move(dir) respektuje world.is_walkable, inventář (seznam předmětů), vybavení (zbraň + zbroj). die() -> void vytvoří mrtvolu (Area2D s předměty z těla) na místě smrti a hráč přijde o vše na těle. Při smrti se hráč přesune na spawn. Vystav take_item(item) a drop_item(item)."
     },
     {
-      "id": "hodnota-predmetu",
-      "title": "Předměty mají hodnotu",
+      "id": "sim.combat",
+      "title": "Boj — rozřešení zásahu a poškození",
       "kind": "code",
-      "prompt": "V scripts/game.gd přidej funkci _hodnota() -> int, která spočítá majetek hráče: ruda krát 2 plus ingot krát 8 plus zbran_poskozeni krát 5. Do existující _update_hud() přidej na konec výpis hodnoty (HODNOTA s číslem). Je to základ pro obchod a pro princip, že věci ve světě mají hodnotu. Nic dalšího neměň."
+      "owns": ["scripts/combat.gd"],
+      "depends_on": ["core.attributes", "core.skills", "entity.item"],
+      "prompt": "V scripts/combat.gd vytvoř resolve(attacker, defender) -> Dictionary. Hit chance = 0.5 + (Dex útočníka)/200 + (skill boj_na_blizko)/200; když zasáhne, damage = 1 + Str/10 + zbraň.damage, zmenšené o armor rating obránce. Vrať {hit: bool, damage: int}. Používej provides z attributes.gd a skills.gd, nic nečti napřímo."
     },
     {
-      "id": "ulozit-postup-sandbox",
-      "title": "Uložení dovedností a surovin",
+      "id": "sim.mining",
+      "title": "Těžba a dřevorubectví — výtěžek dle skillu × obtížnosti",
       "kind": "code",
-      "prompt": "V scripts/game.gd přidej funkce _save_stav() -> void a _load_stav() -> void, které používají ConfigFile a soubor user://sandbox.cfg (stejný vzor, jaký v souboru už je pro nejlepší skóre). Ukládej do sekce stav hodnoty: tezba, kovarstvi, ruda, ingot, zbran_poskozeni, zbran_trvanlivost. Funkci _save_stav() volej na konci _tav(), _kuj() a _oprav(); _load_stav() volej v _ready() po načtení skóre a ošetři, že soubor nemusí existovat (když cfg.load nevrátí OK, funkce skončí). Po načtení zavolej _update_hud()."
+      "owns": ["scripts/mining.gd"],
+      "depends_on": ["core.skills", "world.map", "data.content"],
+      "prompt": "V scripts/mining.gd vytvoř gather(node) -> int: výtěžek = 1 + (skill_těžby_or_dřevorubectví - obtížnost suroviny)/10, nejmíň 0. Při těžbě zvyš add(skill, 1) pro příslušný skill (tezba u rudy/kamene, drevorubectvi u dřeva) a zavolej world.gather(cell) (označí uzel vytěžený). Vrať počet vytěžených kusů."
     },
     {
-      "id": "napoveda-klaves",
-      "title": "Nápověda kláves v HUD",
+      "id": "sim.crafting",
+      "title": "Výroba — tavení, kování, oprava",
       "kind": "code",
-      "prompt": "V scripts/game.gd uprav existující _add_ui() tak, aby kromě HUD vytvořil druhý Label se jménem HelpLabel a textem: E těžba rudy, C tavení, B kování, X použít zbraň, R oprava, M hudba (oddělovačem je středník nebo tečka). Písmo zmenši přes add_theme_font_size_override na velikost 8 a label umísti doleva dolů (pozice Vector2(4, výška viewportu minus 14)). Ošetři, že HUD může být null. Nic dalšího neměň."
+      "owns": ["scripts/crafting.gd"],
+      "depends_on": ["core.skills", "core.attributes", "entity.item", "data.content"],
+      "prompt": "V scripts/crafting.gd vytvoř smelt(recipe) -> Item (železná ruda → ingot), forge(recipe) -> Item (ingot+dřevo → meč; ingoty → zbroj) a repair(item) -> void (za 1 ingot obnoví trvanlivost). Kvalita výrobku roste se skill kovarstvi (kvalita = skill/20). Po výrobě zavolej add('kovarstvi', 1). Recepty čti z assets/data/recipes.json."
     },
     {
-      "id": "iso-vykresleni",
-      "title": "Izometrické vykreslení dlaždic",
+      "id": "sim.economy",
+      "title": "Ekonomika — zlato, ceny, obchod",
       "kind": "code",
-      "prompt": "V scripts/level.gd přidej funkci iso_position(cx: int, cy: int) -> Vector2, která převede buňku mřížky na obrazovku v izometrii 2:1. Uvnitř spočítej polovina := cell / 2.0 a ctvrt := cell / 4.0 a vrať offset + Vector2((cx - cy) * polovina, (cx + cy) * ctvrt). V existující funkci build() nahraď dosavadní výpočet pozice dlaždice voláním iso_position(cx, cy). Přidej i opačný převod iso_to_cell(pozice: Vector2) -> Vector2i: p := pozice - offset, cx := int(round(p.y / (cell / 4.0) + p.x / (cell / 2.0)) / 2.0), cy := int(round(p.y / (cell / 4.0) - p.x / (cell / 2.0)) / 2.0) a vrať Vector2i(cx, cy). Logiku mřížky (grid, is_walkable_cell, width, height, markers) NEMĚŇ – testy průchodnosti na ní závisí."
+      "owns": ["scripts/economy.gd"],
+      "depends_on": ["entity.item", "data.content"],
+      "prompt": "V scripts/economy.gd vytvoř ceny předmětů (price(item) -> int odvozená z materiálu a kvality) a obchod: buy(player, item) (hráč zaplatí zlato, dostane item) a sell(player, item) (hráč prodá, dostane zlato). Vystav gold(player) -> int. Hráč začíná s 0 zlatem."
     },
     {
-      "id": "iso-pohyb-hrace",
-      "title": "Pohyb hráče po izometrických osách",
+      "id": "entity.npc",
+      "title": "NPC — obchodník",
       "kind": "code",
-      "prompt": "V scripts/player.gd uprav existující _physics_process(delta: float) tak, aby se vstup přepočítal do izometrických os. Nejdřív zjisti, zda má uzel level metodu iso_position (použij if level != null and level.has_method(...) s názvem metody v uvozovkách). Když ano, směr ze vstupu (proměnná dir) převeď na iso := Vector2((dir.x - dir.y) * 0.5, (dir.x + dir.y) * 0.25); když má nenulovou délku, normalizuj ho, a teprve ten použij pro pohyb místo dir. Když metoda není, chovej se jako dosud. Kolizní funkci _step ani kontroly průchodnosti NEMĚŇ. Cílem je, aby šipky a WASD vedly hráče po dlaždicích izometrické mřížky."
+      "owns": ["scripts/npc.gd"],
+      "depends_on": ["entity.item", "sim.economy"],
+      "prompt": "V scripts/npc.gd vytvoř obchodníka (Area2D): při dotyku hráče otevře obchod — buy/sell přes economy.gd. Vystav trade(player) -> void, které volá economy.buy/sell podle interakce. Obchodník stojí na pevné pozici."
+    },
+    {
+      "id": "entity.enemy",
+      "title": "Nepřítel — kostlivec, boj a loot",
+      "kind": "code",
+      "owns": ["scripts/enemy.gd"],
+      "depends_on": ["entity.item", "sim.combat"],
+      "prompt": "V scripts/enemy.gd vytvoř kostlivce (Area2D) s hp (z assets/data/monsters.json) a attack(player) -> void přes combat.resolve. Když hp klesne na 0, drop_loot() -> void vytvoří loot (zlato + občas ruda) na místě smrti a nepřítel zmizí (s respawnem po čase). Vystav hp a is_dead()."
+    },
+    {
+      "id": "sim.offline",
+      "title": "Offline — rozřešení nečinnosti s denním stropem",
+      "kind": "code",
+      "owns": ["scripts/offline.gd"],
+      "depends_on": ["core.skills", "sim.mining", "sim.crafting", "sim.combat"],
+      "prompt": "V scripts/offline.gd vytvoř resolve(char, job: String, hours: float) -> Dictionary: jedno „rozřešení" za dobu nečinnosti. job může být 'tezba', 'vyroba' nebo 'boj'; výstup = zisk (dle příslušného skillu × obtížnosti) s faktorem účinnosti 0.3 oproti aktivní hře. Denní strop: součet zisku za 24 h nepřesáhne konstantu (např. 100 kusů). Offline nikdy nezpůsobí smrt (konzervativní). Vrať {zisk: int, xp: int}."
+    },
+    {
+      "id": "sim.assist",
+      "title": "Asistence — reaktivní pravidla (spoušť → akce)",
+      "kind": "code",
+      "owns": ["scripts/assist.gd"],
+      "depends_on": ["entity.player", "entity.item"],
+      "prompt": "V scripts/assist.gd vytvoř pravidla: add_rule(trigger, action) a evaluate(player) -> Array. Spouště: hp < X, mana < X, cíl mrtev. Akce: vypít lektvar, seslat kouzlo, přepnout cíl. Akce jen přes veřejné příkazy hráče (spotřebovávají skutečné zdroje), nikdy ne autonomní smyčky."
+    },
+    {
+      "id": "persist.save",
+      "title": "Ukládání — stav postavy a světa",
+      "kind": "code",
+      "owns": ["scripts/save.gd"],
+      "depends_on": ["core.skills", "core.attributes", "entity.player", "world.map", "sim.economy"],
+      "prompt": "V scripts/save.gd vytvoř save() a load() přes ConfigFile do user://save.cfg: atributy, skilly, inventář, zlato, pozici hráče a stav uzlů světa (které jsou vytěžené). load() ošetří neexistující soubor (vrátí false). Vystav save() -> bool a load() -> bool."
+    },
+    {
+      "id": "ui.hud",
+      "title": "HUD — zobrazení stavu",
+      "kind": "code",
+      "owns": ["scripts/hud.gd"],
+      "depends_on": ["core.skills", "core.attributes", "entity.player", "sim.economy"],
+      "prompt": "V scripts/hud.gd vytvoř update() -> void, které zobrazí: HP, atributy (Str/Dex/Int), dovednosti (tezba/drevorubectvi/kovarstvi/boj_na_blizko), zlato a vybavenou zbraň/zbroj. Čte jen veřejné gettery (attributes.get, skills.get, economy.gold, player). Label se umístí do rohu obrazovky."
     }
   ]
 }
