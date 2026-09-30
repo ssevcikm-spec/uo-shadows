@@ -1,6 +1,6 @@
 {
-  "name": "uo-sandbox",
+  "name": "uo-shadows",
   "engine": "godot-4.7.2",
   "created": "2026-09-28 11:06:33",
-  "generated_by": "gameforge/pipeline/forge.py"
+  "generated_by": "orchestra (puvodne gameforge/pipeline/forge.py)"
 }
