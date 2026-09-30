@@ -293,7 +293,14 @@ jobs:
             if echo "$VYSTUP" | grep -q 'SCRIPT ERROR: Parse Error'; then
               CHYBY=$((CHYBY + 1))
               echo "::error file=$f::Skript se neparsuje – $f"
-              echo "$VYSTUP" | grep -A2 'SCRIPT ERROR: Parse Error' | head -12
+              # Vypisují se VŠECHNY chyby souboru, ne jen první (dřív `head -12`
+              # ukázal jednu a zbytek se zahodil). Model jich často udělá víc
+              # najednou a při opakování pak opraví jednu a spadne na další.
+              # Naměřeno 30. 9. 2026 (běh #131, scripts/npc.gd): čtyři různé
+              # chyby v jednom souboru – `Member "position" redefined`,
+              # `Cannot infer the type of "item"` a `Identifier "GameItem" not
+              # declared` (poslední je jen NÁSLEDEK předchozích).
+              echo "$VYSTUP" | grep -A1 'SCRIPT ERROR: Parse Error' | head -40
               echo ""
             else
               echo "  OK  $f"
@@ -303,8 +310,14 @@ jobs:
           if [ "$CHYBY" -gt 0 ]; then
             echo "::error::$CHYBY souborů se neparsuje – testy nemá cenu pouštět"
             echo "TIP: nejčastější příčiny jsou v CONVENTIONS.md §1c (File/json místo"
-            echo "     FileAccess/JSON) a §1d (§1e) – kolize jmen s enginem, např."
-            echo "     class_name Item, funkce get(), property name."
+            echo "     FileAccess/JSON), §1d (§1e) – kolize jmen s enginem, např."
+            echo "     class_name Item, funkce get(), property name – a §1f:"
+            echo "     NIKDY nedeklaruj `var position/scale/rotation/visible/name`"
+            echo "     (jsou to členové Area2D/Node2D → 'Member redefined'),"
+            echo "     a `var x := load(...)`/`var x := uzel.neco()` potřebuje"
+            echo "     VÝSLOVNÝ typ (`var x: Node = ...`), jinak 'Cannot infer type'."
+            echo "     Pozor: chyba 'Identifier X not declared' bývá jen NÁSLEDEK"
+            echo "     předchozích chyb v témž souboru – oprav první z nich."
             exit 1
           fi
           echo "Parsování v pořádku ($(echo "$ZMENENE" | wc -l) souborů)."
