@@ -467,4 +467,4 @@ jobs:
         run: |
           gh pr comment "$PR" --body "🤖 **Automatické sloučení neproběhlo** (pravidla: ${{ steps.gate.outputs.ok }}, CI: ${{ steps.ci.outputs.ci }}).
 
-          Buď je změna větší než 60 řádků, sahá mimo \`scripts/\` a \`assets/\`, nebo se dotýká testů či orchestrace – a to agent sám nesmí. Podívej se na ni prosím ručně."
+          Buď je změna větší než limit granule (${{ inputs.max_lines }} řádků), sahá mimo \`scripts/\` a \`assets/\`, nebo se dotýká testů či orchestrace – a to agent sám nesmí. Podívej se na ni prosím ručně."
