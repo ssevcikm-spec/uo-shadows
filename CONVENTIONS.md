@@ -76,12 +76,6 @@ tím celý běh (testy pak hlásily jen „překročen tvrdý limit 90 s").
 Buď jméno projektu předřaď (`GameItem`, `UoItem`), nebo – ještě lépe – žádné
 `class_name` nedávej a přistupuj k souboru přes `preload()`/`load()`.
 
-## 1e. Než začneš psát, zkontroluj, že soubor není jen kostra
-
-Když granule říká „vytvoř `scripts/x.gd`", **nejdřív zjisti, jestli už
-existuje** a co v něm je. Přepisovat existující funkční soubor je zakázané
-(viz §6) – a slepé `class_name` do souboru, který ho už má, je okamžitá chyba.
-
 ## 1b. Do uzlu vytvořeného `Area2D.new()` nejde přidat vlastní vlastnost
 
 ```gdscript
@@ -101,6 +95,12 @@ nepřátele" – kdyby v projektu chyběla, vypadá to jako úspěch.
 
 Alternativa bez nového souboru je `e.set_meta("smer", …)` / `e.get_meta("smer")`,
 ale vlastní skript je čitelnější.
+
+## 1e. Než začneš psát, zkontroluj, že soubor není jen kostra
+
+Když granule říká „vytvoř `scripts/x.gd`", **nejdřív zjisti, jestli už
+existuje** a co v něm je. Přepisovat existující funkční soubor je zakázané
+(viz §6) – a slepé `class_name` do souboru, který ho už má, je okamžitá chyba.
 
 ## 2. Když se skript hry nenačte, poznáš to hned
 
