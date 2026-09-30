@@ -63,3 +63,9 @@ func _step(target: Vector2) -> Vector2:
 	if level.is_walkable_at(Vector2(position.x, target.y)):
 		return Vector2(position.x, target.y)
 	return position
+
+func flash() -> void:
+	var original = modulate
+	modulate = Color(1, 0, 0)
+	await get_tree().create_timer(0.15).timeout
+	modulate = original
