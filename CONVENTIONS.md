@@ -26,6 +26,26 @@ for uzel in get_tree().get_nodes_in_group("enemy"):
 Platí to i pro `get_tree().get_first_node_in_group(...)`, `get_node_or_null(...)`
 a cokoli dalšího, co vrací `Node`/`Variant` bez konkrétního typu.
 
+## 1b. Do uzlu vytvořeného `Area2D.new()` nejde přidat vlastní vlastnost
+
+```gdscript
+# ŠPATNĚ – runtime chyba a nepřítel se vůbec nepřidá do scény
+var e := Area2D.new()
+e.smer = Vector2(1, 0)      # Invalid assignment of property or key 'smer' …
+
+# SPRÁVNĚ – vlastnost deklaruje vlastní skript (scripts/enemy.gd)
+var e := Area2D.new()
+e.set_script(load("res://scripts/enemy.gd"))
+e.smer = Vector2(1, 0)
+```
+
+Chyba uvnitř `_make_*` funkce **přeruší celou funkci**, takže se uzel nevrátí
+a ve hře prostě chybí. Testy to poznají jen díky kontrole „hra vytvořila
+nepřátele" – kdyby v projektu chyběla, vypadá to jako úspěch.
+
+Alternativa bez nového souboru je `e.set_meta("smer", …)` / `e.get_meta("smer")`,
+ale vlastní skript je čitelnější.
+
 ## 1c. `File` a `json` NEEXISTUJÍ – Godot má `FileAccess` a `JSON`
 
 Nejčastější chyba modelů, které znají Python: sáhnou po `File`, `open()` nebo
@@ -75,26 +95,6 @@ tím celý běh (testy pak hlásily jen „překročen tvrdý limit 90 s").
 
 Buď jméno projektu předřaď (`GameItem`, `UoItem`), nebo – ještě lépe – žádné
 `class_name` nedávej a přistupuj k souboru přes `preload()`/`load()`.
-
-## 1b. Do uzlu vytvořeného `Area2D.new()` nejde přidat vlastní vlastnost
-
-```gdscript
-# ŠPATNĚ – runtime chyba a nepřítel se vůbec nepřidá do scény
-var e := Area2D.new()
-e.smer = Vector2(1, 0)      # Invalid assignment of property or key 'smer' …
-
-# SPRÁVNĚ – vlastnost deklaruje vlastní skript (scripts/enemy.gd)
-var e := Area2D.new()
-e.set_script(load("res://scripts/enemy.gd"))
-e.smer = Vector2(1, 0)
-```
-
-Chyba uvnitř `_make_*` funkce **přeruší celou funkci**, takže se uzel nevrátí
-a ve hře prostě chybí. Testy to poznají jen díky kontrole „hra vytvořila
-nepřátele" – kdyby v projektu chyběla, vypadá to jako úspěch.
-
-Alternativa bez nového souboru je `e.set_meta("smer", …)` / `e.get_meta("smer")`,
-ale vlastní skript je čitelnější.
 
 ## 1e. Než začneš psát, zkontroluj, že soubor není jen kostra
 
