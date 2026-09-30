@@ -134,6 +134,12 @@ func _add_music() -> void:
 
 func _clear_entities() -> void:
 	"""Smaže všechny entity z mapy."""
+	if level:
+		# Fade out the current level
+		var tween := create_tween()
+		tween.tween_property(level, "modulate:a", 0.0, 0.5)
+		tween.tween_property(hud, "modulate:a", 0.0, 0.5)
+		tween.tween_callback(level.queue_free.bind(level))
 	for group in ["coin", "enemy", "chest", "player"]:
 		for entity in get_tree().get_nodes_in_group(group):
 			entity.queue_free()
@@ -163,6 +169,11 @@ func _add_level() -> void:
 	level = node
 	add_child(level)
 	level.build()
+
+	# Fade in the new level
+	var tween := create_tween()
+	tween.tween_property(level, "modulate:a", 1.0, 0.5)
+	tween.tween_property(hud, "modulate:a", 1.0, 0.5)
 
 
 func _coin_spots(vp: Vector2) -> Array:
