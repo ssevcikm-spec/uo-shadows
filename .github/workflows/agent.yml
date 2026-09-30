@@ -47,6 +47,10 @@ on:
         description: 'ID granule v roadmapě (např. core.skills) – podle něj se bere owns, tedy soubory k editaci'
         required: false
         default: ''
+      attempt:
+        description: 'Číslo pokusu (1 = první). Podle něj se posouvá pořadí modelů, aby opakovaný pokus nezkoušel stejný model.'
+        required: false
+        default: '1'
 
 permissions:
   contents: read
@@ -108,6 +112,11 @@ jobs:
           # Granule s model=strong (size_lines > 60) smí zpracovat jen silný
           # model – pick-provider se pak zúží na strongModels z providers.json.
           FORGE_MIN_STRONG: ${{ inputs.model }}
+          # Číslo pokusu: pick-provider podle něj posune pořadí modelů, aby
+          # opakovaný pokus nezkoušel stejný model jako ten, co právě selhal.
+          # Naměřeno 30. 9. 2026: task #128 i #131 zkoušely 5× po sobě
+          # mistral/codestral a selhaly pokaždé stejně.
+          FORGE_ATTEMPT: ${{ inputs.attempt }}
         run: node .forge/pick-provider.mjs
       - name: Spusť agenta
         # Zadání jde do skriptu přes proměnnou, ne přes ${{ }} – jinak by se
