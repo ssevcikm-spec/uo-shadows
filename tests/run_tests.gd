@@ -511,6 +511,171 @@ func _run() -> void:
 				"hráč je po restartu na spawnu (%.0f px od něj)"
 				% player.position.distance_to(spawn_bod))
 
+	# --------------------------------------------------- UO (ARCHITEKTURA) ----
+	# Failing-first testy granulí z docs/ARCHITEKTURA.md. Každá kontrola se
+	# zapne sama, až soubor granule v projektu JE – dokud granule neexistuje,
+	# přeskočí se a CI zůstává zelené i uprostřed vlny. Kontroly se drží
+	# smluvních `provides` (nikdy soukromých polí).
+
+	var attrs_sc = load("res://scripts/attributes.gd")
+	if attrs_sc != null:
+		var attrs = attrs_sc.new()
+		if attrs.has_method("get") and attrs.has_method("derived"):
+			_check(int(attrs.get("Str")) == 10 and int(attrs.get("Dex")) == 10
+				and int(attrs.get("Int")) == 10,
+				"atributy začínají na 10 (%s/%s/%s)"
+				% [str(attrs.get("Str")), str(attrs.get("Dex")), str(attrs.get("Int"))])
+			var odvozene = attrs.derived()
+			_check(odvozene is Dictionary and odvozene.has("damage") and odvozene.has("hit_chance")
+				and odvozene.has("attack_speed") and odvozene.has("mana") and odvozene.has("carry"),
+				"derived() vrací damage, hit_chance, attack_speed, mana i carry")
+		attrs.free()
+
+	var skills_sc = load("res://scripts/skills.gd")
+	if skills_sc != null:
+		var sk = skills_sc.new()
+		if sk.has_method("get") and sk.has_method("add"):
+			_check(int(sk.get("tezba")) == 0 and int(sk.get("kovarstvi")) == 0,
+				"skilly začínají na 0")
+			sk.add("tezba", 150)
+			_check(int(sk.get("tezba")) == 100,
+				"skill je shora omezený na 100 (má %s)" % str(sk.get("tezba")))
+			sk.add("tezba", -500)
+			_check(int(sk.get("tezba")) == 0,
+				"skill neklesne pod 0 (má %s)" % str(sk.get("tezba")))
+		sk.free()
+
+	var world_sc = load("res://scripts/world.gd")
+	if world_sc != null:
+		var w = world_sc.new()
+		if w.has_method("iso_position") and w.has_method("cell_at"):
+			var p0 = w.iso_position(0, 0)
+			var p1 = w.iso_position(1, 0)
+			_check(p0 is Vector2 and p1 is Vector2 and p1.x > p0.x and p1.y > p0.y,
+				"izo projekce 2:1 – (1,0) je vpravo dole od (0,0) (%s → %s)" % [str(p0), str(p1)])
+			var zpet = w.cell_at(w.iso_position(2, 3))
+			_check(zpet == Vector2i(2, 3),
+				"cell_at je zpětný převod iso_position (%s)" % str(zpet))
+		w.free()
+
+	var item_sc = load("res://scripts/item.gd")
+	if item_sc != null:
+		var it = item_sc.new()
+		_check(it.has_method("use") and it.has_method("repair") and it.has_method("broken"),
+			"item.gd poskytuje use/repair/broken")
+		var d0 = it.get("trvanlivost")
+		if d0 == null:
+			d0 = it.get("durability")
+		if d0 != null and it.has_method("use") and it.has_method("repair"):
+			it.use()
+			var d1 = it.get("trvanlivost") if it.get("trvanlivost") != null else it.get("durability")
+			_check(int(d1) < int(d0) or it.broken(),
+				"use() snižuje trvanlivost (%s → %s)" % [str(d0), str(d1)])
+			it.repair()
+			_check(not it.broken(), "repair() obnoví předmět")
+		it.free()
+
+	var combat_sc = load("res://scripts/combat.gd")
+	if combat_sc != null:
+		var cb = combat_sc.new()
+		_check(cb.has_method("resolve"), "combat.gd poskytuje resolve(att, def)")
+		cb.free()
+
+	var mining_sc = load("res://scripts/mining.gd")
+	if mining_sc != null:
+		var mn = mining_sc.new()
+		_check(mn.has_method("gather"), "mining.gd poskytuje gather(node)")
+		mn.free()
+
+	var crafting_sc = load("res://scripts/crafting.gd")
+	if crafting_sc != null:
+		var cr = crafting_sc.new()
+		_check(cr.has_method("smelt") and cr.has_method("forge") and cr.has_method("repair"),
+			"crafting.gd poskytuje smelt/forge/repair")
+		cr.free()
+
+	var economy_sc = load("res://scripts/economy.gd")
+	if economy_sc != null:
+		var ec = economy_sc.new()
+		_check(ec.has_method("price") and ec.has_method("buy") and ec.has_method("sell"),
+			"economy.gd poskytuje price/buy/sell")
+		ec.free()
+
+	var npc_sc = load("res://scripts/npc.gd")
+	if npc_sc != null:
+		var np = npc_sc.new()
+		_check(np.has_method("trade"), "npc.gd poskytuje trade(player)")
+		np.free()
+
+	var enemy_sc = load("res://scripts/enemy.gd")
+	if enemy_sc != null:
+		var en = enemy_sc.new()
+		_check(en.has_method("attack") and en.has_method("drop_loot"),
+			"enemy.gd poskytuje attack/drop_loot")
+		en.free()
+
+	var offline_sc = load("res://scripts/offline.gd")
+	if offline_sc != null:
+		var of = offline_sc.new()
+		_check(of.has_method("resolve"), "offline.gd poskytuje resolve(char, job, hodiny)")
+		of.free()
+
+	var assist_sc = load("res://scripts/assist.gd")
+	if assist_sc != null:
+		var asist = assist_sc.new()
+		_check(asist.has_method("add_rule") and asist.has_method("evaluate"),
+			"assist.gd poskytuje add_rule/evaluate")
+		asist.free()
+
+	var save_sc = load("res://scripts/save.gd")
+	if save_sc != null:
+		var sv = save_sc.new()
+		_check(sv.has_method("save") and sv.has_method("load"), "save.gd poskytuje save/load")
+		sv.free()
+
+	var hud_sc = load("res://scripts/hud.gd")
+	if hud_sc != null:
+		var hu = hud_sc.new()
+		_check(hu.has_method("update"), "hud.gd poskytuje update()")
+		hu.free()
+
+	# Data (data.content): 4 skilly sjednocené napříč hrou – žádná alchymie.
+	var skills_data: Array = []
+	if FileAccess.file_exists("res://assets/data/skills.json"):
+		var parsed_skills = JSON.parse_string(FileAccess.get_file_as_string("res://assets/data/skills.json"))
+		if parsed_skills is Array:
+			skills_data = parsed_skills
+	_check(not skills_data.is_empty(), "skills.json je pole s dovednostmi")
+	var ids_skillu: Array = []
+	for s in skills_data:
+		if s is Dictionary:
+			ids_skillu.append(str(s.get("id", "")))
+	var cekane_skilly := ["tezba", "drevorubectvi", "kovarstvi", "boj_na_blizko"]
+	var maji_vsechny := true
+	for c in cekane_skilly:
+		if not ids_skillu.has(c):
+			maji_vsechny = false
+	_check(maji_vsechny, "dovednosti jsou sjednocené: %s" % str(ids_skillu))
+
+	# Migrace monolitu (engine.shell): game.gd = kostra s registrem, alchymie pryč.
+	if main.has_method("component"):
+		var chybejici_komponenty := 0
+		for nm in ["Skills", "Attributes", "World", "Hud"]:
+			if main.component(nm) == null:
+				chybejici_komponenty += 1
+		_check(chybejici_komponenty == 0,
+			"kostra instancuje komponenty z registru (%d chybí)" % chybejici_komponenty)
+		_check(not zdroj.contains("alchymie") and not zdroj.contains("cas_dne"),
+			"monolit je pryč: game.gd už nezná alchymii ani denní cyklus")
+
+	# Drift iso_position: hráč smí volat izo projekci jen na světě (world),
+	# ne na úrovni. Kontrola se zapne, až hráč dostane smluvní move().
+	if player != null and player.has_method("move"):
+		var player_zdroj := FileAccess.get_file_as_string("res://scripts/player.gd")
+		_check(not player_zdroj.contains("level.iso_position")
+			and not player_zdroj.contains("level.has_method(\"iso_position\")"),
+			"player volá izo projekci přes world, ne přes level")
+
 	_finish()
 
 

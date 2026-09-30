@@ -82,7 +82,10 @@ zdi. Použij `_safe_spot(vp)` (už v `game.gd` je) nebo `marker_positions()`.
 `tests/`, `.github/`, `.forge/`, `project.godot` – to jsou pravidla hry
 a automatického sloučení. Když agent sáhne na testy, ztratí tím páku, která
 hlídá jeho vlastní práci. Automatické sloučení navíc pustí jen změny
-v `scripts/` a `assets/` do 60 řádků.
+v `scripts/` a `assets/` do 60 řádků. Výjimka: granule s deklarovaným
+`size_lines > 60` (`model: strong`) smí být větší — limit se bere z granule
+(vstup `max_lines`), a když orchestr nic nepředá, PR z takové granule čeká
+na ruční sloučení (záměr, ne chyba).
 
 ## 6. Styl
 

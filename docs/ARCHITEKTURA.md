@@ -1,0 +1,244 @@
+# Architektura — UO Shadows (uo-shadows)
+
+> Autoritativní zdroj pravdy pro rozpad na granule. Vzniklo z vize uživatele
+> metodou skillu `game-developer` (rozpad shora dolů). Nahrazuje plán v
+> `DESIGN.md` (plánovač) — tenhle soubor je jediný závazný.
+> Toto je závazná kopie v repu — agenti čtou ji. Autorská kopie pro `forge plan`
+> je mimo repo (`gameforge/projects/uo-sandbox/docs/ARCHITEKTURA.md`).
+
+## 0. Cíl
+
+Moderní Ultima Online: izometrický sandbox, kde hráč hledí do „zmenšeného
+skutečného světa" — realistická, praktická výbava (zbraně, zbroj, nástroje)
+s navazujícími fantasy prvky (příšery, magie, materiály, magické vlastnosti).
+Dovednosti rostou používáním a v synergii s atributy dělají postavu silnou.
+Svět je škálovaný dovedností (ne levelem), vše je interaktivní, činy mají
+důsledek. Ekonomika stojí na výrobě, loot ji doplňuje. MMO s offline režimem
+pro lidi s prací a rodinou.
+
+### Pilíře (nevyjednatelné)
+
+1. **Synergie skill + atribut** — Dex → rychlost útoku, Int → síla kouzel, skill → lepší materiály.
+2. **Svět škálovaný dovedností, ne levelem** — žádný level scaling (antiteze WoW).
+3. **Vše interaktivní** — těžit každý kámen i strom, otevřít každé dveře, používat nástroje tovaryšů.
+4. **Výroba = střed ekonomiky; loot doplňuje** (vzácné/mocné z lootu, část jen z lootu).
+5. **Offline režim je legitimní, ale ohraničený; aktivní hra je vždy lepší.**
+6. **Asistence při hraní = reaktivní pravidla, ne bot.**
+7. **Obsah je DATA, ne kód** — materiály, recepty, skilly, příšery, kouzla v datech; nový obsah = nový záznam, ne nová granule.
+
+## 0.1 Rozsah — první hratelný řez (MVP)
+
+- jeden ostrov / město + 1 důl (železo, kámen) + 1 les (dřevo)
+- smyčka: `těžit → tavit → kovat → používat → opravovat`
+- 1 druh nepřítele (drak až později)
+- simulace běží lokálně (single-player); server/MMO vrstva až později
+- MMO, plná interaktivita a draci = vize, ne obsah MVP
+
+## 0.2 Požadavky (mechaniky)
+
+| id | Požadavek |
+|---|---|
+| REQ-skills | dovednosti 0–100, rostou používáním; **bez celkového stropu** (strop = budoucí přepínatelný parametr) |
+| REQ-attrs | atributy Str/Dex/Int + armor rating; resistence později |
+| REQ-craft | těžba → tavení → kování → použití → oprava (trvanlivost) |
+| REQ-econ | výroba = střed, loot doplňuje; propad (sink) skrze trvanlivost/spotřebu |
+| REQ-interact | vše interaktivní (kámen, strom, dveře, nástroje) |
+| REQ-world | svět škálovaný dovedností, ne levelem |
+| REQ-offline | offline = jedno „rozřešení" (boj/výroba/těžba dle skillu × obtížnosti), denní strop |
+| REQ-chars | N postav na hráče, právě 1 „běžící" (aktivní nebo offline úkol); ostatní spí |
+| REQ-assist | asistence = reaktivní pravidla (spoušť → akce) přes server, spotřebovává skutečné zdroje |
+| REQ-mmo | server-autoritativní simulace; MMO jako vrstva nad simulací |
+| REQ-persist | trvalý svět (činy mají důsledek); suroviny se obnovují — viz REQ-respawn |
+| REQ-death | smrt = ztráta všeho na těle (mrtvola); insurance/blessing = budoucí granule |
+| REQ-trade | zlato + 1 NPC obchodník (prodej/nákup) |
+| REQ-respawn | suroviny se obnovují (MVP: statické uzly + časovač; budoucnost: objevitelné žíly podle skillu) |
+
+## 0.3 Schopnosti (capabilities — ověřitelné věty)
+
+- hráč vytěží rudu (výtěžek dle skillu těžby × obtížnosti suroviny)
+- hráč vytaví ingot
+- hráč uková zbraň (kvalita dle skillu kovářství)
+- hráč použije zbraň (sníží trvanlivost; poškození dle Str, rychlost dle Dex)
+- hráč opraví zbraň (za ingot)
+- hráč bojuje (hit chance dle Dex, damage dle Str, armor rating snižuje zranění)
+- hráč sesílá kouzlo (úspěšnost a mana dle Int) — *později, magie není v MVP*
+- hráč nastaví asistenci (spoušť → akce)
+- offline: postava vyřeší boj/těžbu/výrobu za dobu nečinnosti, s denním stropem
+- hráč přepíná mezi postavami (jen jedna běží)
+- hráč zemře a ztratí vše na těle (mrtvola s výbavou k vyzvednutí)
+- hráč prodá/nakoupí u obchodníka za zlato
+- vytěžená surovina se po čase obnoví (respawn)
+
+## 0.4 Obsah MVP (data prvního řezu)
+
+Konkrétní minimální obsah, na kterém se postaví datová vrstva (§1.1).
+
+| Kategorie | Obsah |
+|---|---|
+| Suroviny | železná ruda, dřevo, kámen |
+| Meziprodukt | železný ingot (tavení) |
+| Výrobky | železný meč (ingot + dřevo), železná zbroj (ingoty) |
+| Uzly (s respawnem) | žíla železa, strom, skála |
+| Příšera | 1 (kostlivec/slime) — drop: zlato + občas ruda |
+| NPC | 1 obchodník (prodej/nákup) |
+| Skilly (4) | těžba, dřevorubectví, kovářství, boj na blízko |
+| Atributy | Str, Dex, Int |
+| Měna | zlato |
+| Kouzla | 0 v MVP (magie = pozdější granule; Int už je v modelu) |
+
+## 1. Architektura (vrstvy + směry závislostí)
+
+| Vrstva | Odpovědnost | Soubory |
+|---|---|---|
+| engine | smyčka, vstup, okno | `main.tscn`, `scripts/game.gd` (jen kostra) |
+| svět | mapa, dlaždice, izo projekce, průchodnost | `scripts/world.gd`, `scripts/level.gd` |
+| entity | hráč, NPC, nepřítel, předmět | `scripts/player.gd`, `npc.gd`, `enemy.gd`, `item.gd` |
+| simulace | skilly, atributy, řemesla, boj, ekonomika, offline, asistence | `scripts/skills.gd`, `attributes.gd`, `crafting.gd`, `mining.gd`, `combat.gd`, `economy.gd`, `offline.gd`, `assist.gd` |
+| prezentace | HUD, kamera | `scripts/hud.gd` |
+| persistence | ukládání/načítání | `scripts/save.gd` |
+| síť | MMO vrstva (později) | `scripts/net.gd` |
+| nástroje | brány ověřující vzhled a zapojení | `.forge/check-*.py` |
+
+**Pravidlo závislosti:** shora dolů (prezentace → simulace → svět → engine). Žádné kruhy.
+**Simulace nezávisí na síti** — MMO je vrstva nad server-autoritativní simulací (tik),
+takže první řez běží lokálně a MMO se přidá, aniž by se měnilo jádro.
+
+## 1.1 Extenzibilita (jak se hra rozšiřuje)
+
+Dvě cesty rozšíření, zásadně rozdílné náročnosti:
+
+| Druh | Příklady | Jak se přidává |
+|---|---|---|
+| **Obsah (data)** | materiálová žíla, nový skill, recept, příšera, kouzlo | nový záznam v datech (JSON/Resource) — **bez kódu** |
+| **Systém** | taming/followers, pet system, levelovací výbava | nová granule (komponenta + rozhraní), napojená na existující vrstvy |
+
+Proto **MVP musí postavit datovou vrstvu správně hned** (tabulky surovin, receptů,
+skillů, příšer), i když zatím obsahuje jen pár položek. Pak „přidat žílu na zlato"
+= jeden řádek, ne přepis `mining.gd`. Nové systémy (taming, pet) se přidávají jako
+nové granule do DAG, aniž by se měnilo jádro.
+
+## 2. Smlouvy (kontrakty — provides/consumes)
+
+Rozhraní komponent. Agent volá jen `provides`, nikdy nečte cizí vnitřek.
+Tohle je vrstva, která umožňuje paralelní granule (každý staví proti smlouvě,
+ne proti nedokončenému sousedovi).
+
+| Komponenta | Soubor | Poskytuje (provides) | Spotřebovává (consumes) |
+|---|---|---|---|
+| Data | `assets/data/*.json` | materiály, skilly, recepty, příšery, předměty | — |
+| Atributy | `scripts/attributes.gd` | `get(attr)`, `derived()` (damage, hit chance, attack speed, mana, carry) | — |
+| Skilly | `scripts/skills.gd` | `add(skill, n)`, `get(skill)` | — |
+| Úroveň | `scripts/level.gd` | `load_file()`, `is_walkable()`, `cell_center()` | data levelů |
+| Svět | `scripts/world.gd` | `iso_position(cx,cy)`, `cell_at(pos)`, uzly + respawn | Úroveň |
+| Předmět | `scripts/item.gd` | def, trvanlivost, materiál, kvalita | Data |
+| Hráč | `scripts/player.gd` | `move()`, inventář, `die()` (mrtvola) | Atributy, Skilly, Svět, Předmět |
+| NPC | `scripts/npc.gd` | `trade(player)` (koupit/prodat) | Předmět, Ekonomika |
+| Nepřítel | `scripts/enemy.gd` | `attack()`, `drop_loot()` | Předmět, Boj |
+| Těžba | `scripts/mining.gd` | `gather(node)` (výtěžek dle skillu × obtížnosti) | Skilly, Svět, Data |
+| Výroba | `scripts/crafting.gd` | `smelt()`, `forge()`, `repair()` | Skilly, Atributy, Předmět, Data |
+| Boj | `scripts/combat.gd` | `resolve(att, def)` (hit chance, damage) | Atributy, Skilly, Předmět |
+| Ekonomika | `scripts/economy.gd` | `price(item)`, `trade(player, item)` | Předmět, Data |
+| Offline | `scripts/offline.gd` | `resolve(char, úkol, doba)` (ohraničené) | Skilly, Těžba, Výroba, Boj |
+| Asistence | `scripts/assist.gd` | `add_rule(spoušť, akce)`, `evaluate(char)` | Hráč, Předmět |
+| Ukládání | `scripts/save.gd` | `save()`, `load()` | celý stav |
+| HUD | `scripts/hud.gd` | `update(...)` | Hráč, Skilly, Atributy, Ekonomika |
+| Kostra | `scripts/game.gd` | `component(name) -> Node` (registr), sestavení scény | všechny komponenty (přes registr) |
+
+## 3. Granule (atomické jednotky)
+
+Každá granule = jeden soubor, vlastní `owns`, deklaruje `depends_on` a je
+samostatně ověřitelná testem (test se píše před implementací).
+
+### Velikost granule se řídí modelem (ne naopak)
+
+60 řádků je **výchozí míra pro slabý model**, ne dogma. Když je soudržná
+jednotka větší a rozsekání by vytvořilo **umělý šev** (stav entity + pravidla
+smrti + inventář patří k sobě; rozseknutí by donutilo agenta lepit polovičaté
+API, které stejně vyjde dráž), smí být granule větší — ale jen s deklarací
+v `roadmap.json` (`size_lines` + `model: strong`) a jen pro **dostatečně silný
+model**. Bez deklarace platí `<= 60` a `any`.
+
+Důsledky pro orchestr (pravidla, ne přání):
+
+- conductor vydá granuli `model: strong` jen silnému modelu; slabému ji
+  nevydá, i kdyby fronta stála,
+- brána auto-merge posuzuje limit podle deklarace granule, ne podle globálních
+  60 řádků — jinak by PR z velké granule systematicky visel v ruční frontě,
+- když orchestr silný model nemá (jen free rotace), granule `model: strong`
+  zůstávají ve frontě a plán se buď doplní o silný model, nebo se přerozloží.
+
+| Granule | size_lines | model | Proč ne 60 |
+|---|---|---|---|
+| `entity.player` | `<= 120` | strong | pohyb + inventář + vybavení + smrt/mrtvola = jeden celek |
+| `sim.crafting` | `<= 100` | strong | tavení + kování + oprava + kvalita nad jedním receptovým modelem |
+| `sim.offline` | `<= 100` | strong | tři druhy rozřešení + denní strop = jeden algoritmus |
+| `entity.enemy` | `<= 90` | strong | hp + útok + loot + respawn = jeden životní cyklus |
+| `engine.shell` | `<= 120` | strong | rozřezání monolitu: registr + přepojení scény + sjednocení skillů = jeden řez |
+
+Ostatních 13 granulí zůstává na `<= 60` — zvládne je slabý model.
+
+1. `data.content` — `assets/data/*.json` — depends: — → schémata obsahu
+2. `core.attributes` — `scripts/attributes.gd` — depends: — → Atributy
+3. `core.skills` — `scripts/skills.gd` — depends: — → Skilly
+4. `world.level` — `scripts/level.gd` — depends: — → Úroveň
+5. `world.map` — `scripts/world.gd` — depends: `world.level` → Svět (izo, uzly, respawn)
+6. `entity.item` — `scripts/item.gd` — depends: `data.content` → Předmět
+7. `entity.player` — `scripts/player.gd` — depends: `core.attributes, core.skills, world.map, entity.item` → Hráč (**size `<= 120`, model `strong`**)
+8. `entity.npc` — `scripts/npc.gd` — depends: `entity.item, sim.economy` → NPC obchodník
+9. `entity.enemy` — `scripts/enemy.gd` — depends: `entity.item, sim.combat` → Nepřítel (**size `<= 90`, model `strong`**)
+10. `sim.mining` — `scripts/mining.gd` — depends: `core.skills, world.map, data.content` → Těžba
+11. `sim.crafting` — `scripts/crafting.gd` — depends: `core.skills, core.attributes, entity.item, data.content` → Výroba (**size `<= 100`, model `strong`**)
+12. `sim.combat` — `scripts/combat.gd` — depends: `core.attributes, core.skills, entity.item` → Boj
+13. `sim.economy` — `scripts/economy.gd` — depends: `entity.item, data.content` → Ekonomika
+14. `sim.offline` — `scripts/offline.gd` — depends: `core.skills, sim.mining, sim.crafting, sim.combat` → Offline (**size `<= 100`, model `strong`**)
+15. `sim.assist` — `scripts/assist.gd` — depends: `entity.player, entity.item` → Asistence
+16. `persist.save` — `scripts/save.gd` — depends: `core.skills, core.attributes, entity.player, world.map, sim.economy` → Ukládání
+17. `ui.hud` — `scripts/hud.gd` — depends: `core.skills, core.attributes, entity.player, sim.economy` → HUD
+18. `engine.shell` — `scripts/game.gd` — depends: všech 16 výše → Kostra + registr komponent (**size `<= 120`, model `strong`**)
+
+### Migrace monolitu (`engine.shell`)
+
+Dnešní `game.gd` je starý monolit (vlastní dovednosti `tezba/kovarstvi/alchymie`,
+suroviny, save/load, NPC = tavení, denní cyklus). Granule `engine.shell` ho
+přepíše na kostru:
+
+- komponenty se instancují **z pevného registru** (jméno uzlu = název komponenty),
+  chybějící soubor se přeskočí → hra zůstane hratelná po celou migraci,
+- scéna (úroveň, hráč, HUD, NPC) se sestaví z veřejných `provides` komponent,
+  ne z vnitřků,
+- z monolitu se **smaže** vše, co převzaly komponenty (dovednosti, suroviny,
+  ukládání, tavení u NPC) — brána wiring hlásí nepoužité funkce jen jako poznámku,
+- **sjednocení dovedností** na 4 skilly z dat: `tezba, drevorubectvi, kovarstvi,
+  boj_na_blizko` (alchymie a denní cyklus jsou out-of-scope — viz DESIGN.md).
+
+Granule běží **poslední** (6. vlna), až jsou všechny komponenty sloučené —
+jinak by se nemělo kam registrovat. Rozsekání tohohle řezu na menší granule by
+vytvořilo umělý šev: půlka hry na starých polích a půlka na komponentách se
+nedá nechat uležet mezi dvěma PR.
+
+## 4. DAG a vlny (paralelizace)
+
+Závislosti tvoří orientovaný acyklický graf. Granule ve stejné vlně mají
+**disjunktní `owns`** → můžou běžet současně.
+
+- **Vlna 0** (bez závislostí): `data.content`, `core.attributes`, `core.skills`, `world.level`
+- **Vlna 1**: `world.map`, `entity.item`
+- **Vlna 2**: `entity.player`, `sim.mining`, `sim.crafting`, `sim.combat`, `sim.economy`
+- **Vlna 3**: `entity.npc`, `entity.enemy`, `sim.offline`, `sim.assist`
+- **Vlna 4**: `persist.save`, `ui.hud`
+- **Vlna 5** (migrace monolitu): `engine.shell`
+
+Tohle je 18 granulí v 6 vlnách — první řez, ke kterému se MVP (§0.4) přesně mapuje.
+
+## Co je dál (tooling)
+
+1. ~~zapsat granule do `roadmap.json` jako DAG (migrace z lineárního seznamu)~~ ✅
+2. ~~conductor: číst `depends_on`, povolit N souběžných větví, hlídat `owns`~~ ✅
+3. každá granule dostane test (failing-first) + brany z §6 skillu `game-developer`
+4. ~~conductor: číst `size_lines`/`model` — `model: strong` řadit do fronty silného
+   modelu (slabým nevydávat) a `size_lines` předat jako limit bráně auto-merge
+   (vstup `max_lines` workflowu agenta; bez něj platí 60)~~ ✅ (30. 9.: conductor +
+   `strongModels` v providers.json + FORGE_MIN_STRONG v pick-provider)
+5. conductor: selhanou granuli znovu do fronty po cooldownu (RETRY_HOURS) — ✅
+   (30. 9.: retry + done-detekce přes sloučené PR, konec smyčky „world.level
+   se vydává znovu")

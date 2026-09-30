@@ -1,4 +1,28 @@
-# Isometric Forge
+# UO Shadows — DESIGN (historický dokument)
+
+> **Zrušeno jako zdroj pravdy.** Závazná architektura a rozpad na granule je
+> v [`docs/ARCHITEKTURA.md`](ARCHITEKTURA.md) a strojově v `.forge/roadmap.json`
+> (DAG granulí). Tenhle dokument vygeneroval plánovač (`forge plan`) pro první
+> nástřel a popisuje starý 6-úlohový plán — orchestr ho už nepoužívá.
+> Ponechává se jen jako historie vzniku vize.
+
+## Co je z tohohle dokumentu OUT-OF-SCOPE (explicitně)
+
+Následující mechaniky z původního zadání **nejsou** v MVP a nemá je nikdo
+implementovat, dokud to nerozhodne uživatel v ARCHITEKTURA.md:
+
+- **Denní cyklus** (den/noc ovlivňující NPC a prostředí) — MVP má offline režim
+  s denním stropem, ale žádné střídání dne a noci. (Starý `game.gd` měl
+  `cas_dne` — migrační granule `engine.shell` ho maže.)
+- **Alchymie** — v MVP nejsou kouzla ani lektvary; dovednosti jsou právě čtyři:
+  `tezba, drevorubectvi, kovarstvi, boj_na_blizko` (viz `assets/data/skills.json`).
+  (Starý `game.gd` měl skill `alchymie` — maže ho `engine.shell`.)
+- **MMO / server-autoritativní simulace** — MVP běží lokálně (single-player);
+  síťová vrstva je pozdější.
+- **Magie / kouzla** — atribut Int už v modelu je (synergie s budoucí magií),
+  ale kouzla samotná jsou pozdější granule.
+
+## Původní obsah (zmrazený)
 
 > **Záměr:** Nova hra podle principu Ultima Online, ale v rozsahu, ktery zvladne maly tym: izometricky fantasy sandbox pro jednoho hrace. Vse v hernim svete je interaktivni a ma dusledek. Skilly se zlepsuji jejich pouzivanim - boj, kovarstvi, alchymie, leceni, tatazstvi. Vyrobni skilly vyrabeji predmety s opravdovym uzitkem a hodnotou: zbran zvysuje poskozeni, zbroj snizuje zraneni, lektvar leci, jidlo doplnuje silu. Predmety maji trvanlivost a daji se opravovat. Suroviny se tezi z prostredi (ruda, drevo, byliny) a daji se mezi sebou smenovat. Izometricky pohled, dlazdicova mapa, fantasy svet, NPC s jednoduchou smysluplnou reakci, denni doba.
 
@@ -32,7 +56,7 @@ Hráč prochází izometrickým fantasy světem, kde každý předmět, NPC a pr
 
 Implementujeme základní sandboxovou logiku, NPC reakce, denní cyklus, dovednosti a předměty. Vynecháme multiplayer, komplexní questy a fyziku
 
-## Plán prací
+## Plán prací (starý — orchestr ho nepoužívá)
 
 | # | Úkol | id |
 |---|---|---|
@@ -42,7 +66,3 @@ Implementujeme základní sandboxovou logiku, NPC reakce, denní cyklus, dovedno
 | 4 | Sběr surovin | `resource-gathering` |
 | 5 | Základní NPC reakce | `npc-interaction` |
 | 6 | Trvanlivost předmětů | `item-durability` |
-
----
-
-*Tenhle dokument vygeneroval plánovač (`forge plan`) a je zadáním pro orchestr: jednotlivé úkoly jsou v `.forge/roadmap.json`. Slabší modely je plní po jednom; dokument je tu proto, aby se neztratila vize.*
