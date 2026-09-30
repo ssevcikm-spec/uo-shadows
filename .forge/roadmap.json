@@ -41,7 +41,7 @@
       "owns": ["scripts/skills.gd"],
       "depends_on": [],
       "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/skills.gd vytvoř slovník dovednosti (klíče: tezba, drevorubectvi, kovarstvi, boj_na_blizko — všechny začínají na 0) a funkce add(skill: String, n: int) -> void (zvýší hodnotu, omezeno na 0–100) a hodnota(skill: String) -> int. POZOR: funkci NIKDY nepojmenuj get() — koliduje s vestavěnou Object.get() a Godot skript odmítne naparsovat (CONVENTIONS.md §1f). Dovednosti musí být čitelné přes Object.get(\"tezba\"), jak to dělají testy. Nic dalšího neměň."
+      "prompt": "V scripts/skills.gd vytvoř dovednosti jako VLASTNOST s konkrétním jménem: var dovednosti: Dictionary = {\"tezba\": 0, \"drevorubectvi\": 0, \"kovarstvi\": 0, \"boj_na_blizko\": 0} (všechny začínají na 0). Přidej funkce add(skill: String, n: int) -> void (zvýší hodnotu, omezeno na 0–100) a hodnota(skill: String) -> int (vrátí hodnotu). DŮLEŽITÉ – JAK SE DOVEDNOSTI ČTOU: testy je čtou takto: var sk = load(\"res://scripts/skills.gd\").new() a pak sk.get(\"tezba\"). get() je metoda ENGINU (Object.get), která vrátí hodnotu vlastnosti podle jména – proto NEDEFINUJ žádnou vlastní funkci get() (kolidovala by s enginem a musela by sama řešit, co je klíč a co slovník; naměřeno 30. 9. 2026: model ji definoval a vracela null). Když skript vlastní get() nemá, sk.get(\"tezba\") vrátí hodnotu vlastnosti. Klíče drž přesně: tezba, drevorubectvi, kovarstvi, boj_na_blizko. Struktura souboru: začni extends Node, žádné class_name, _init() bez povinného argumentu (CONVENTIONS.md §1f a §1g). Nic dalšího neměň."
     },
     {
       "id": "world.level",
