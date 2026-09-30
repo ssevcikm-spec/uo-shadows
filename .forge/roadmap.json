@@ -32,7 +32,7 @@
       "owns": ["scripts/attributes.gd"],
       "depends_on": [],
       "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/attributes.gd vytvoř atributy Str, Dex, Int (každý 0–100, výchozí 10) a funkci get(attr: String) -> int. Přidej derived() vracející slovník odvozených statů: damage = 1 + Str/10, hit_chance = 0.5 + Dex/200, attack_speed = 1.0 + Dex/100, mana = Int, carry = 40 + Str. Nic víc — je to základ, na který navazují boj, magie i výroba."
+      "prompt": "V scripts/attributes.gd vytvoř atributy Str, Dex, Int (každý 0–100, výchozí 10) a funkci hodnota(attr: String) -> int. POZOR: funkci NIKDY nepojmenuj get() — koliduje s vestavěnou Object.get() a Godot skript odmítne naparsovat (CONVENTIONS.md §1f). Testy čtou atributy přes Object.get(\"Str\"), takže musí být veřejné vlastnosti (var Str := 10), ne schované za funkcí. Přidej derived() vracející slovník odvozených statů: damage = 1 + Str/10, hit_chance = 0.5 + Dex/200, attack_speed = 1.0 + Dex/100, mana = Int, carry = 40 + Str. Nic víc — je to základ, na který navazují boj, magie i výroba."
     },
     {
       "id": "core.skills",
@@ -41,7 +41,7 @@
       "owns": ["scripts/skills.gd"],
       "depends_on": [],
       "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/skills.gd vytvoř slovník dovednosti (klíče: tezba, drevorubectvi, kovarstvi, boj_na_blizko — všechny začínají na 0) a funkce add(skill: String, n: int) -> void (zvýší hodnotu, omezeno na 0–100) a get(skill: String) -> int. Nic dalšího neměň."
+      "prompt": "V scripts/skills.gd vytvoř slovník dovednosti (klíče: tezba, drevorubectvi, kovarstvi, boj_na_blizko — všechny začínají na 0) a funkce add(skill: String, n: int) -> void (zvýší hodnotu, omezeno na 0–100) a hodnota(skill: String) -> int. POZOR: funkci NIKDY nepojmenuj get() — koliduje s vestavěnou Object.get() a Godot skript odmítne naparsovat (CONVENTIONS.md §1f). Dovednosti musí být čitelné přes Object.get(\"tezba\"), jak to dělají testy. Nic dalšího neměň."
     },
     {
       "id": "world.level",
@@ -70,7 +70,7 @@
       "owns": ["scripts/item.gd"],
       "depends_on": ["data.content"],
       "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/item.gd vytvoř reprezentaci předmětu načtenou z assets/data/items.json: id, název, materiál, trvanlivost (výchozí 20), damage nebo armor_rating, kvalita. Funkce use() -> void (sníží trvanlivost o 1, nejmíň 0) a repair() -> void (obnoví trvanlivost). Vystav broken() -> bool."
+      "prompt": "V scripts/item.gd vytvoř reprezentaci předmětu načtenou z assets/data/items.json: id, název, materiál, trvanlivost (výchozí 20), damage nebo armor_rating, kvalita. Funkce use() -> void (sníží trvanlivost o 1, nejmíň 0) a repair() -> void (obnoví trvanlivost). Vystav broken() -> bool. POZOR: NEPIŠ do souboru `class_name Item` — koliduje s globálním jménem a Godot skript odmítne naparsovat (CONVENTIONS.md §1d). Buď `class_name GameItem`, nebo žádné class_name. Vlastnost trvanlivosti pojmenuj `trvanlivost` (testy ji čtou přes Object.get a přijímají i `durability`)."
     },
     {
       "id": "entity.player",
@@ -110,7 +110,7 @@
       "size_lines": "<= 100",
       "model": "strong",
       "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/crafting.gd vytvoř smelt(recipe) -> Item (železná ruda → ingot), forge(recipe) -> Item (ingot+dřevo → meč; ingoty → zbroj) a repair(item) -> void (za 1 ingot obnoví trvanlivost). Kvalita výrobku roste se skill kovarstvi (kvalita = skill/20). Po výrobě zavolej add('kovarstvi', 1). Recepty čti z assets/data/recipes.json."
+      "prompt": "V scripts/crafting.gd vytvoř smelt(recipe) -> GameItem (železná ruda → ingot), forge(recipe) -> GameItem (ingot+dřevo → meč; ingoty → zbroj) a repair(item) -> void (za 1 ingot obnoví trvanlivost). Kvalita výrobku roste se skill kovarstvi (kvalita = skill/20). Po výrobě zavolej add('kovarstvi', 1). Recepty čti z assets/data/recipes.json. POZOR: jako návratový typ použij `GameItem` (ne `Item` — to je rezervované globální jméno), a pokud třída ještě neexistuje, deklaruj návratový typ jako Node nebo Variant (CONVENTIONS.md §1d)."
     },
     {
       "id": "sim.economy",
@@ -188,7 +188,7 @@
       "size_lines": "<= 120",
       "model": "strong",
       "acceptance": ["tests", "wiring", "render"],
-      "prompt": "Přepiš scripts/game.gd (starý monolit s vlastními dovednostmi tezba/kovarstvi/alchymie, surovinami, save/load a NPC=tavení) na KOSTRU s registrem komponent. Komponenty se instancují z pevného seznamu (Skills, Attributes, World, Level, Item, Player, Npc, Enemy, Mining, Crafting, Combat, Economy, Offline, Assist, Save, Hud) jako poduzly; chybějící soubor se přeskočí, hra musí zůstat hratelná. Vystav component(name) -> Node. Scénu sestav z veřejných provides komponent (world.iso_position, level.cell_center, player.move) – ne ze soukromých polí. Z monolitu SMAŽ: dovednosti (alchymie, denní cyklus cas_dne), vlastní suroviny, save/load, tavení u NPC – převzaly je komponenty (skills/attributes/save/crafting). Dovednosti sjednoť na 4 skilly z dat: tezba, drevorubectvi, kovarstvi, boj_na_blizko. ZACHOVEJ: uzel Player se scriptem scripts/player.gd na spawnu, uzel Label 'Hud' se skóre (testy ho čtou – scripts/hud.gd instancuj jako 'HudInfo' a volej jeho update(), 'Hud' zůstává Label), úroveň z main.json, mince, hudbu/pozadí a průchodnost. Nic jiného neměň (tests/, .forge/, project.godot se nesmí dotknout)."
+      "prompt": "Přepiš scripts/game.gd (starý monolit s vlastními dovednostmi tezba/kovarstvi/alchymie, surovinami, save/load a NPC=tavení) na KOSTRU s registrem komponent. Komponenty se instancují z pevného seznamu (Skills, Attributes, World, Level, Item, Player, Npc, Enemy, Mining, Crafting, Combat, Economy, Offline, Assist, Save, Hud) jako poduzly; chybějící soubor se přeskočí, hra musí zůstat hratelná. Vystav component(id: String) -> Node — POZOR: parametr NEPOJMENUJ `name`, to je rezervovaný člen Node a skript se nenaparsuje (CONVENTIONS.md §1f). Scénu sestav z veřejných provides komponent (world.iso_position, level.cell_center, player.move) – ne ze soukromých polí. Z monolitu SMAŽ: dovednosti (alchymie, denní cyklus cas_dne), vlastní suroviny, save/load, tavení u NPC – převzaly je komponenty (skills/attributes/save/crafting). Dovednosti sjednoť na 4 skilly z dat: tezba, drevorubectvi, kovarstvi, boj_na_blizko. ZACHOVEJ: uzel Player se scriptem scripts/player.gd na spawnu, uzel Label 'Hud' se skóre (testy ho čtou – scripts/hud.gd instancuj jako 'HudInfo' a volej jeho update(), 'Hud' zůstává Label), úroveň z main.json, mince, hudbu/pozadí a průchodnost. Nic jiného neměň (tests/, .forge/, project.godot se nesmí dotknout)."
     }
   ]
 }

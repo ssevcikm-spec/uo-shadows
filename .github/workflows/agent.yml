@@ -172,31 +172,57 @@ jobs:
           fi
 
       - name: Kontrola parsování (rychlá brána)
-        # PROČ: když má skript parse error, testy se nezastaví hned – Godot
-        # spadne do timeoutu a runner hlásí jen „překročen tvrdý limit 90 s"
-        # s „1 selhání". To vypadá jako zaseknuté testy, ne jako chyba kódu,
-        # a diagnostika se tím ztratí (naměřeno 30. 9. 2026 u granulí
-        # core.attributes a entity.item: 3 běhy spálené na timeout).
-        # Tahle brána řekne PŘESNÝ soubor a přesný důvod hned.
+        # PROČ A JAK (přepsáno 30. 9. 2026 — první verze byla slepá):
+        #
+        # 1) První verze pouštěla `godot --import` a hledala parse errory v jeho
+        #    výstupu. To je slepé: import načítá ASSETY, ne skripty, které v hlavní
+        #    scéně nejsou. Naměřeno u granulí core.attributes a entity.item —
+        #    brána hlásila „Parsování v pořádku", a o krok dál testy spadly na
+        #    parse error s „překročen tvrdý limit 90 s".
+        # 2) Kontroluje se proto `--check-only --script <soubor>` pro KAŽDÝ
+        #    ZMĚNĚNÝ .gd soubor. Godot tím vrátí nenulový kód a vypíše přesný
+        #    soubor i řádek — a hlavně to platí i pro nové soubory, které ještě
+        #    nikdo nenačítá (to je přesně případ granulí, které zakládají soubor).
+        #
+        # Kontrolují se JEN změněné soubory: staré skripty v repu jsou ověřené
+        # a jejich varování by bránu zbytečně shazovaly.
         timeout-minutes: 3
         id: parse
         run: |
-          set -o pipefail
-          PARSE_LOG="${RUNNER_TEMP:-/tmp}/parse.log"
-          "$FORGE_GODOT" --headless --path . --import > "$PARSE_LOG" 2>&1 || true
+          ZMENENE=$(git status --porcelain \
+            | grep -Ev '\.(uid|import)$|^.. (smoke|agent)\.log$|^.. \.forge/provider\.(env|json)$' \
+            | awk '{print $NF}' | grep '\.gd$' || true)
 
-          if grep -qE 'SCRIPT ERROR: (Parse Error|Compile Error)' "$PARSE_LOG"; then
-            echo "::error::Skript se neparsuje – oprav syntaxi, testy nemá cenu pouštět"
-            grep -nE 'SCRIPT ERROR: (Parse Error|Compile Error)' "$PARSE_LOG" | head -12
-            echo ""
-            echo "--- kontext (soubor a řádek) ---"
-            grep -nB2 -A2 'SCRIPT ERROR: Parse Error' "$PARSE_LOG" | head -40
-            echo ""
-            echo "TIP: nejčastější příčiny jsou v CONVENTIONS.md §1c (File/json"
-            echo "     místo FileAccess/JSON) a §1d (rezervované jméno v class_name)."
+          if [ -z "$ZMENENE" ]; then
+            echo "Agent nezměnil žádný .gd soubor – není co kontrolovat."
+            exit 0
+          fi
+
+          echo "Kontroluji parsování těchto souborů:"
+          echo "$ZMENENE" | sed 's/^/  /'
+          echo ""
+
+          CHYBY=0
+          for f in $ZMENENE; do
+            VYSTUP=$("$FORGE_GODOT" --headless --path . --check-only --script "res://$f" 2>&1 || true)
+            if echo "$VYSTUP" | grep -q 'SCRIPT ERROR: Parse Error'; then
+              CHYBY=$((CHYBY + 1))
+              echo "::error file=$f::Skript se neparsuje – $f"
+              echo "$VYSTUP" | grep -A2 'SCRIPT ERROR: Parse Error' | head -12
+              echo ""
+            else
+              echo "  OK  $f"
+            fi
+          done
+
+          if [ "$CHYBY" -gt 0 ]; then
+            echo "::error::$CHYBY souborů se neparsuje – testy nemá cenu pouštět"
+            echo "TIP: nejčastější příčiny jsou v CONVENTIONS.md §1c (File/json místo"
+            echo "     FileAccess/JSON) a §1d (§1e) – kolize jmen s enginem, např."
+            echo "     class_name Item, funkce get(), property name."
             exit 1
           fi
-          echo "Parsování v pořádku."
+          echo "Parsování v pořádku ($(echo "$ZMENENE" | wc -l) souborů)."
 
       - name: Testy hry (Godot headless)
         # POZOR: tenhle timeout tam musí být. Bez něj se stalo, že patch od
