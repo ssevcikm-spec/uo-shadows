@@ -96,5 +96,7 @@ na ruční sloučení (záměr, ne chyba).
 
 ## 7. Ověření
 
-Testy běží v CI na každý PR (`Godot --headless`): 31 kontrol. Když něco
-nevyjde, je to vidět v logu jako `[test] FAIL …` – čti ten řádek, ne celý log.
+Testy běží v CI na každý PR (`Godot --headless`): 26 kontrol, počet roste
+s každou granulí (kontroly na komponenty se zapínají samy, až soubor granule
+v projektu je). Když něco nevyjde, je to vidět v logu jako `[test] FAIL …` –
+čti ten řádek, ne celý log.

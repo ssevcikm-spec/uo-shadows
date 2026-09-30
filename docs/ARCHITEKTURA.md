@@ -209,7 +209,10 @@ přepíše na kostru:
 - z monolitu se **smaže** vše, co převzaly komponenty (dovednosti, suroviny,
   ukládání, tavení u NPC) — brána wiring hlásí nepoužité funkce jen jako poznámku,
 - **sjednocení dovedností** na 4 skilly z dat: `tezba, drevorubectvi, kovarstvi,
-  boj_na_blizko` (alchymie a denní cyklus jsou out-of-scope — viz DESIGN.md).
+  boj_na_blizko` (alchymie a denní cyklus jsou out-of-scope — viz DESIGN.md),
+- **změna je aditivní:** `_step`/`_physics_process` u hráče a uzel `Hud`
+  (Label se skóre) zůstávají, dokud je nevymění komponenty — stojí na nich
+  testy i hratelnost mezi vlnami.
 
 Granule běží **poslední** (6. vlna), až jsou všechny komponenty sloučené —
 jinak by se nemělo kam registrovat. Rozsekání tohohle řezu na menší granule by

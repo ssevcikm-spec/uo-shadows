@@ -81,7 +81,7 @@
       "size_lines": "<= 120",
       "model": "strong",
       "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/player.gd vytvoř hráče: move(dir) přepočítá směr na izometrické osy přes world.iso_position (2:1, ne volá level) a respektuje world.is_walkable, inventář (seznam předmětů), vybavení (zbraň + zbroj). die() -> void vytvoří mrtvolu (Area2D s předměty z těla) na místě smrti a hráč přijde o vše na těle. Při smrti se hráč přesune na spawn. Vystav take_item(item) a drop_item(item)."
+      "prompt": "V scripts/player.gd vytvoř hráče: move(dir) přepočítá směr na izometrické osy přes world.iso_position (2:1, ne volá level) a respektuje world.is_walkable, inventář (seznam předmětů), vybavení (zbraň + zbroj). die() -> void vytvoří mrtvolu (Area2D s předměty z těla) na místě smrti a hráč přijde o vše na těle. Při smrti se hráč přesune na spawn. Vystav take_item(item) a drop_item(item). ZACHOVEJ stávající _step(target) -> Vector2 (testy ho volají přímo) a _physics_process (čtení kláves, ať hra funguje, dokud game.gd nepřepojí engine.shell) – změna je aditivní, nic funkčního nemaž."
     },
     {
       "id": "sim.combat",
@@ -188,7 +188,7 @@
       "size_lines": "<= 120",
       "model": "strong",
       "acceptance": ["tests", "wiring", "render"],
-      "prompt": "Přepiš scripts/game.gd (starý monolit s vlastními dovednostmi tezba/kovarstvi/alchymie, surovinami, save/load a NPC=tavení) na KOSTRU s registrem komponent. Komponenty se instancují z pevného seznamu (Skills, Attributes, World, Level, Item, Player, Npc, Enemy, Mining, Crafting, Combat, Economy, Offline, Assist, Save, Hud) jako poduzly; chybějící soubor se přeskočí, hra musí zůstat hratelná. Vystav component(name) -> Node. Scénu sestav z veřejných provides komponent (world.iso_position, level.cell_center, player.move) – ne ze soukromých polí. Z monolitu SMAŽ: dovednosti (alchymie, denní cyklus cas_dne), vlastní suroviny, save/load, tavení u NPC – převzaly je komponenty (skills/attributes/save/crafting). Dovednosti sjednoť na 4 skilly z dat: tezba, drevorubectvi, kovarstvi, boj_na_blizko. Zachovej: úroveň z main.json, hráče na spawnu, HUD s počátečním skóre, mince, hudbu/pozadí a průchodnost. Nic jiného neměň (tests/, .forge/, project.godot se nesmí dotknout)."
+      "prompt": "Přepiš scripts/game.gd (starý monolit s vlastními dovednostmi tezba/kovarstvi/alchymie, surovinami, save/load a NPC=tavení) na KOSTRU s registrem komponent. Komponenty se instancují z pevného seznamu (Skills, Attributes, World, Level, Item, Player, Npc, Enemy, Mining, Crafting, Combat, Economy, Offline, Assist, Save, Hud) jako poduzly; chybějící soubor se přeskočí, hra musí zůstat hratelná. Vystav component(name) -> Node. Scénu sestav z veřejných provides komponent (world.iso_position, level.cell_center, player.move) – ne ze soukromých polí. Z monolitu SMAŽ: dovednosti (alchymie, denní cyklus cas_dne), vlastní suroviny, save/load, tavení u NPC – převzaly je komponenty (skills/attributes/save/crafting). Dovednosti sjednoť na 4 skilly z dat: tezba, drevorubectvi, kovarstvi, boj_na_blizko. ZACHOVEJ: uzel Player se scriptem scripts/player.gd na spawnu, uzel Label 'Hud' se skóre (testy ho čtou – scripts/hud.gd instancuj jako 'HudInfo' a volej jeho update(), 'Hud' zůstává Label), úroveň z main.json, mince, hudbu/pozadí a průchodnost. Nic jiného neměň (tests/, .forge/, project.godot se nesmí dotknout)."
     }
   ]
 }
