@@ -43,6 +43,7 @@ func _ready() -> void:
 	var npc := _make_npc(vp)
 	add_child(npc)
 	_add_ui()
+	_add_fps_label()
 	print("[game] připraveno: hráč + %d mincí, zvuků načteno: %d, dlaždice: %s, úroveň: %s" % [
 		coin_total, sfx.size(), "ano" if _texture("tiles/grass") else "ne",
 		"%s %d×%d" % [level.level_name, level.width, level.height] if level else "ne"])
@@ -52,6 +53,18 @@ func _update_hud() -> void:
 	if hud:
 		hud.text = "Skóre: %d / %d" % [score, coin_total]
 		hud.text += " HODNOTA: %d" % [_hodnota()]
+
+func _add_fps_label() -> void:
+	var fps_label := Label.new()
+	fps_label.name = "Fps"
+	fps_label.add_theme_font_size_override("font_size", 8)
+	var vp := get_viewport_rect().size
+	fps_label.position = Vector2(vp.x - 60, 4)
+	add_child(fps_label)
+
+func _process(delta: float) -> void:
+	if has_node("Fps"):
+		$Fps.text = "FPS: %d" % Engine.get_frames_per_second()
 
 func _hodnota() -> int:
 	return suroviny["ruda"] * 2 + suroviny["ingot"] * 8 + zbran_poskozeni * 5
