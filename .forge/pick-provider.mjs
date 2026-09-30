@@ -28,17 +28,46 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // verze (raw.githubusercontent) a lokální kopie v repu hry je jen ZÁLOHA pro
 // případ, že by raw nebyl dostupný. Díky tomu se mrtvý model opraví jednou
 // (v orchestra) a všechny hry ho uvidí při dalším běhu – žádné kopie v repoch her.
+//
+// POZOR (naměřeno 30. 9. 2026): raw.githubusercontent má CDN cache, která po
+// pushi do orchestra slouží STAROU verzi i několik minut. To nevadí u seznamu
+// modelů (ten se mění málokdy), ale VADÍ to u směrovacích metadat
+// (`anyPriority`, `skromny`) — podle nich se řadí poskytovatelé, a stará verze
+// by poslala granuli `any` na gemini (~20 dotazů/den).
+// Řešení: seznam modelů a klíčů bere z orchestra (čerstvý), ale směrovací
+// metadata vždy z LOKÁLNÍ kopie — ta se do her synchronizuje při změně šablony.
 const ORCHESTRA_RAW = "https://raw.githubusercontent.com/ssevcikm-spec/forge-orchestra/main/repo/.forge/providers.json";
+const LOKALNI = JSON.parse(readFileSync(join(HERE, 'providers.json'), 'utf8'));
+
+/** Vezme z orchestra, co se mění často; routing metadata z lokální kopie. */
+function sloucitVOdkazy(remote, lokal) {
+  const podleJmena = new Map((lokal.providers || []).map((p) => [p.name, p]));
+  return {
+    ...remote,
+    providers: (remote.providers || []).map((p) => {
+      const l = podleJmena.get(p.name) || {};
+      const maRouting = l.anyPriority !== undefined || l.skromny !== undefined;
+      return {
+        ...p,                                  // z orchestra: modely, baseUrl, klíč
+        ...(l.anyPriority !== undefined ? { anyPriority: l.anyPriority } : {}),
+        ...(l.skromny !== undefined ? { skromny: l.skromny } : {}),
+        ...(maRouting ? { _routingZ: "lokální kopie" } : {}),
+      };
+    }),
+  };
+}
+
 let config;
 try {
   const r = await fetch(ORCHESTRA_RAW);
   if (r.ok) {
-    config = await r.json();
-    console.log("providers.json: čerstvá verze z orchestra");
+    config = sloucitVOdkazy(await r.json(), LOKALNI);
+    const routing = config.providers.filter((p) => p.anyPriority !== undefined).length;
+    console.log(`providers.json: orchestra + routing z lokální kopie (${routing}/${config.providers.length})`);
   }
 } catch { /* offline – spadni na lokální kopii */ }
 if (!config) {
-  config = JSON.parse(readFileSync(join(HERE, 'providers.json'), 'utf8'));
+  config = LOKALNI;
   console.log("providers.json: lokální kopie (orchestra nedostupná)");
 }
 
@@ -63,6 +92,36 @@ if (minStrong) {
     console.error('CHYBA: granule má model=strong, ale v providers.json není žádný strongModels.');
     process.exit(1);
   }
+} else if (process.env.FORGE_MIN_STRONG !== 'only') {
+  // DISTRIBUCE any/strong (od 30. 9. 2026): granule `model: any` je malá (≤ 60
+  // řádků), takže ji zvládne i slabší model — a silné modely mají vzácnější
+  // kvótu (Cerebras jede z trial kreditu, Groq má 200k tokenů/den, naměřeno
+  // 30. 9.: 9 z 13 běhů skončilo na rate-limitu). Silné modely proto u `any`
+  // granulí zkoušíme až NAKONEC, ne první.
+  //
+  // POZOR na význam: tohle NENÍ „slabý model dostane velkou granuli" — to
+  // pořád hlídá strongModels u granule `strong`. Jen se u malých granulí
+  // neplýtvá vzácnou kvótou silných modelů.
+  //
+  // Vypnout se dá `FORGE_MIN_STRONG=only` (chová se jako dřív = silné první).
+  //
+  // Řazení pro `any` granule (od nejvhodnějšího):
+  //   1) štědré zdroje (ne `skromny`) podle `anyPriority` vzestupně
+  //      (mistral, cerebras) — nejvíc kvóty, nejspolehlivější,
+  //   2) poskytovatelé se `strongModels` (groq) — šetříme je na granule `strong`,
+  //      ale pro `any` jsou pořád lepší než skromné,
+  //   3) `skromny` (gemini ~20/den) a vysoké `anyPriority` (openrouter 50/den)
+  //      až na konci: každý probe tam zkouší víc modelů a kvóta je malá.
+  const skromny = (p) => Boolean(p.skromny) || Number(p.anyPriority ?? 0) >= 50;
+  const priorita = (p) => Number(p.anyPriority ?? (p.strongModels?.length ? 50 : 10));
+  const serad = [...providers].sort((a, b) => {
+    const sa = skromny(a) ? 1 : 0, sb = skromny(b) ? 1 : 0;
+    if (sa !== sb) return sa - sb;
+    return priorita(a) - priorita(b);
+  });
+  providers = serad;
+  console.log(`granule 'any' – řazení podle štědrosti kvóty: ${
+    providers.map((p) => `${p.name}(${priorita(p)})`).join(' → ')}`);
 }
 
 async function probe(baseUrl, apiKey, model) {
@@ -105,11 +164,17 @@ try {
   posledni = JSON.parse(raw).provider || '';
 } catch { /* první běh – žádný záznam není */ }
 
-const order = orderProviders(providers, seed);
+// POZOR na pořadí kroků: `orderProviders` posouvá pořadí podle `run_key`, což
+// u granulí `any` rozbíjí řazení podle štědrosti kvóty (rotace přesune skromný
+// zdroj dopředu). Proto se u `any` rotace NEPOUŽÍVÁ — priorita je důležitější
+// než rozmanitost modelů. Rotace zůstává u granulí `strong`, kde je jejím
+// smyslem, aby se opakované pokusy téže granule potkaly s jiným silným modelem
+// (naměřeno u úlohy #40: tři pokusy se stejným modelem selhaly stejně).
+const order = minStrong ? orderProviders(providers, seed) : providers;
 const start = startIndex(order, posledni, chciDalsiho);
 const poradi = probeOrder(order, start);
-if (seed) {
-  console.log(`pořadí posunuto podle run_key (${String(seed).slice(0, 8)}…): ` +
+if (minStrong && seed) {
+  console.log(`pořadí silných modelů posunuto podle run_key (${String(seed).slice(0, 8)}…): ` +
     `${order.map((p) => p.name).join(' → ')}`);
 }
 if (chciDalsiho && posledni) {
