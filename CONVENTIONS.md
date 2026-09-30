@@ -26,6 +26,62 @@ for uzel in get_tree().get_nodes_in_group("enemy"):
 Platí to i pro `get_tree().get_first_node_in_group(...)`, `get_node_or_null(...)`
 a cokoli dalšího, co vrací `Node`/`Variant` bez konkrétního typu.
 
+## 1c. `File` a `json` NEEXISTUJÍ – Godot má `FileAccess` a `JSON`
+
+Nejčastější chyba modelů, které znají Python: sáhnou po `File`, `open()` nebo
+`json.load()`. V GDScriptu nic z toho není a **skript se vůbec nenačte**:
+
+```gdscript
+# ŠPATNĚ – Parse Error: Identifier "File" not declared in the current scope
+var file = File.new()
+file.open("res://assets/data/items.json", File.READ)
+var data = json.load(file)
+
+# SPRÁVNĚ – Godot 4
+var text := FileAccess.get_file_as_string("res://assets/data/items.json")
+if text.is_empty():
+    push_error("items.json nejde načíst")
+    return
+var data: Variant = JSON.parse_string(text)
+if typeof(data) != TYPE_DICTIONARY:
+    push_error("items.json není objekt")
+    return
+```
+
+Pozor i na `json.parse()` (Python) vs `JSON.parse_string()` (Godot) a na to, že
+`JSON.parse_string()` vrací `null` při chybě – **vždy zkontroluj výsledek**,
+jinak dostaneš `Cannot infer the type` nebo pád na `null`.
+
+## 1d. Rezervovaná a globální jména tříd
+
+`class_name` vytváří **globální** jméno v celém projektu. Když se trefí do
+jména, které už používá Godot, parsování skriptu selže:
+
+```gdscript
+# ŠPATNĚ – Parse Error: Class "Item" hides a global script class.
+class_name Item
+
+# SPRÁVNĚ – konkrétnější jméno
+class_name GameItem
+```
+
+Naměřeno 30. 9. 2026: granule `entity.item` psala `class_name Item` a shodila
+tím celý běh (testy pak hlásily jen „překročen tvrdý limit 90 s").
+
+**Nepoužívej jako `class_name`:** `Item`, `Node`, `Object`, `Resource`, `Timer`,
+`Camera`, `Light`, `Shape`, `Curve`, `Animation`, `Environment`, `Material`,
+`Texture`, `Image`, `Font`, `Label`, `Button`, `Panel`, `Window`, `File`,
+`Directory`, `JSON`, `Input`, `Engine`, `OS`, `Time`, `RandomNumberGenerator`.
+
+Buď jméno projektu předřaď (`GameItem`, `UoItem`), nebo – ještě lépe – žádné
+`class_name` nedávej a přistupuj k souboru přes `preload()`/`load()`.
+
+## 1e. Než začneš psát, zkontroluj, že soubor není jen kostra
+
+Když granule říká „vytvoř `scripts/x.gd`", **nejdřív zjisti, jestli už
+existuje** a co v něm je. Přepisovat existující funkční soubor je zakázané
+(viz §6) – a slepé `class_name` do souboru, který ho už má, je okamžitá chyba.
+
 ## 1b. Do uzlu vytvořeného `Area2D.new()` nejde přidat vlastní vlastnost
 
 ```gdscript
