@@ -519,7 +519,7 @@ func _run() -> void:
 
 	var attrs_sc = load("res://scripts/attributes.gd")
 	if attrs_sc != null:
-		var attrs = attrs_sc.new()
+		var attrs = _instantiate("atributy", "res://scripts/attributes.gd")
 		if attrs.has_method("get") and attrs.has_method("derived"):
 			_check(int(attrs.get("Str")) == 10 and int(attrs.get("Dex")) == 10
 				and int(attrs.get("Int")) == 10,
@@ -529,11 +529,11 @@ func _run() -> void:
 			_check(odvozene is Dictionary and odvozene.has("damage") and odvozene.has("hit_chance")
 				and odvozene.has("attack_speed") and odvozene.has("mana") and odvozene.has("carry"),
 				"derived() vrací damage, hit_chance, attack_speed, mana i carry")
-		attrs.free()
+		_zavri(attrs)
 
 	var skills_sc = load("res://scripts/skills.gd")
 	if skills_sc != null:
-		var sk = skills_sc.new()
+		var sk = _instantiate("skilly", "res://scripts/skills.gd")
 		if sk.has_method("get") and sk.has_method("add"):
 			_check(int(sk.get("tezba")) == 0 and int(sk.get("kovarstvi")) == 0,
 				"skilly začínají na 0")
@@ -543,11 +543,11 @@ func _run() -> void:
 			sk.add("tezba", -500)
 			_check(int(sk.get("tezba")) == 0,
 				"skill neklesne pod 0 (má %s)" % str(sk.get("tezba")))
-		sk.free()
+		_zavri(sk)
 
 	var world_sc = load("res://scripts/world.gd")
 	if world_sc != null:
-		var w = world_sc.new()
+		var w = _instantiate("svět", "res://scripts/world.gd")
 		if w.has_method("iso_position") and w.has_method("cell_at"):
 			var p0 = w.iso_position(0, 0)
 			var p1 = w.iso_position(1, 0)
@@ -556,11 +556,11 @@ func _run() -> void:
 			var zpet = w.cell_at(w.iso_position(2, 3))
 			_check(zpet == Vector2i(2, 3),
 				"cell_at je zpětný převod iso_position (%s)" % str(zpet))
-		w.free()
+		_zavri(w)
 
 	var item_sc = load("res://scripts/item.gd")
 	if item_sc != null:
-		var it = item_sc.new()
+		var it = _instantiate("předmět", "res://scripts/item.gd")
 		_check(it.has_method("use") and it.has_method("repair") and it.has_method("broken"),
 			"item.gd poskytuje use/repair/broken")
 		var d0 = it.get("trvanlivost")
@@ -573,71 +573,71 @@ func _run() -> void:
 				"use() snižuje trvanlivost (%s → %s)" % [str(d0), str(d1)])
 			it.repair()
 			_check(not it.broken(), "repair() obnoví předmět")
-		it.free()
+		_zavri(it)
 
 	var combat_sc = load("res://scripts/combat.gd")
 	if combat_sc != null:
-		var cb = combat_sc.new()
+		var cb = _instantiate("boj", "res://scripts/combat.gd")
 		_check(cb.has_method("resolve"), "combat.gd poskytuje resolve(att, def)")
-		cb.free()
+		_zavri(cb)
 
 	var mining_sc = load("res://scripts/mining.gd")
 	if mining_sc != null:
-		var mn = mining_sc.new()
+		var mn = _instantiate("těžba", "res://scripts/mining.gd")
 		_check(mn.has_method("gather"), "mining.gd poskytuje gather(node)")
-		mn.free()
+		_zavri(mn)
 
 	var crafting_sc = load("res://scripts/crafting.gd")
 	if crafting_sc != null:
-		var cr = crafting_sc.new()
+		var cr = _instantiate("výroba", "res://scripts/crafting.gd")
 		_check(cr.has_method("smelt") and cr.has_method("forge") and cr.has_method("repair"),
 			"crafting.gd poskytuje smelt/forge/repair")
-		cr.free()
+		_zavri(cr)
 
 	var economy_sc = load("res://scripts/economy.gd")
 	if economy_sc != null:
-		var ec = economy_sc.new()
+		var ec = _instantiate("ekonomika", "res://scripts/economy.gd")
 		_check(ec.has_method("price") and ec.has_method("buy") and ec.has_method("sell"),
 			"economy.gd poskytuje price/buy/sell")
-		ec.free()
+		_zavri(ec)
 
 	var npc_sc = load("res://scripts/npc.gd")
 	if npc_sc != null:
-		var np = npc_sc.new()
+		var np = _instantiate("npc", "res://scripts/npc.gd")
 		_check(np.has_method("trade"), "npc.gd poskytuje trade(player)")
-		np.free()
+		_zavri(np)
 
 	var enemy_sc = load("res://scripts/enemy.gd")
 	if enemy_sc != null:
-		var en = enemy_sc.new()
+		var en = _instantiate("nepřítel", "res://scripts/enemy.gd")
 		_check(en.has_method("attack") and en.has_method("drop_loot"),
 			"enemy.gd poskytuje attack/drop_loot")
-		en.free()
+		_zavri(en)
 
 	var offline_sc = load("res://scripts/offline.gd")
 	if offline_sc != null:
-		var of = offline_sc.new()
+		var of = _instantiate("offline", "res://scripts/offline.gd")
 		_check(of.has_method("resolve"), "offline.gd poskytuje resolve(char, job, hodiny)")
-		of.free()
+		_zavri(of)
 
 	var assist_sc = load("res://scripts/assist.gd")
 	if assist_sc != null:
-		var asist = assist_sc.new()
+		var asist = _instantiate("asistence", "res://scripts/assist.gd")
 		_check(asist.has_method("add_rule") and asist.has_method("evaluate"),
 			"assist.gd poskytuje add_rule/evaluate")
-		asist.free()
+		_zavri(asist)
 
 	var save_sc = load("res://scripts/save.gd")
 	if save_sc != null:
-		var sv = save_sc.new()
+		var sv = _instantiate("ukládání", "res://scripts/save.gd")
 		_check(sv.has_method("save") and sv.has_method("load"), "save.gd poskytuje save/load")
-		sv.free()
+		_zavri(sv)
 
 	var hud_sc = load("res://scripts/hud.gd")
 	if hud_sc != null:
-		var hu = hud_sc.new()
+		var hu = _instantiate("HUD", "res://scripts/hud.gd")
 		_check(hu.has_method("update"), "hud.gd poskytuje update()")
-		hu.free()
+		_zavri(hu)
 
 	# Data (data.content): 4 skilly sjednocené napříč hrou – žádná alchymie.
 	var skills_data: Array = []
@@ -683,3 +683,39 @@ func _finish() -> void:
 	_done = true
 	print("\n[test] %d kontrol, %d selhání" % [checks, failures])
 	quit(failures)
+
+
+func _instantiate(oblast: String, cesta: String):
+	"""Vytvoří instanci skriptu granule a varuje, když není potomkem Node.
+
+	POZOR – PROČ TO EXISTUJE (naměřeno 30. 9. 2026, běh #122): když soubor
+	deklaruje `class_name GameItem` a zároveň uvnitř definuje `class GameItem`,
+	vnořená třída přebije globální jméno. `new()` pak vrátí vnořenou třídu –
+	nemá smluvní metody – a když je potomkem RefCounted, spadne na `free()`.
+	Chyba v _run() přeruší CELÝ běh testů, takže se nikdy nedojde na _finish(),
+	testy visí do tvrdého limitu 90 s a v logu je jen „testy se zasekly".
+	Příčina je přitom neviditelná. Tenhle pomocník ji vysype do logu hned.
+	"""
+	var sc = load(cesta)
+	if sc == null:
+		return null
+	var obj = sc.new()
+	if obj == null:
+		print("[test]      %s: %s.new() vrátil null" % [oblast, cesta])
+		return null
+	if not (obj is Node):
+		print("[test]      %s: %s nevrací potomka Node, ale %s – půjde zavřít"
+			% [oblast, cesta, obj.get_class()])
+		print("[test]      → pravděpodobně vnořená `class` stíní `class_name`,"
+			+ " nebo soubor nezačíná `extends Node`")
+	return obj
+
+
+func _zavri(obj) -> void:
+	"""Uvolní instanci granule. Nikdy neshodí běh testů."""
+	if obj == null:
+		return
+	if obj is Node:
+		obj.free()
+	# Potomek RefCounted (Resource, Object) se uvolní sám; `free()` na něm
+	# vyhodí chybu a přeruší _run() – což se přesně jednou stalo.

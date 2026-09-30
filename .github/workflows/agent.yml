@@ -235,6 +235,55 @@ jobs:
           fi
           echo "Parsování v pořádku ($(echo "$ZMENENE" | wc -l) souborů)."
 
+          # DRUHÁ KONTROLA: Godot sám tuhle vadu NEPOZNÁ (naměřeno 30. 9. 2026).
+          #
+          # Když soubor deklaruje `class_name GameItem` a ZÁROVEŇ definuje
+          # `class GameItem extends …`, vnořená třída přebije tu globální. `new()`
+          # pak vrátí vnořenou třídu – ta nemá smluvní metody, a když není
+          # potomkem Node, spadne i `free()` v testech. Testy pak hlásí jen
+          # „překročen tvrdý limit 90 s" a příčina je neviditelná.
+          #
+          # Ověřeno na běhu #122 (granule entity.item): model napsal přesně tenhle
+          # tvar, `--check-only` vrátil exit 0 a bez chyby, a testy spadly.
+          # Kontroluje se zdrojový text, protože na to Godot nemá nástroj.
+          echo ""
+          echo "Kontroluji stínění class_name (staticky, Godot to nepozná):"
+          CHYBY_STIN=0
+          for f in $ZMENENE; do
+            PRVNI=$(grep -m1 -oE '^class_name[[:space:]]+[A-Za-z_][A-Za-z0-9_]*' "$f" | awk '{print $2}' || true)
+            if [ -z "$PRVNI" ]; then
+              continue
+            fi
+            if grep -qE "^class[[:space:]]+$PRVNI([[:space:]]|:|$)" "$f"; then
+              echo "::error file=$f::$f deklaruje class_name $PRVNI a zároveň definuje vnořenou class $PRVNI – vnořená třída přebije globální jméno"
+              CHYBY_STIN=$((CHYBY_STIN + 1))
+            else
+              echo "  OK  $f (class_name $PRVNI)"
+            fi
+          done
+          if [ "$CHYBY_STIN" -gt 0 ]; then
+            echo "::error::vnořená třída stíní class_name – smaž vnořenou 'class $PRVNI' (soubor sám je ta třída; začni 'extends Node')"
+            exit 1
+          fi
+
+      - name: Import assetů (než se pustí testy)
+        # PROČ TO TU JE (doplněno 30. 9. 2026 — bez toho orchestr nemohl uspět):
+        #
+        # `ci.yml` tenhle krok MÁ, ale `agent.yml` ho neměl. Agent přitom pouští
+        # TYTÉŽ testy – a v čerstvém checkoutu runneru nejsou `.godot/imported/*.ctex`
+        # (`.godot/` je v .gitignore). Godot v režimu `--script` assety NEimportuje,
+        # takže 16 z 19 assetů nešlo načíst a testy padaly VŽDY, bez ohledu na to,
+        # co agent udělal:
+        #
+        #   [test] FAIL všechny assety jdou načíst (3 OK, 16 chybí)
+        #   [test] FAIL mapa má dlaždici pro každé políčko (0)
+        #   [test] FAIL dlaždicové pozadí je ve scéně
+        #
+        # Naměřeno u běhů #119–#122 (4 granule × 5 pokusů): všech 21 běhů selhalo
+        # na tomhle, žádný PR nevznikl. Lokálně tytéž testy s importem: 26/26 OK.
+        timeout-minutes: 5
+        run: '"$FORGE_GODOT" --headless --path . --import 2>&1 | tail -3'
+
       - name: Testy hry (Godot headless)
         # POZOR: tenhle timeout tam musí být. Bez něj se stalo, že patch od
         # agenta obsahoval nekonečnou smyčku, Godot se zasekl a krok visel
@@ -464,15 +513,22 @@ jobs:
           del=0
           echo "soubory ve změně:"
           while read -r a d f; do
+            # Generované soubory se přeskakují PRVNÍ, ještě před kontrolou
+            # složky. Godot si .import/.uid přepisuje sám a při importu assetů
+            # v runneru jich přepíše stovky – z toho 260 leží pod tools/blender/,
+            # tedy mimo scripts/ a assets/. Když se kontrolovaly složkou dřív,
+            # KAŽDÝ PR skončil na „mimo povolené složky" a nechal se ručně.
+            case "$f" in
+              *.import|*.uid)
+                echo "  (generované Godotem, přeskočeno: $f)"
+                continue ;;
+            esac
             case "$f" in
               scripts/*|assets/*) ;;
               *) echo "  !! mimo povolené složky: $f"; ok=0 ;;
             esac
             case "$f" in
               tests/*|.github/*|.forge/*|project.godot) echo "  !! chráněný soubor: $f"; ok=0 ;;
-            esac
-            case "$f" in
-              *.import|*.uid) echo "  (generované, do velikosti se nepočítá) $f"; continue ;;
             esac
             echo "  +$a/-$d  $f"
             add=$((add + a))

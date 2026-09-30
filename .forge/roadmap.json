@@ -70,7 +70,7 @@
       "owns": ["scripts/item.gd"],
       "depends_on": ["data.content"],
       "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/item.gd vytvoř reprezentaci předmětu načtenou z assets/data/items.json: id, název, materiál, trvanlivost (výchozí 20), damage nebo armor_rating, kvalita. Funkce use() -> void (sníží trvanlivost o 1, nejmíň 0) a repair() -> void (obnoví trvanlivost). Vystav broken() -> bool. POZOR: NEPIŠ do souboru `class_name Item` — koliduje s globálním jménem a Godot skript odmítne naparsovat (CONVENTIONS.md §1d). Buď `class_name GameItem`, nebo žádné class_name. Vlastnost trvanlivosti pojmenuj `trvanlivost` (testy ji čtou přes Object.get a přijímají i `durability`)."
+      "prompt": "V scripts/item.gd vytvoř reprezentaci předmětu načtenou z assets/data/items.json: id, název, materiál, trvanlivost (výchozí 20), damage nebo armor_rating, kvalita. Funkce use() -> void (sníží trvanlivost o 1, nejmíň 0), repair() -> void (obnoví trvanlivost na 20) a broken() -> bool (true, když je trvanlivost 0). STRUKTURA SOUBORU (testy berou load(...).new() a volají metody přímo): (1) soubor ZAČÍNÁ `extends Node`, (2) `class_name GameItem` může následovat, ale NIKDY nesmí být i jménem vnořené `class` v témž souboru — vnořená třída přebije globální jméno, `new()` pak vrátí ji a testy spadnou; soubor SÁM JE ta třída, žádnou vnořenou nedefinuj. (3) `_init()` nesmí mít povinný argument — `new()` se volá bez parametrů, data načti v `_ready()`. (4) NEPIŠ `class_name Item` — koliduje s globálním jménem (CONVENTIONS.md §1d). (5) Vlastnost trvanlivosti pojmenuj `trvanlivost` (testy ji čtou přes Object.get a přijímají i `durability`)."
     },
     {
       "id": "entity.player",
