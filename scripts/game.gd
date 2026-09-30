@@ -132,9 +132,16 @@ func _add_music() -> void:
 		return
 
 
+func _clear_entities() -> void:
+	"""Smaže všechny entity z mapy."""
+	for group in ["coin", "enemy", "chest", "player"]:
+		for entity in get_tree().get_nodes_in_group(group):
+			entity.queue_free()
+
 func _add_level() -> void:
 	"""Postaví mapu z assets/levels/<nazev>.json (generuje `forge level`).
 	Když úroveň v projektu není, hra se hraje na holé ploše – pořád hratelná."""
+	_clear_entities()
 	var path := LEVEL_DIR + LEVEL_NAME + ".json"
 	if not FileAccess.file_exists(path):
 		print("[game] úroveň %s není – hraju bez mapy" % path)
