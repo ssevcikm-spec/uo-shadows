@@ -164,10 +164,21 @@ jobs:
           }
           spust_agenta
           if ! zmenil_neco; then
-            echo "::notice::model nezměnil žádný kód – zkouším jiného bezplatného poskytovatele"
-            if node .forge/pick-provider.mjs --next; then
-              nacti_poskytovatele
-              spust_agenta
+            # KVÓTA vs. SCHOPNOST (od 30. 9. 2026). Druhý pokus s jiným
+            # poskytovatelem má smysl jen tehdy, když je co zkoušet — tedy když
+            # model odpověděl, ale kód nezměnil (jiný model to může trefit).
+            # Když ale běh spadl na vyčerpané kvótě (rate-limit / denní strop),
+            # druhý pokus je jen další spálený pokus: naměřeno 30. 9. — 9 z 13
+            # běhů skončilo na rate-limitu a 11 z 13 zkoušelo druhého
+            # poskytovatele — žádný z nich neuspěl. Kvóta je vzácnější než čas.
+            if grep -qE 'RateLimitError|rate limit reached|exceeded your current quota' agent.log; then
+              echo "::warning::první pokus spadl na vyčerpané kvótě – druhý poskytovatel se nezkouší (šetřím kvótu)"
+            else
+              echo "::notice::model nezměnil žádný kód – zkouším jiného bezplatného poskytovatele"
+              if node .forge/pick-provider.mjs --next; then
+                nacti_poskytovatele
+                spust_agenta
+              fi
             fi
           fi
 
