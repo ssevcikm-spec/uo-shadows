@@ -50,7 +50,22 @@ jobs:
         # Když si hra odporuje, vision hlásí buď věčné nekonzistence, nebo nic.
         # Tohle je navíc zdarma a běží 0,2 s.
         timeout-minutes: 2
-        run: python3 .forge/check-schema.py .
+        run: |
+          # POZOR – PILLOW JE TU POVINNÝ, i když se to nezdá:
+          # `.forge/check-schema.py:386` importuje `PIL` UVNITŘ funkce a jen když
+          # hra má sprity (`assets/sprites/` + `role` ve specu). `uo-shadows`
+          # sprity MÁ, takže se import provede vždy.
+          #
+          # Naměřeno 1. 10. 2026: brána spadla na `ModuleNotFoundError: No module
+          # named 'PIL'` (běh CI #80 na commitu 0519d1a). Byla to PRVNÍ brána
+          # celého CI, takže `main` zezelenal nikdy – a protože `/failed`
+          # conductora hlásí selhané ÚLOHY (ne běhy), orchestra 7,5 h nevydala
+          # ani granuli a `/health` přitom hlásil `ok: true`.
+          #
+          # Když sem přidáš bránu, která importuje knihovnu mimo stdlib,
+          # DOPLŇ SEM I JEJÍ INSTALACI. Krok na :70 a :119 to mají taky.
+          python3 -m pip install --quiet pillow
+          python3 .forge/check-schema.py .
 
       - name: Testy hry
         # Timeout i tady: kdyby se do hry dostala nekonečná smyčka (stalo se to
