@@ -10,6 +10,10 @@ config/name="uo-sandbox"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.7")
 
+[input]
+
+input_devices=PackedStringArray("keyboard", "mouse")
+
 [display]
 
 window/size/viewport_width=480
