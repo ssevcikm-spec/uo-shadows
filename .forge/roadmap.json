@@ -40,6 +40,8 @@
       "kind": "code",
       "owns": ["scripts/skills.gd"],
       "depends_on": [],
+      "done": true,
+      "done_note": "PR #24 sloučené 30. 9.",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/skills.gd vytvoř dovednosti jako VLASTNOST s konkrétním jménem: var dovednosti: Dictionary = {\"tezba\": 0, \"drevorubectvi\": 0, \"kovarstvi\": 0, \"boj_na_blizko\": 0} (všechny začínají na 0). Přidej funkce add(skill: String, n: int) -> void (zvýší hodnotu, omezeno na 0–100) a hodnota(skill: String) -> int (vrátí hodnotu). DŮLEŽITÉ – JAK SE DOVEDNOSTI ČTOU: testy je čtou takto: var sk = load(\"res://scripts/skills.gd\").new() a pak sk.get(\"tezba\"). get() je metoda ENGINU (Object.get), která vrátí hodnotu vlastnosti podle jména – proto NEDEFINUJ žádnou vlastní funkci get() (kolidovala by s enginem a musela by sama řešit, co je klíč a co slovník; naměřeno 30. 9. 2026: model ji definoval a vracela null). Když skript vlastní get() nemá, sk.get(\"tezba\") vrátí hodnotu vlastnosti. Klíče drž přesně: tezba, drevorubectvi, kovarstvi, boj_na_blizko. Struktura souboru: začni extends Node, žádné class_name, _init() bez povinného argumentu (CONVENTIONS.md §1f a §1g). Nic dalšího neměň."
     },
@@ -60,6 +62,8 @@
       "kind": "code",
       "owns": ["scripts/world.gd"],
       "depends_on": ["world.level"],
+      "done": true,
+      "done_note": "PR #21 sloučené 30. 9.",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/world.gd vytvoř izometrickou projekci a surovinové uzly. iso_position(cx: int, cy: int) -> Vector2 vrací offset + Vector2((cx-cy)*cell/2, (cx+cy)*cell/4); cell_at(pos) -> Vector2i zpětný převod. Přidej seznam uzlů (žíla železa, strom, skála) s pozicí a stavem (vytěžen/aktivní) a respawn: vytěžený uzel se po čase (konstanta, např. 60 s) obnoví. Vystav gather(cell) -> bool a is_walkable(pos)."
     },
@@ -78,6 +82,8 @@
       "kind": "code",
       "owns": ["scripts/player.gd"],
       "depends_on": ["core.attributes", "core.skills", "world.map", "entity.item"],
+      "done": true,
+      "done_note": "PR #25 sloučené 1. 10.",
       "size_lines": "<= 120",
       "model": "strong",
       "acceptance": ["tests", "wiring"],
@@ -89,6 +95,8 @@
       "kind": "code",
       "owns": ["scripts/combat.gd"],
       "depends_on": ["core.attributes", "core.skills", "entity.item"],
+      "done": true,
+      "done_note": "PR #26 sloučené 1. 10.",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/combat.gd vytvoř resolve(attacker, defender) -> Dictionary. Hit chance = 0.5 + (Dex útočníka)/200 + (skill boj_na_blizko)/200; když zasáhne, damage = 1 + Str/10 + zbraň.damage, zmenšené o armor rating obránce. Vrať {hit: bool, damage: int}. Používej provides z attributes.gd a skills.gd, nic nečti napřímo."
     },
@@ -118,6 +126,8 @@
       "kind": "code",
       "owns": ["scripts/economy.gd"],
       "depends_on": ["entity.item", "data.content"],
+      "done": true,
+      "done_note": "PR #22 sloučené 30. 9.",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/economy.gd vytvoř ceny předmětů (price(item) -> int odvozená z materiálu a kvality) a obchod: buy(player, item) (hráč zaplatí zlato, dostane item) a sell(player, item) (hráč prodá, dostane zlato). Vystav gold(player) -> int. Hráč začíná s 0 zlatem."
     },
@@ -158,6 +168,8 @@
       "kind": "code",
       "owns": ["scripts/assist.gd"],
       "depends_on": ["entity.player", "entity.item"],
+      "done": true,
+      "done_note": "PR #27 sloučené 1. 10.",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/assist.gd vytvoř pravidla: add_rule(trigger, action) a evaluate(player) -> Array. Spouště: hp < X, mana < X, cíl mrtev. Akce: vypít lektvar, seslat kouzlo, přepnout cíl. Akce jen přes veřejné příkazy hráče (spotřebovávají skutečné zdroje), nikdy ne autonomní smyčky."
     },
@@ -167,6 +179,8 @@
       "kind": "code",
       "owns": ["scripts/save.gd"],
       "depends_on": ["core.skills", "core.attributes", "entity.player", "world.map", "sim.economy"],
+      "done": true,
+      "done_note": "POZOR: v D1 hotovo (task 139), ale PR NENÍ sloučené – práce není v main",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/save.gd vytvoř save() a load() přes ConfigFile do user://save.cfg: atributy, skilly, inventář, zlato, pozici hráče a stav uzlů světa (které jsou vytěžené). load() ošetří neexistující soubor (vrátí false). Vystav save() -> bool a load() -> bool."
     },
@@ -176,6 +190,8 @@
       "kind": "code",
       "owns": ["scripts/hud.gd"],
       "depends_on": ["core.skills", "core.attributes", "entity.player", "sim.economy"],
+      "done": true,
+      "done_note": "POZOR: v D1 hotovo (task 140), ale PR NENÍ sloučené – práce není v main",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/hud.gd vytvoř update() -> void, které zobrazí: HP, atributy (Str/Dex/Int), dovednosti (tezba/drevorubectvi/kovarstvi/boj_na_blizko), zlato a vybavenou zbraň/zbroj. Čte jen veřejné gettery (attributes.get, skills.get, economy.gold, player). Label se umístí do rohu obrazovky."
     },

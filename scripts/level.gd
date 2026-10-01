@@ -21,7 +21,7 @@
 ## celou dobu deklaroval izometrii 2:1 a dlaždice byly 32×32 čtverce. Výsledek:
 ## izometrický pohled nemohl vzniknout, ať se sprity ladily jakkoli – a nikdo si
 ## toho nevšiml, protože se deklarace s kódem nikde neporovnávala.
-## Od toho je `orchestra/tools/kontrola-schematu.py`.
+## Od toho je brána `.forge/check-schema.py` (běží v CI před testy).
 ##
 ## SOUŘADNICE: dlaždice (cx, cy) se kreslí na
 ##     x = (cx - cy) * cell_w / 2
@@ -104,7 +104,7 @@ func load_file(path: String) -> bool:
 	level_name = str(data.get("name", ""))
 	# Velikost buňky se bere ZE SPECU, ne z mapy: schéma je vlastnost hry, ne
 	# jednotlivého levelu. Když to level deklaruje jinak, je to rozpor a ohlásí
-	# ho `kontrola-schematu.py` – tady se jen použije platné schéma.
+	# ho `.forge/check-schema.py` – tady se jen použije platné schéma.
 	_nacti_spec()
 	width = int(data.get("width", 0))
 	height = int(data.get("height", 0))
