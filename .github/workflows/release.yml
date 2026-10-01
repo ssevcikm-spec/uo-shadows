@@ -79,7 +79,7 @@ jobs:
             echo "Automatický build ze commitu \`${GITHUB_SHA:0:7}\` ($(date -u '+%Y-%m-%d %H:%M UTC'))."
             echo
             echo "**Jak si zahrát:**"
-            echo "- v prohlížeči: https://ssevcikm-spec.github.io/forge-quest/"
+            echo "- v prohlížeči: https://ssevcikm-spec.github.io/uo-shadows/"
             echo "- Windows: stáhni \`game-windows.zip\` a spusť \`game.exe\`"
             echo "- Linux: stáhni \`game-linux.zip\` a spusť \`game.x86_64\`"
             echo
@@ -132,7 +132,11 @@ jobs:
 
       - name: Označit nasazený web
         if: steps.pages.outcome == 'success'
-        run: echo "Web se nasadí na https://ssevcikm-spec.github.io/forge-quest/"
+        # POZOR: adresa je ODVOZENÁ Z NÁZVU REPA, ne z historie. Dřív tu bylo
+        # `.../forge-quest/` – tedy STARÝ repozitář. Odkaz byl mrtvý a v release
+        # notes málem poslal uživatele hrát jinou hru (forge-quest má vlastní
+        # Pages a vlastní hru). Při přejmenování repa se MUSÍ změnit i tady.
+        run: echo "Web se nasadí na https://ssevcikm-spec.github.io/uo-shadows/"
 
   deploy:
     name: Nasazení webu

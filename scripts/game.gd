@@ -168,6 +168,11 @@ func _add_level() -> void:
 	node.z_index = -1
 	level = node
 	add_child(level)
+	# POŘADÍ JE DŮLEŽITÉ: nejdřív se mapa vystředí na spawn a teprve pak se
+	# staví dlaždice – `build()` kreslí na pozice, které offset už potřebují.
+	# Mapa se vystředí na spawn: bez toho je spawn (17,7) v izometrii na
+	# y = 576, tedy POD obrazovkou (viewport je 540), a hráč nevidí sám sebe.
+	level.vystredni_na_spawn(get_viewport_rect().size)
 	level.build()
 
 	# Fade in the new level

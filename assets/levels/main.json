@@ -1,12 +1,12 @@
 {
   "name": "main",
   "seed": 648754554,
-  "cell": 16,
+  "cell": 96,
   "width": 30,
   "height": 16,
   "viewport": [
-    480,
-    270
+    960,
+    540
   ],
   "offset": [
     0,
@@ -82,5 +82,6 @@
     "markers": 4,
     "markers_unreachable": []
   },
-  "generated": "2026-09-29 14:10:46"
+  "generated": "2026-09-29 14:10:46",
+  "_projekce": "izometricka – mřížka je jen znaky, projekci určuje assets/spec.json a scripts/level.gd"
 }

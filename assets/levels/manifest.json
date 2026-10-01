@@ -5,7 +5,7 @@
       "name": "main",
       "file": "main.json",
       "seed": 648754554,
-      "cell": 16,
+      "cell": 96,
       "size": [
         30,
         16
@@ -15,5 +15,5 @@
       "preview": "main.preview.png"
     }
   ],
-  "note": "mřížka je text (0=zeď, 1=místnost, 2=chodba); spawn a mince jsou středy místností, průchodnost ověřená flood fillemp"
+  "note": "mřížka je text (0=zeď, 1=místnost, 2=chodba); buňka 96 px podle assets/spec.json; spawn a mince jsou středy místností, průchodnost ověřená flood fillemp"
 }

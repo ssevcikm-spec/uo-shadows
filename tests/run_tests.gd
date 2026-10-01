@@ -562,18 +562,42 @@ func _run() -> void:
 					"skill neklesne pod 0 (má %s)" % str(sk.get("tezba")))
 		_zavri(sk)
 
-	var world_sc = load("res://scripts/world.gd")
-	if world_sc != null:
-		var w = _instantiate("svět", "res://scripts/world.gd")
-		if w.has_method("iso_position") and w.has_method("cell_at"):
-			var p0 = w.iso_position(0, 0)
-			var p1 = w.iso_position(1, 0)
-			_check(p0 is Vector2 and p1 is Vector2 and p1.x > p0.x and p1.y > p0.y,
-				"izo projekce 2:1 – (1,0) je vpravo dole od (0,0) (%s → %s)" % [str(p0), str(p1)])
-			var zpet = w.cell_at(w.iso_position(2, 3))
-			_check(zpet == Vector2i(2, 3),
-				"cell_at je zpětný převod iso_position (%s)" % str(zpet))
-		_zavri(w)
+	# ---------------------------------------------------------- izometrie ----
+	# DŘÍV TU BYL TEST `world.gd`, KTERÝ SE OVĚŘOVAL SÁM PROTI SOBĚ:
+	# `w.cell_at(w.iso_position(2,3))` projde vždy, protože obě funkce používají
+	# stejnou konstantu – i kdyby byl výsledek nesmyslný. Navíc `world.gd` nebyl
+	# v projektu NIKDE instancovaný (jen tady), takže test hlídal mrtvý kód a
+	# tvrdil o něm, že je v pořádku.
+	#
+	# Izometrie se teď testuje tam, kde skutečně je – na `level.gd`, který mapu
+	# kreslí. Ověřuje se VLASTNOST projekce (2:1), ne shoda funkce se sebou samou.
+	var level_sc := load("res://scripts/level.gd")
+	if level_sc != null:
+		var lv = _instantiate("level", "res://scripts/level.gd")
+		if lv.has_method("je_izometricka") and lv.has_method("cell_center") and lv.has_method("cell_at"):
+			_check(lv.je_izometricka(),
+				"level.gd se hlásí jako izometrický (podle assets/spec.json)")
+			# 2:1 znamená, že sousední buňka v ose X ujde 2× víc do strany než dolů.
+			var c00: Vector2 = lv.cell_center(0, 0)
+			var c10: Vector2 = lv.cell_center(1, 0)
+			var c01: Vector2 = lv.cell_center(0, 1)
+			var dx: float = abs(c10.x - c00.x)
+			var dy: float = abs(c10.y - c00.y)
+			_check(is_equal_approx(dx, 2.0 * dy) and dy > 0.0,
+				"izo projekce 2:1 – krok (1,0) je %s (dx=%.1f, dy=%.1f)" % [str(c10 - c00), dx, dy])
+			# A hlavně: zpětný převod musí sedět na SKUTEČNÝCH dlaždicích,
+			# ne jen sám na sebe – bere se pozice vzniklé z projekce.
+			#
+			# POZOR na `:=`: `lv` je z `load()` bez typu, takže `lv.cell_at(...)`
+			# nemá známý návratový typ a `var zpet := ...` spadne na
+			# „Cannot infer the type" (CONVENTIONS.md §1). Typ se píše výslovně.
+			var zpet: Vector2i = lv.cell_at(c10)
+			_check(zpet == Vector2i(1, 0),
+				"cell_at je zpětný převod cell_center pro (1,0) (%s)" % str(zpet))
+			var zpet2: Vector2i = lv.cell_at(c01)
+			_check(zpet2 == Vector2i(0, 1),
+				"cell_at je zpětný převod cell_center pro (0,1) (%s)" % str(zpet2))
+		_zavri(lv)
 
 	var item_sc = load("res://scripts/item.gd")
 	if item_sc != null:

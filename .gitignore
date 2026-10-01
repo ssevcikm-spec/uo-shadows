@@ -1,4 +1,4 @@
-﻿# Godot
+# Godot
 .godot/
 *.translation
 export_presets.cfg.bak
@@ -7,6 +7,11 @@ export_presets.cfg.bak
 build/
 artifacts/
 assets/_raw/
+
+# Python cache po LOKÁLNÍM spuštění bran (.forge/check-schema.py apod.).
+# Kdyby se dostala do repa, `git add -A` by ji poslal do patche a do PR.
+__pycache__/
+*.pyc
 
 # Lokální nástroje
 .forge/provider.json

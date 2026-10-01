@@ -95,8 +95,8 @@ HOTOVO (fáze 1). Co ještě ručně:
  3) Zkopíruj workera do telefonu (až bude repo na GitHubu):
       cd ~/forge/phone
       # buď z repa:
-      #   git clone --depth 1 https://github.com/ssevcikm-spec/forge-quest /tmp/fq
-      #   cp /tmp/fq/…           (worker.mjs se bere z gameforge/orchestra/phone)
+      #   git clone --depth 1 https://github.com/ssevcikm-spec/uo-shadows /tmp/uos
+      #   cp /tmp/uos/…          (worker.mjs se bere z orchestra/repo/.forge/node)
       # nebo ho sem přenes přes Tailscale/scp z PC
  4) Test bez připojení:
       node worker.mjs --info

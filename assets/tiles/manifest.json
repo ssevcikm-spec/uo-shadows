@@ -1,50 +1,78 @@
 {
-  "generated": "2026-09-29 14:13:29",
-  "seed": 20260924,
-  "tile_size": 32,
+  "generated": "2026-10-01T01:09:53",
+  "seed": 20260930,
+  "projekce": "izometricka",
+  "tile_size": [
+    96,
+    48
+  ],
   "tiles": [
     {
       "name": "grass",
       "file": "grass.png",
-      "size": 32,
-      "seam": 0.27,
-      "bytes": 490
+      "size": [
+        96,
+        48
+      ],
+      "seam": 1.33,
+      "stav": "OK",
+      "bytes": 1426
     },
     {
       "name": "dirt",
       "file": "dirt.png",
-      "size": 32,
-      "seam": 0.17,
-      "bytes": 448
+      "size": [
+        96,
+        48
+      ],
+      "seam": 0.58,
+      "stav": "OK",
+      "bytes": 1349
     },
     {
       "name": "sand",
       "file": "sand.png",
-      "size": 32,
-      "seam": 0.3,
-      "bytes": 416
+      "size": [
+        96,
+        48
+      ],
+      "seam": 1.43,
+      "stav": "OK",
+      "bytes": 1605
     },
     {
       "name": "stone",
       "file": "stone.png",
-      "size": 32,
-      "seam": 0.17,
-      "bytes": 402
+      "size": [
+        96,
+        48
+      ],
+      "seam": 0.78,
+      "stav": "OK",
+      "bytes": 1444
     },
     {
       "name": "water",
       "file": "water.png",
-      "size": 32,
-      "seam": 0.18,
-      "bytes": 371
+      "size": [
+        96,
+        48
+      ],
+      "seam": 0.27,
+      "stav": "OK",
+      "bytes": 1825
     },
     {
       "name": "brick",
       "file": "brick.png",
-      "size": 32,
-      "seam": 0.73,
-      "bytes": 205
+      "size": [
+        96,
+        48
+      ],
+      "seam": 0.39,
+      "stav": "OK",
+      "bytes": 2098
     }
   ],
-  "note": "procedurální dlaždice – šev ≤ 1.6 znamená, že na sebe navazují"
+  "note": "izometrické kosočtverce 96×48 (2:1) – generuje tools/make_iso_tiles.py podle assets/spec.json; šev ≤ 1.6 znamená, že na sebe navazují"
 }

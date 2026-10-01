@@ -1,0 +1,2457 @@
+{
+  "verze": 1,
+  "prompt_verze": null,
+  "schvaleno": "2026-09-30T23:07:32+00:00",
+  "polozky": {
+    "assets/sprites/chest.png": {
+      "sha256": "50005bbe32fa26f065fe7bd1481809109f82f99571610118254a8b6eeac91980",
+      "phash": "d03f6a3e6c9391d0",
+      "barva": "5-4-3",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/coin.png": {
+      "sha256": "26c2eda957b0981a118963cbd0291f9ff53db4c1f60b52724fa44413a3b84797",
+      "phash": "952f6a346bd0a5c3",
+      "barva": "7-6-4",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/enemy.png": {
+      "sha256": "61ca795b377db6c9c067ba3269fc8a9eff33941412ac14fb5cd91389532e6239",
+      "phash": "922d6d36d01bb56c",
+      "barva": "2-4-2",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/items/chest_final.png": {
+      "sha256": "50005bbe32fa26f065fe7bd1481809109f82f99571610118254a8b6eeac91980",
+      "phash": "d03f6a3e6c9391d0",
+      "barva": "5-4-3",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/items/coin_final.png": {
+      "sha256": "26c2eda957b0981a118963cbd0291f9ff53db4c1f60b52724fa44413a3b84797",
+      "phash": "952f6a346bd0a5c3",
+      "barva": "7-6-4",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/items/dirt_tex.png": {
+      "sha256": "e27d2ee9a4fec4c1bd3fe89d991c7a52358d4072d8b0397edcd5ab888ee18884",
+      "phash": "966c009b1fae1dd3",
+      "barva": "4-2-2",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/items/grass_tex.png": {
+      "sha256": "602fb2643ea79ba9790199ed670962bdb5eeee225ac6772a039029f5c45f6e79",
+      "phash": "fb91c16cd0aecd50",
+      "barva": "2-5-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/items/ore_final.png": {
+      "sha256": "d0caf05e20f09749be9318d8faeae2dd04ae7bf33985ef03c9a62fa158a21675",
+      "phash": "c53b72e00f9933c6",
+      "barva": "3-2-2",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/items/potion_final.png": {
+      "sha256": "e59a56790551aa363252855acd9e8d67a9a904c6846eec89b2329ba54bd1df48",
+      "phash": "99316696699933cd",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/items/slime_final.png": {
+      "sha256": "61ca795b377db6c9c067ba3269fc8a9eff33941412ac14fb5cd91389532e6239",
+      "phash": "922d6d36d01bb56c",
+      "barva": "2-4-2",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/items/sword_final.png": {
+      "sha256": "fcb1dccfada936b990a97067fc005284547d10a6dffa8a52d112a97bee070a04",
+      "phash": "c33c65cc99e32ce1",
+      "barva": "1-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/npc.png": {
+      "sha256": "04e39cd883ab0294397a9c45c8957ece9827e779e0057bb68d919f6e9a124ed9",
+      "phash": "99cc33666693ce89",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/ore.png": {
+      "sha256": "d0caf05e20f09749be9318d8faeae2dd04ae7bf33985ef03c9a62fa158a21675",
+      "phash": "c53b72e00f9933c6",
+      "barva": "3-2-2",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/player.png": {
+      "sha256": "735bc784ea0142d838038efdfcb47b87e8844ecf3172f6f5562688d5c5cdb183",
+      "phash": "99cc33646693ce8b",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/potion.png": {
+      "sha256": "e59a56790551aa363252855acd9e8d67a9a904c6846eec89b2329ba54bd1df48",
+      "phash": "99316696699933cd",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:31+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "assets/sprites/weapon.png": {
+      "sha256": "fcb1dccfada936b990a97067fc005284547d10a6dffa8a52d112a97bee070a04",
+      "phash": "c33c65cc99e32ce1",
+      "barva": "1-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d0_f0.png": {
+      "sha256": "4816807443f0affb829969034f53ae7afe29a74f31d666de0f5cd36d75effd92",
+      "phash": "cdcc332366938ace",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d0_f1.png": {
+      "sha256": "08aa3189da0f52b94d3d6b587f6b5e77c117f8a87e80c8da7b5e7facb0d51d91",
+      "phash": "cd8c336666938e8b",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d0_f2.png": {
+      "sha256": "739a98d5c93d1dfecf248447aa8f9ed27534c4064ebe70e727861c420e2161db",
+      "phash": "99996364669acc9b",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d0_f3.png": {
+      "sha256": "eb1ad4b9cc5ef3b2aa8bc4ff6f144286b2d4733f4812a8bc74fba2bcfa7ab835",
+      "phash": "9999666433c6cb9a",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d0_f4.png": {
+      "sha256": "ef41f25fcd65a3830f5e29916e8b31c26ed4e2c68d2412e3f837ceed1ed76bbc",
+      "phash": "9999666633c68b9a",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d0_f5.png": {
+      "sha256": "7dfb0643fe1d96309227439cf584f7ea6de0d5a9f2f347f9ccb6127e56da3e1b",
+      "phash": "9999663133c69b8e",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d0_f6.png": {
+      "sha256": "db5b5773c59ed57de7a71e49643c0713e7e9a83cc3878d553ed4878eaae78eb2",
+      "phash": "99cc6631338b99ce",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d0_f7.png": {
+      "sha256": "cb2599a25e5f6a1642d050f42f27a82731bec2fb383250e95d9882038a4388ab",
+      "phash": "c9cc332166938ecf",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d1_f0.png": {
+      "sha256": "39e2d6d10879c76e3596f1afee68391330409feeef38fcd8a792c8700cb6567e",
+      "phash": "8c9963323366cf3c",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d1_f1.png": {
+      "sha256": "c0a1126c304b8397d6ca7e76b937647c112ca0bc5a49a80eded65ae876ea785a",
+      "phash": "9999663633e6cc31",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d1_f2.png": {
+      "sha256": "d42ff7cb6db8e71abc8b17215affbd23df8beef7dbbb5802465061b2750baaf0",
+      "phash": "99d966336664cc33",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d1_f3.png": {
+      "sha256": "81a86650646530347328bc4712ab9b73a5303c9070e40012d691e59270103a5c",
+      "phash": "999966666692ce63",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d1_f4.png": {
+      "sha256": "3373cfdc706782225e6a3854462f8f0d1940cb143e5e421475f9fe7d21884875",
+      "phash": "9899336666b29b65",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d1_f5.png": {
+      "sha256": "649f7722806e0d128cafd4cde5a37edb0ba3115d1d614a57f912fb54e2594e34",
+      "phash": "9999636666b3cc64",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d1_f6.png": {
+      "sha256": "eb772606bd0c95d2b217924cc9b1df36d60d32bd26399660508bcfbaafde8db3",
+      "phash": "9999666766664c33",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d1_f7.png": {
+      "sha256": "5da0656cc6a2831a43d720f73fd8a69eefa9e836a290f66a1f8f92dbe3f25868",
+      "phash": "999966b63366ce30",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d2_f0.png": {
+      "sha256": "8e3fb6cf7e7263b8574329ead2ab57b467d4671f2392727ca624714468fc315c",
+      "phash": "cdcc33336633928e",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d2_f1.png": {
+      "sha256": "cab1a40d4901b0c282660eee1debb9197f54bbe20abcb1db2cf263936c9cea0c",
+      "phash": "cdcc333166339b92",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d2_f2.png": {
+      "sha256": "08a7dbf6762f9722e4d25275345800efa0293ba6b29ee7bb27201905198c6d63",
+      "phash": "cccc663133339b66",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d2_f3.png": {
+      "sha256": "660dd3543f464e37ba0e047438f9f29382aa80448d99826625aad2e680484561",
+      "phash": "989966643366cfc3",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d2_f4.png": {
+      "sha256": "efffaea7bb2a771de1ec363fa6d9a530c3967e75ce0bbf3a503ada7219a15352",
+      "phash": "989966663366c69b",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d2_f5.png": {
+      "sha256": "7e98a62d590338308d0ad4fe2776287345d9af2e305f80dcd17c6d0694669c5a",
+      "phash": "989966643366cec7",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d2_f6.png": {
+      "sha256": "833af875ae9ad7f9ce17b243a9d40233628acf7a7cd7cfd655fd0658ffe78dbd",
+      "phash": "999963646633ce66",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d2_f7.png": {
+      "sha256": "6d74f637fcd7525b2252b20945bc8962bdfff74694623f4aff16871fcb00413b",
+      "phash": "cdcc333166339ac6",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d3_f0.png": {
+      "sha256": "1d13d594e02734b4c2e976a19a0c5421d3f73ed02d4ac4d3e87d2832317c809c",
+      "phash": "cd8c663233e7ce30",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d3_f1.png": {
+      "sha256": "3faaa5a3431429d40771f99be7063d4ed9c41a4ae47b73bd849db1728252b38a",
+      "phash": "cccc363333e69931",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d3_f2.png": {
+      "sha256": "fd0790823ab7157f0efa0267be1fae64ea71463a9522dba6b5894bbdb5e88278",
+      "phash": "cccc333333339966",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d3_f3.png": {
+      "sha256": "f1feb04f044d3c7354ea0c6a2652896b51ebea875d2833e5e03a1a71f07017a0",
+      "phash": "cccc33e366319b64",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d3_f4.png": {
+      "sha256": "c84ddc24f3b9e56d5b3eb83c5f0bf0f80234226d6ac525fa41ced7bd58919529",
+      "phash": "d9cc326766339a29",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d3_f5.png": {
+      "sha256": "9ec74221f09d9020a39810d0e0da0c5b27901e2ff45d8a3e00457f31af9425b9",
+      "phash": "cccc33e366339964",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d3_f6.png": {
+      "sha256": "4b777c2bf2012ece7d011c6e3a9b22bc9a7a983d3f8844ab22b9b63e110e51d6",
+      "phash": "cccc33663331d966",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/body_d3_f7.png": {
+      "sha256": "0cb37855a762815d4108f51d4aa97742d7171613668700519580fb7243cf05c9",
+      "phash": "cccc333333c79b30",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d0_f0.png": {
+      "sha256": "49c3af1933f9b2754bb0c16d7bc5dd5a7eabfd2e7f473cc7ce2ecb8ec4bf260b",
+      "phash": "99666699cccc3366",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d0_f1.png": {
+      "sha256": "8d76db52bc6c3fdceb76185cfce853cd47d3398d7d2ac03deb915f458796c39a",
+      "phash": "99666699cc333366",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d0_f2.png": {
+      "sha256": "0316f15e34ea544c7cac7e7a3de9f533fded15c5194e68c88eaefcec3859cc1f",
+      "phash": "996666cc99336666",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d0_f3.png": {
+      "sha256": "4ad1c98e74902a822eeb5aa1a430a8beec72bddc459982ff2c0c9da95f96432f",
+      "phash": "cc3333cc99336663",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d0_f4.png": {
+      "sha256": "fcf02d9c1743d212701599ffbb962fbf20c905bf0eae6223105074eff92c2526",
+      "phash": "cc3333cc99996633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d0_f5.png": {
+      "sha256": "1ed537048a2f10ea1a37ec78c30bd20d7856cb7c8c9d187033f5e1e9750a6af0",
+      "phash": "cc3366cc99666633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d0_f6.png": {
+      "sha256": "c062814256262310d83db5deaeeb5a5b620702cc1c4f65ba40f7d6479b9ba45a",
+      "phash": "9966669999663333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d0_f7.png": {
+      "sha256": "022abb1e1453de7060a6aef9489d2087e59a4d21afc7230ee8ef7df3d33003e4",
+      "phash": "99666699cc663333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d1_f0.png": {
+      "sha256": "4b5db38eaf9315c93e21ea7637f25fa5b9acb2b69967c599e88e17c1d0688250",
+      "phash": "cc3133cf9831e732",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d1_f1.png": {
+      "sha256": "fd48b379d4951de09ac49912b91d5321299306494b528ea211ef79fed4a7046d",
+      "phash": "c93366cc9964ce33",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d1_f2.png": {
+      "sha256": "74d87abf028ee7d4cb812b60c9534338275dc00283dbc680ba7d1f4503d8a615",
+      "phash": "99666699996c6c33",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d1_f3.png": {
+      "sha256": "5af0e1c8970e52a4c430ec70e3e2e401b57faaae59e7da1328e475eb5cd4809c",
+      "phash": "996466db986d6632",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d1_f4.png": {
+      "sha256": "2a0e6561e34a9abfe715ebe0fe8a6133e7ec64bd4ed56721dc7332320add372a",
+      "phash": "cc3433cbcc38b366",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d1_f5.png": {
+      "sha256": "6515f1f81072347bf653eb14e616a83d4006d6e7a4458b550cc93d4543efafc4",
+      "phash": "993636cdcc31c666",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d1_f6.png": {
+      "sha256": "88094407211899f8b5c3200fc8889b29a687b1591c50eaf4d81eeeaa7346c00c",
+      "phash": "9973669c99cc6433",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d1_f7.png": {
+      "sha256": "c85c0ab2629d661a59f8b299c2f6d14e298f9d390f6643f5d7cb24d2fcb2700e",
+      "phash": "993166ce99796632",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d2_f0.png": {
+      "sha256": "7da2c83dab2ee0fac90554317a08e244b72c053c4e67513a4ccab20eb39db0f0",
+      "phash": "99666699cc996666",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d2_f1.png": {
+      "sha256": "42b3c4dc46090820c125a7bd3c7729fa69975c708d9815316cbe660cf8b6262b",
+      "phash": "99666699cc713366",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d2_f2.png": {
+      "sha256": "8ff809a2228c074854dd43113aeac3826617d2fa1a878d87546ab1518dc6f4e4",
+      "phash": "9867669999669933",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d2_f3.png": {
+      "sha256": "7f756f01e7d4dc3813017f639177dc5a09220d266abb94a6cdad12ba6058fd91",
+      "phash": "cc3333cc99cc3333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d2_f4.png": {
+      "sha256": "b1d14cd395aa73779579885f0a6024be67e5e87d9a94061d922dee980cc2b80c",
+      "phash": "cc3333cc99cc3333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d2_f5.png": {
+      "sha256": "f296c8ccbef43bd43b21bea7081a03f94a3cbe84aaed749bfae19a51ad7f9146",
+      "phash": "cc3333cc99666633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d2_f6.png": {
+      "sha256": "7a669ab4c73ce290d89562c3e2278a7af802be1fba9254ad9df580d62ca55338",
+      "phash": "c96633cccc336c66",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d2_f7.png": {
+      "sha256": "7e3be8b5d8cfae414ce777d27d4a258ad7f54ca4b46ee4fb9aeb09c45a8c210d",
+      "phash": "99666699cc996666",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d3_f0.png": {
+      "sha256": "f7eac5b558d4b5d41249a2a2dae1a5f488ae6c288bff82eeb8bfc7a502bede92",
+      "phash": "9871669e996d2633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d3_f1.png": {
+      "sha256": "913ede044ac0101a15b53fffbbd5d9a63763b234a0e0bb226a6ca7392b5493d4",
+      "phash": "cc33739c99649333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d3_f2.png": {
+      "sha256": "bd1d070ccdbca49be1b648ff10e2ab4b9e5abc936c2ec2fd0a3040da985a9aa4",
+      "phash": "cc7333cccc393166",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d3_f3.png": {
+      "sha256": "df89ea58f5fc992e26864d74c7e669e9ca8c71e1b6ff5a0a63ad0be48f4806b1",
+      "phash": "cc64339bcc343367",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d3_f4.png": {
+      "sha256": "83957bee76cae7f522bfadf2ae861f3197ec7537449ea9a5f32716ee24bb9b68",
+      "phash": "9965669acd21b267",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d3_f5.png": {
+      "sha256": "950d0b5f1a4c187667dc0394486a1df9ef76296adc880796f3db20b8b272e556",
+      "phash": "8c663399cc339b66",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d3_f6.png": {
+      "sha256": "c1b981200aba396dfe8367f51b33ff4a4e7920725efa39f2278465a8f7b39c5f",
+      "phash": "cc3333cccc393966",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/legs_d3_f7.png": {
+      "sha256": "b3c09e933c4e9263f2d014bdc177ab59ea5218ced4b3ebf697bdd458d780cdba",
+      "phash": "cc3133cecc393267",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d0_f0.png": {
+      "sha256": "4816807443f0affb829969034f53ae7afe29a74f31d666de0f5cd36d75effd92",
+      "phash": "cdcc332366938ace",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d0_f1.png": {
+      "sha256": "08aa3189da0f52b94d3d6b587f6b5e77c117f8a87e80c8da7b5e7facb0d51d91",
+      "phash": "cd8c336666938e8b",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d0_f2.png": {
+      "sha256": "739a98d5c93d1dfecf248447aa8f9ed27534c4064ebe70e727861c420e2161db",
+      "phash": "99996364669acc9b",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d0_f3.png": {
+      "sha256": "eb1ad4b9cc5ef3b2aa8bc4ff6f144286b2d4733f4812a8bc74fba2bcfa7ab835",
+      "phash": "9999666433c6cb9a",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d0_f4.png": {
+      "sha256": "ef41f25fcd65a3830f5e29916e8b31c26ed4e2c68d2412e3f837ceed1ed76bbc",
+      "phash": "9999666633c68b9a",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d0_f5.png": {
+      "sha256": "7dfb0643fe1d96309227439cf584f7ea6de0d5a9f2f347f9ccb6127e56da3e1b",
+      "phash": "9999663133c69b8e",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d0_f6.png": {
+      "sha256": "db5b5773c59ed57de7a71e49643c0713e7e9a83cc3878d553ed4878eaae78eb2",
+      "phash": "99cc6631338b99ce",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d0_f7.png": {
+      "sha256": "cb2599a25e5f6a1642d050f42f27a82731bec2fb383250e95d9882038a4388ab",
+      "phash": "c9cc332166938ecf",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d1_f0.png": {
+      "sha256": "39e2d6d10879c76e3596f1afee68391330409feeef38fcd8a792c8700cb6567e",
+      "phash": "8c9963323366cf3c",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d1_f1.png": {
+      "sha256": "c0a1126c304b8397d6ca7e76b937647c112ca0bc5a49a80eded65ae876ea785a",
+      "phash": "9999663633e6cc31",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d1_f2.png": {
+      "sha256": "d42ff7cb6db8e71abc8b17215affbd23df8beef7dbbb5802465061b2750baaf0",
+      "phash": "99d966336664cc33",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d1_f3.png": {
+      "sha256": "81a86650646530347328bc4712ab9b73a5303c9070e40012d691e59270103a5c",
+      "phash": "999966666692ce63",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d1_f4.png": {
+      "sha256": "3373cfdc706782225e6a3854462f8f0d1940cb143e5e421475f9fe7d21884875",
+      "phash": "9899336666b29b65",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d1_f5.png": {
+      "sha256": "649f7722806e0d128cafd4cde5a37edb0ba3115d1d614a57f912fb54e2594e34",
+      "phash": "9999636666b3cc64",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d1_f6.png": {
+      "sha256": "eb772606bd0c95d2b217924cc9b1df36d60d32bd26399660508bcfbaafde8db3",
+      "phash": "9999666766664c33",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d1_f7.png": {
+      "sha256": "5da0656cc6a2831a43d720f73fd8a69eefa9e836a290f66a1f8f92dbe3f25868",
+      "phash": "999966b63366ce30",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d2_f0.png": {
+      "sha256": "8e3fb6cf7e7263b8574329ead2ab57b467d4671f2392727ca624714468fc315c",
+      "phash": "cdcc33336633928e",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d2_f1.png": {
+      "sha256": "cab1a40d4901b0c282660eee1debb9197f54bbe20abcb1db2cf263936c9cea0c",
+      "phash": "cdcc333166339b92",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d2_f2.png": {
+      "sha256": "08a7dbf6762f9722e4d25275345800efa0293ba6b29ee7bb27201905198c6d63",
+      "phash": "cccc663133339b66",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d2_f3.png": {
+      "sha256": "660dd3543f464e37ba0e047438f9f29382aa80448d99826625aad2e680484561",
+      "phash": "989966643366cfc3",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d2_f4.png": {
+      "sha256": "efffaea7bb2a771de1ec363fa6d9a530c3967e75ce0bbf3a503ada7219a15352",
+      "phash": "989966663366c69b",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d2_f5.png": {
+      "sha256": "7e98a62d590338308d0ad4fe2776287345d9af2e305f80dcd17c6d0694669c5a",
+      "phash": "989966643366cec7",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d2_f6.png": {
+      "sha256": "833af875ae9ad7f9ce17b243a9d40233628acf7a7cd7cfd655fd0658ffe78dbd",
+      "phash": "999963646633ce66",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d2_f7.png": {
+      "sha256": "6d74f637fcd7525b2252b20945bc8962bdfff74694623f4aff16871fcb00413b",
+      "phash": "cdcc333166339ac6",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d3_f0.png": {
+      "sha256": "1d13d594e02734b4c2e976a19a0c5421d3f73ed02d4ac4d3e87d2832317c809c",
+      "phash": "cd8c663233e7ce30",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d3_f1.png": {
+      "sha256": "3faaa5a3431429d40771f99be7063d4ed9c41a4ae47b73bd849db1728252b38a",
+      "phash": "cccc363333e69931",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d3_f2.png": {
+      "sha256": "fd0790823ab7157f0efa0267be1fae64ea71463a9522dba6b5894bbdb5e88278",
+      "phash": "cccc333333339966",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d3_f3.png": {
+      "sha256": "f1feb04f044d3c7354ea0c6a2652896b51ebea875d2833e5e03a1a71f07017a0",
+      "phash": "cccc33e366319b64",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d3_f4.png": {
+      "sha256": "c84ddc24f3b9e56d5b3eb83c5f0bf0f80234226d6ac525fa41ced7bd58919529",
+      "phash": "d9cc326766339a29",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d3_f5.png": {
+      "sha256": "9ec74221f09d9020a39810d0e0da0c5b27901e2ff45d8a3e00457f31af9425b9",
+      "phash": "cccc33e366339964",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d3_f6.png": {
+      "sha256": "4b777c2bf2012ece7d011c6e3a9b22bc9a7a983d3f8844ab22b9b63e110e51d6",
+      "phash": "cccc33663331d966",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/body_d3_f7.png": {
+      "sha256": "0cb37855a762815d4108f51d4aa97742d7171613668700519580fb7243cf05c9",
+      "phash": "cccc333333c79b30",
+      "barva": "1-1-1",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d0_f0.png": {
+      "sha256": "08cd486e0f8c1530d648e6a33ab87942e0e93603a1432f5759a7a43b91b47e3d",
+      "phash": "99666699cccc3366",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d0_f1.png": {
+      "sha256": "ed6ab6227a3bfb69bc60e8e0785afd8d2d6ef7cba3d8e8795d43593472dfeddc",
+      "phash": "99666699cc333366",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d0_f2.png": {
+      "sha256": "b12fc745c3debe9fb5dc672aa6e66e9fad9901bd7cf259361ac7f0dcf08c2e55",
+      "phash": "996666cc99336666",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d0_f3.png": {
+      "sha256": "a5977e2bccc76ce7f53affa630d258ece0dd990293c572d73956a29a1ac44da9",
+      "phash": "cc3333cc99336627",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d0_f4.png": {
+      "sha256": "5a354b7a392c15d9090d433024199df2e84b51c781d40441a3089fdf55292b9c",
+      "phash": "cc3333cc99996633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d0_f5.png": {
+      "sha256": "bdbc91c6ba70c31c1d3c760ee1790aa0af9c09d4985ea93a0cc53262e9546c4e",
+      "phash": "cc3366cc99666633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d0_f6.png": {
+      "sha256": "7b8dee1ebf0be5a53802c05c3a4fe8d88407dace350c2bd1b57e2be0333493f0",
+      "phash": "9966669999663333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d0_f7.png": {
+      "sha256": "6ec9886316a3e27eac4bd061f725b7d4fae5fe18fff265154fd56db2d3ed27ff",
+      "phash": "99666699cc663333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d1_f0.png": {
+      "sha256": "78235f40fe9435660769dac2c65203099dde722b33b4526900b869342db96e7c",
+      "phash": "cc3033cf9871e732",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d1_f1.png": {
+      "sha256": "d3e169087504978eb8ed8bc5c6b3920e9de58c5fdb41ec2935aa79f906c530d0",
+      "phash": "c93366cc9964ce33",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d1_f2.png": {
+      "sha256": "e99f02d768e19151606d3af95ce37dd627b9378b81298e38ceda37a5e66536d8",
+      "phash": "99666699996c6c33",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d1_f3.png": {
+      "sha256": "9d6d44b55779685604ce4bfef25e31e55b01d0c1f16c0475ae3d662a4e3fe4fd",
+      "phash": "996466db986d6632",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d1_f4.png": {
+      "sha256": "a6ebfb6681c551b9bbe246ddead0297ba4e8ccc14313922fcd1fb3f8dc0607b6",
+      "phash": "cc3433cbcc38b366",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d1_f5.png": {
+      "sha256": "ad10e9a631d75c7300f0e1519403dfb36f9b0479c68a3813cf65dc6ba1452fc0",
+      "phash": "993636cdcc31c666",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d1_f6.png": {
+      "sha256": "551011972621909ec931a1ba8b32af174df7cb2329c3a1a8c5677d4e038cbec8",
+      "phash": "9977669899cc6433",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d1_f7.png": {
+      "sha256": "90c5927e5b76dfb7d3e257bcfad42970b731a36e97d40988387364802a341789",
+      "phash": "993166ce99796632",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d2_f0.png": {
+      "sha256": "44bfd368e1eb078e00bb77dc65a61b7bd59ecbc08812e98567ba9abcdb7766a8",
+      "phash": "99666699cc996666",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d2_f1.png": {
+      "sha256": "05661ea58e69f8f5701811801419a252e473d7b4059ef1b2de10162eaf90c675",
+      "phash": "99666699cc333366",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d2_f2.png": {
+      "sha256": "2dfa8fbcdf0face1e9ad3b78bfe3ecf8ea1d9cf3ef8ceb24fab40667f875e922",
+      "phash": "9873669999669933",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d2_f3.png": {
+      "sha256": "fc59a8503b85d44f01d01b857114a6ed7f512010cc1acf14d34b096f45451cc1",
+      "phash": "cc3333cc99cc3333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d2_f4.png": {
+      "sha256": "1262aa38c4ab76590669fa128dcddfcc9bd053b3d5881c34c18e21e96cd9039f",
+      "phash": "cc3333cc99cc3333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d2_f5.png": {
+      "sha256": "dbb70e0b0586c113b826ec22e02f0a2d6bec5ea3b7ce05470b8c9bcb143a5467",
+      "phash": "cc3333cc99666633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d2_f6.png": {
+      "sha256": "079404d21f759dfa4918df77fbe763811cba26a93ef5776af4b53c0f5945639f",
+      "phash": "c96633cccc336c66",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d2_f7.png": {
+      "sha256": "875ca02c2aaef421c425f57e8969fd9135f03f107a427d6e1ccfd57f2a5f0e6d",
+      "phash": "99666699cc996666",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d3_f0.png": {
+      "sha256": "e080a23a73d3a95e230399ea449e915a3d1d35ffaa4533036d4a05cbe6d111f1",
+      "phash": "9861669e996da633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d3_f1.png": {
+      "sha256": "372321aa7b5387a5fc8d0c0f6e04375bdcb7ead3d6ecb9a2689ce18da3b1ec52",
+      "phash": "cc33739c99649333",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d3_f2.png": {
+      "sha256": "0ce1932174f5e27ed3b0433ae344a56ad62928ce07a31862c0dd75958939e840",
+      "phash": "cc7333cccc393166",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d3_f3.png": {
+      "sha256": "3e3180a233d4bc96ab2816169bfb2549cc3185dcd472d3353fe877452f8b6219",
+      "phash": "cc64339bcc343367",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d3_f4.png": {
+      "sha256": "fb615bee51a6bfd068cc2c1972f1956849b9b1b1bdcdbb044634ff067b91dbd3",
+      "phash": "9965669acd21b267",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d3_f5.png": {
+      "sha256": "d8924da220a8e13312e413db36c13ed02a1e2d6d5a6f2a164aef3da1602cb95f",
+      "phash": "8c663399cc339b66",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d3_f6.png": {
+      "sha256": "9dd4313d528d6cf08d04767e96389238c3025107708e5751710f2d61dba85953",
+      "phash": "cc3333cccc393966",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/legs_d3_f7.png": {
+      "sha256": "4b00ab6d9d79ff98b2208fcb747dbb7df15969cd39a167be1839b66c6a2ac2c4",
+      "phash": "cc3133cecc393267",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d0_f0.png": {
+      "sha256": "6ba937aafb9d9329cdd72b72dfca3cc8bcc65ef7a00f6313dcf3d2c32dbb4971",
+      "phash": "99996666339999cc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d0_f1.png": {
+      "sha256": "28d206e01f7e5ea7baa3d2ef5488c20b48a0c5f50cb84da1f9e38948fbb46ead",
+      "phash": "9999666666999999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d0_f2.png": {
+      "sha256": "1d7798389f26f37b40c4eb83d80a2b321018e2dcd11fe745a78b8cda1f1b92f3",
+      "phash": "9999666666999999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d0_f3.png": {
+      "sha256": "28d206e01f7e5ea7baa3d2ef5488c20b48a0c5f50cb84da1f9e38948fbb46ead",
+      "phash": "9999666666999999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d0_f4.png": {
+      "sha256": "6ba937aafb9d9329cdd72b72dfca3cc8bcc65ef7a00f6313dcf3d2c32dbb4971",
+      "phash": "99996666339999cc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d0_f5.png": {
+      "sha256": "9adbd7abe9a9ddd510508eab329bd3485acecbf22d044c87044be8b5f58f3d38",
+      "phash": "99996666339999cc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d0_f6.png": {
+      "sha256": "c2a5be0e642a61d277bb3ea234e1e1e97f711f5908200b283d0980e5fcf38e3a",
+      "phash": "cccc66333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d0_f7.png": {
+      "sha256": "9adbd7abe9a9ddd510508eab329bd3485acecbf22d044c87044be8b5f58f3d38",
+      "phash": "99996666339999cc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d1_f0.png": {
+      "sha256": "91fac48f4141dcefc574f116426755aa453c1f25f32a66e72940d8fca3b851f1",
+      "phash": "cccc333366cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d1_f1.png": {
+      "sha256": "9eb4ae7ab5a80dbba7852e45f4b0443d7c4651ae5f139b0dbcf29f9d35b6a234",
+      "phash": "9999666666cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d1_f2.png": {
+      "sha256": "6c1acf4145c86437df793e8f69a6194e952672f4e1fe0896a03b6bfd3954cc26",
+      "phash": "9999666666d89999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d1_f3.png": {
+      "sha256": "9eb4ae7ab5a80dbba7852e45f4b0443d7c4651ae5f139b0dbcf29f9d35b6a234",
+      "phash": "9999666666cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d1_f4.png": {
+      "sha256": "91fac48f4141dcefc574f116426755aa453c1f25f32a66e72940d8fca3b851f1",
+      "phash": "cccc333366cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d1_f5.png": {
+      "sha256": "cd26dd1d61c4c18e1d4bbdf042f22077f5f6cb9cade2a7505e8c7ba9e736c67c",
+      "phash": "9999666666cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d1_f6.png": {
+      "sha256": "c5271e8c173e1e71b7a86ccb036a9b3212c69269ce47a897cd9aa21c3de0ce93",
+      "phash": "9999666666999999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d1_f7.png": {
+      "sha256": "cd26dd1d61c4c18e1d4bbdf042f22077f5f6cb9cade2a7505e8c7ba9e736c67c",
+      "phash": "9999666666cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d2_f0.png": {
+      "sha256": "eb81b5d669018c26da69df56db87b8f03264f8dc476a0bfeeb83a82929c65bde",
+      "phash": "cccc66333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d2_f1.png": {
+      "sha256": "cad153cb6cbb449d3ff9d3e815fcee2b52176bdb8bd16939faf293ef4a7131d4",
+      "phash": "cccc33333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d2_f2.png": {
+      "sha256": "1f8290f4865007ebac6395a38e6f766eb8ba22cb0a615cf441605bfba4e7cf5c",
+      "phash": "cccc66333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d2_f3.png": {
+      "sha256": "cad153cb6cbb449d3ff9d3e815fcee2b52176bdb8bd16939faf293ef4a7131d4",
+      "phash": "cccc33333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d2_f4.png": {
+      "sha256": "eb81b5d669018c26da69df56db87b8f03264f8dc476a0bfeeb83a82929c65bde",
+      "phash": "cccc66333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d2_f5.png": {
+      "sha256": "568fa03bca23281a322799599e3fd9fcf2c1aa17e2c93a0e754f0d812e76beef",
+      "phash": "999966663399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d2_f6.png": {
+      "sha256": "f4c85185fa9b7748172ef0920ad8e69cbc58bae2eb7c9cb68e8dcf8cbdf9959e",
+      "phash": "9999666666d998cc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d2_f7.png": {
+      "sha256": "568fa03bca23281a322799599e3fd9fcf2c1aa17e2c93a0e754f0d812e76beef",
+      "phash": "999966663399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d3_f0.png": {
+      "sha256": "1375578e9ce926e7737f84bbafb28c46958b7223a2ef1961f13ab4ee4fa48fd0",
+      "phash": "999866673399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d3_f1.png": {
+      "sha256": "a35d66101acb7458b056e689de7552c252b2d89cecdec172609f6a55a06947d7",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d3_f2.png": {
+      "sha256": "f6d0aa850a3ca771eb0607bb394c4acfb2d457a81cdc7bc2bb1f75c2c0f0f08e",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d3_f3.png": {
+      "sha256": "a35d66101acb7458b056e689de7552c252b2d89cecdec172609f6a55a06947d7",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d3_f4.png": {
+      "sha256": "1375578e9ce926e7737f84bbafb28c46958b7223a2ef1961f13ab4ee4fa48fd0",
+      "phash": "999866673399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d3_f5.png": {
+      "sha256": "cf0c7678b52d1c266caf88ad25809ac915e38b71415bd1eddf716ec1ae0f80aa",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d3_f6.png": {
+      "sha256": "1dec8dd8f975efdb57267dde9192c36f4019440f09cade783bde4c34a29833ee",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/torso_d3_f7.png": {
+      "sha256": "cf0c7678b52d1c266caf88ad25809ac915e38b71415bd1eddf716ec1ae0f80aa",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d0_f0.png": {
+      "sha256": "6f611a999152ce9050978f149eae281ab683c87638695c8ece26693b48d9561d",
+      "phash": "9b9b64649b9b6464",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d0_f1.png": {
+      "sha256": "7dbb24dda0c606d63502e54a377ac9e2a372a54853e32b7e0246bd64d14c2e96",
+      "phash": "9b9b64649b9b6464",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d0_f2.png": {
+      "sha256": "86f6df3a345d2dce416121f73ab37270eb8f23c8122d792cba31d320c8538e9e",
+      "phash": "9b64649b9b64649b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d0_f3.png": {
+      "sha256": "0d5d55f90f6ae638d8ec1856438fc989edb1a3177864dc580615444dfb8ef79b",
+      "phash": "9b64649b9964939b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d0_f4.png": {
+      "sha256": "654c7a3cef8b318b2ab6af44d2c1c91cb60c390c65cb1aa906628c75c5232355",
+      "phash": "9b64649b6664999b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d0_f5.png": {
+      "sha256": "a4bcc647b0a105d86d1957df42b7854cd121993948ec2c08a86eb74aaf14e2ff",
+      "phash": "9b64649b8c649b9b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d0_f6.png": {
+      "sha256": "42ef2bcd984b1701d12a3caa4b23b74b22220e745992ae706c83697059038cfb",
+      "phash": "9b64649b9b64649b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d0_f7.png": {
+      "sha256": "e4435dc0b682fc5b3fdd30b596517568fb800290e513cad61f3a406e76c030b4",
+      "phash": "9b9b64649b9b6464",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d1_f0.png": {
+      "sha256": "11886980f78c399a62e527c5cbb8c9791f9fe396ede9fd7ff0b5fa42ebafa63b",
+      "phash": "c7ce3831c7ce3831",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d1_f1.png": {
+      "sha256": "ce927aaf8e2c7e554e83961c1a121645d1ba93cc39712ff1bdcb63d5aea2464a",
+      "phash": "cecc3133cecc3163",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d1_f2.png": {
+      "sha256": "a382652810353832d29849a6f893c42f05dbe6666b4e49cbf47d3adb4d2c2ca2",
+      "phash": "99cc663299cd6633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d1_f3.png": {
+      "sha256": "78c9f58a532c8aa5c15db2c0d193b55f641655252532f38a054a5c0f37f241be",
+      "phash": "929b6d64969b6964",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d1_f4.png": {
+      "sha256": "e243c76dffaa4c4ef453cc3c489b7dd8ca417c32a3e716cd17d1c8cea377f1aa",
+      "phash": "9692696db4924b6d",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d1_f5.png": {
+      "sha256": "b4dc5b124d83bd26512362a9bda19837be5ace5df71c48025dac7d1cb5aea7c1",
+      "phash": "92936d6c96936965",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d1_f6.png": {
+      "sha256": "7df2eb934c51608c887bdd88fd0be1436260423e8ffe26aed0fa431b7be162df",
+      "phash": "99d9662699c96636",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d1_f7.png": {
+      "sha256": "2e10caf434e59bfc594078ffcbded917873f76f4396918ab0886c5e9579b7c4e",
+      "phash": "cccc3333cccc3173",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d2_f0.png": {
+      "sha256": "ae985a9d56f68c0d2c4b873853dfba427aeecf44c1fb7e65a78dab38784231bb",
+      "phash": "ce3131cece318cce",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d2_f1.png": {
+      "sha256": "b13c33fdcb18001d1c47e64f5ed2e39e3426789759306002ef29029b06cc1045",
+      "phash": "ce3131cece3138ce",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d2_f2.png": {
+      "sha256": "030969703576e1eb7892d1249c50e5de1b5d722063211bda10f6ba2ea3f0c40d",
+      "phash": "ced1313ccece3131",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d2_f3.png": {
+      "sha256": "6384f326b18804edc302744955f946c37ca186490f82f0a074e0f41b9a520069",
+      "phash": "cece313186cece31",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d2_f4.png": {
+      "sha256": "bbcfe7f5fd02504566113e9dd3cb601e28e94b74ba38f88446dbc46a3b31b853",
+      "phash": "cece313131cecec4",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d2_f5.png": {
+      "sha256": "b0e299681671afcb59274f78a66fbb892790f3237e62b1b7c006ab26ac264ba7",
+      "phash": "cece31318ccece31",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d2_f6.png": {
+      "sha256": "77c4da9159ce66721debff8d97f6b2c9a9769694dad94ae88961dca2d27aac21",
+      "phash": "cece3131cece3131",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d2_f7.png": {
+      "sha256": "d51bc6c6dd4b758f8f586cfa6e7b9377abac83cf7542758d69c7f365fa261fd2",
+      "phash": "ce3131cece3131ce",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d3_f0.png": {
+      "sha256": "19f47ec2bb2933f49475a2b24ea9a9070ee0315770d72ce32fcfd7b77f44e110",
+      "phash": "926d6c929b6c929b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d3_f1.png": {
+      "sha256": "ec809800cc112a3493bde7c843584e6761257657064a995262665d29db849761",
+      "phash": "9964669b89669b99",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d3_f2.png": {
+      "sha256": "2108bce03c7d2461d7b838d0389c72fb55a7eb568beca4f02405ed9112f07861",
+      "phash": "cc3333cc9933ce98",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d3_f3.png": {
+      "sha256": "2e6608a744147a60d6a74f2ca0b0fb64a63bcd8dd80e94add9f5117272482394",
+      "phash": "c73c38c3ce38e1c6",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d3_f4.png": {
+      "sha256": "31161875a009b20ce518d61ba1d190581f356c274a16c8db2aeff04a95a907ad",
+      "phash": "c31e3ce1c73c70c3",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d3_f5.png": {
+      "sha256": "d3934bfb199b4a61c9e399d28d8821a4c210954dd0143b65aa44fd3dba57e132",
+      "phash": "c73c38c3c638e1c7",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d3_f6.png": {
+      "sha256": "d7d0d79d99ea16c4cc23ac24beb1d70d04a4cd91c09d9db5985343d8d1cb88fd",
+      "phash": "cc3333cc1933ce9c",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/npc/weapon_d3_f7.png": {
+      "sha256": "217d45356324076c6dcc759815939547d4b47da7e98f084aacb4761dfb50c47f",
+      "phash": "99646699c9669b99",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d0_f0.png": {
+      "sha256": "0449dacb2a24d00939f82ae820d604e48abba6b50ef3fc768c8668bc2df86e8a",
+      "phash": "99996666339999cc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d0_f1.png": {
+      "sha256": "b52738b67074459459f18f265661633ba24b699764e9202122a0739a9f0e9a2c",
+      "phash": "9999666666999999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d0_f2.png": {
+      "sha256": "99a1d5b2021ffc031f4ce128c25faf50e1d8d60d85e271fd401167fdd4f74b28",
+      "phash": "9999666666999999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d0_f3.png": {
+      "sha256": "b52738b67074459459f18f265661633ba24b699764e9202122a0739a9f0e9a2c",
+      "phash": "9999666666999999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d0_f4.png": {
+      "sha256": "0449dacb2a24d00939f82ae820d604e48abba6b50ef3fc768c8668bc2df86e8a",
+      "phash": "99996666339999cc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d0_f5.png": {
+      "sha256": "71e6edc0a8f70d47e4d75bae1c6328393297ce73ef92e6e087c9c11ee821fe1a",
+      "phash": "999966663399c9cc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d0_f6.png": {
+      "sha256": "d66e8c06be68138c7cbb2147dfcaa81fbf35874104faaed365c1c49612c52427",
+      "phash": "cdcc66323399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d0_f7.png": {
+      "sha256": "71e6edc0a8f70d47e4d75bae1c6328393297ce73ef92e6e087c9c11ee821fe1a",
+      "phash": "999966663399c9cc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d1_f0.png": {
+      "sha256": "72f3cd62d7bcbd7774b0bc9796ba27a8158b922b235f176a9bd0d03a7aac4a61",
+      "phash": "cc8d333366cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d1_f1.png": {
+      "sha256": "cd411e4e5312b0b9a52492d7013f6183d9612c2f5da784fe6ea542245b7df4c8",
+      "phash": "9999666666cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d1_f2.png": {
+      "sha256": "7dfb608c7b987776f60b6bb953d8118ec027d78848b9eff2a9460da0f7d99d3e",
+      "phash": "9999666666999999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d1_f3.png": {
+      "sha256": "cd411e4e5312b0b9a52492d7013f6183d9612c2f5da784fe6ea542245b7df4c8",
+      "phash": "9999666666cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d1_f4.png": {
+      "sha256": "72f3cd62d7bcbd7774b0bc9796ba27a8158b922b235f176a9bd0d03a7aac4a61",
+      "phash": "cc8d333366cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d1_f5.png": {
+      "sha256": "fbb984b3ede7f4befc0bd8f85c6ae93acb6dd16a448e853a536d3b2d7315d86d",
+      "phash": "9999666666cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d1_f6.png": {
+      "sha256": "764fd80293d2041f1e69b9654ffcef28acd211f0096a607433b7f440fd960f44",
+      "phash": "9999666666999999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d1_f7.png": {
+      "sha256": "fbb984b3ede7f4befc0bd8f85c6ae93acb6dd16a448e853a536d3b2d7315d86d",
+      "phash": "9999666666cc9999",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d2_f0.png": {
+      "sha256": "48f74f5994c4484fe87acab07c123b23bd0eb0e956d9d5cf50b02afeaa35cfe0",
+      "phash": "cccc66333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d2_f1.png": {
+      "sha256": "96d4493bf47f564e06a26982a73799260e6f78c00a08891a29182ec54ccf3362",
+      "phash": "cccc33333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d2_f2.png": {
+      "sha256": "5e17dadc0387cd64fc873626b295cbf59dd162616b4ffdec5dca7f04f9dde9de",
+      "phash": "cccc66333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d2_f3.png": {
+      "sha256": "96d4493bf47f564e06a26982a73799260e6f78c00a08891a29182ec54ccf3362",
+      "phash": "cccc33333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d2_f4.png": {
+      "sha256": "48f74f5994c4484fe87acab07c123b23bd0eb0e956d9d5cf50b02afeaa35cfe0",
+      "phash": "cccc66333399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d2_f5.png": {
+      "sha256": "9d7ecf3c9ecb4ec66e1de2c2103af214ae77f75fe27bd6ec6fec6297a570a9d3",
+      "phash": "999966663399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d2_f6.png": {
+      "sha256": "7b291f9f6e7b6096f53f81123d63382cfeabb9e694b6f284829a545f36e480e8",
+      "phash": "9999666666c9cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d2_f7.png": {
+      "sha256": "9d7ecf3c9ecb4ec66e1de2c2103af214ae77f75fe27bd6ec6fec6297a570a9d3",
+      "phash": "999966663399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d3_f0.png": {
+      "sha256": "72b09100fbc380103fd6047bcddd51302b0c45e04ff98a5609fb4e2b02f408cf",
+      "phash": "998c66673399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d3_f1.png": {
+      "sha256": "0ab5fcc53b65be2ad6ef2495c042dedf2a74915a57105aef91d3283494ba98b3",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d3_f2.png": {
+      "sha256": "863d670d172d31b9cdc55cd063b117b1e0da2809bbad49614f169bf244eb543a",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d3_f3.png": {
+      "sha256": "0ab5fcc53b65be2ad6ef2495c042dedf2a74915a57105aef91d3283494ba98b3",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d3_f4.png": {
+      "sha256": "72b09100fbc380103fd6047bcddd51302b0c45e04ff98a5609fb4e2b02f408cf",
+      "phash": "998c66673399cccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d3_f5.png": {
+      "sha256": "611f003106ae63d89fb48876363ab8b856839e2590931ecf45e72349bc09fcce",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d3_f6.png": {
+      "sha256": "6f3a3ab37586205e4a241bb7fcf42241292a161339da395d2ab43e2133fa0ba6",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/torso_d3_f7.png": {
+      "sha256": "611f003106ae63d89fb48876363ab8b856839e2590931ecf45e72349bc09fcce",
+      "phash": "cccc333333cccccc",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d0_f0.png": {
+      "sha256": "6f611a999152ce9050978f149eae281ab683c87638695c8ece26693b48d9561d",
+      "phash": "9b9b64649b9b6464",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d0_f1.png": {
+      "sha256": "7dbb24dda0c606d63502e54a377ac9e2a372a54853e32b7e0246bd64d14c2e96",
+      "phash": "9b9b64649b9b6464",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d0_f2.png": {
+      "sha256": "86f6df3a345d2dce416121f73ab37270eb8f23c8122d792cba31d320c8538e9e",
+      "phash": "9b64649b9b64649b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d0_f3.png": {
+      "sha256": "0d5d55f90f6ae638d8ec1856438fc989edb1a3177864dc580615444dfb8ef79b",
+      "phash": "9b64649b9964939b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d0_f4.png": {
+      "sha256": "654c7a3cef8b318b2ab6af44d2c1c91cb60c390c65cb1aa906628c75c5232355",
+      "phash": "9b64649b6664999b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d0_f5.png": {
+      "sha256": "a4bcc647b0a105d86d1957df42b7854cd121993948ec2c08a86eb74aaf14e2ff",
+      "phash": "9b64649b8c649b9b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d0_f6.png": {
+      "sha256": "42ef2bcd984b1701d12a3caa4b23b74b22220e745992ae706c83697059038cfb",
+      "phash": "9b64649b9b64649b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d0_f7.png": {
+      "sha256": "e4435dc0b682fc5b3fdd30b596517568fb800290e513cad61f3a406e76c030b4",
+      "phash": "9b9b64649b9b6464",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d1_f0.png": {
+      "sha256": "11886980f78c399a62e527c5cbb8c9791f9fe396ede9fd7ff0b5fa42ebafa63b",
+      "phash": "c7ce3831c7ce3831",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d1_f1.png": {
+      "sha256": "ce927aaf8e2c7e554e83961c1a121645d1ba93cc39712ff1bdcb63d5aea2464a",
+      "phash": "cecc3133cecc3163",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d1_f2.png": {
+      "sha256": "a382652810353832d29849a6f893c42f05dbe6666b4e49cbf47d3adb4d2c2ca2",
+      "phash": "99cc663299cd6633",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d1_f3.png": {
+      "sha256": "78c9f58a532c8aa5c15db2c0d193b55f641655252532f38a054a5c0f37f241be",
+      "phash": "929b6d64969b6964",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d1_f4.png": {
+      "sha256": "e243c76dffaa4c4ef453cc3c489b7dd8ca417c32a3e716cd17d1c8cea377f1aa",
+      "phash": "9692696db4924b6d",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d1_f5.png": {
+      "sha256": "b4dc5b124d83bd26512362a9bda19837be5ace5df71c48025dac7d1cb5aea7c1",
+      "phash": "92936d6c96936965",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d1_f6.png": {
+      "sha256": "7df2eb934c51608c887bdd88fd0be1436260423e8ffe26aed0fa431b7be162df",
+      "phash": "99d9662699c96636",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d1_f7.png": {
+      "sha256": "2e10caf434e59bfc594078ffcbded917873f76f4396918ab0886c5e9579b7c4e",
+      "phash": "cccc3333cccc3173",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d2_f0.png": {
+      "sha256": "ae985a9d56f68c0d2c4b873853dfba427aeecf44c1fb7e65a78dab38784231bb",
+      "phash": "ce3131cece318cce",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d2_f1.png": {
+      "sha256": "b13c33fdcb18001d1c47e64f5ed2e39e3426789759306002ef29029b06cc1045",
+      "phash": "ce3131cece3138ce",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d2_f2.png": {
+      "sha256": "030969703576e1eb7892d1249c50e5de1b5d722063211bda10f6ba2ea3f0c40d",
+      "phash": "ced1313ccece3131",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d2_f3.png": {
+      "sha256": "6384f326b18804edc302744955f946c37ca186490f82f0a074e0f41b9a520069",
+      "phash": "cece313186cece31",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d2_f4.png": {
+      "sha256": "bbcfe7f5fd02504566113e9dd3cb601e28e94b74ba38f88446dbc46a3b31b853",
+      "phash": "cece313131cecec4",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d2_f5.png": {
+      "sha256": "b0e299681671afcb59274f78a66fbb892790f3237e62b1b7c006ab26ac264ba7",
+      "phash": "cece31318ccece31",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d2_f6.png": {
+      "sha256": "77c4da9159ce66721debff8d97f6b2c9a9769694dad94ae88961dca2d27aac21",
+      "phash": "cece3131cece3131",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d2_f7.png": {
+      "sha256": "d51bc6c6dd4b758f8f586cfa6e7b9377abac83cf7542758d69c7f365fa261fd2",
+      "phash": "ce3131cece3131ce",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d3_f0.png": {
+      "sha256": "19f47ec2bb2933f49475a2b24ea9a9070ee0315770d72ce32fcfd7b77f44e110",
+      "phash": "926d6c929b6c929b",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d3_f1.png": {
+      "sha256": "ec809800cc112a3493bde7c843584e6761257657064a995262665d29db849761",
+      "phash": "9964669b89669b99",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d3_f2.png": {
+      "sha256": "2108bce03c7d2461d7b838d0389c72fb55a7eb568beca4f02405ed9112f07861",
+      "phash": "cc3333cc9933ce98",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d3_f3.png": {
+      "sha256": "2e6608a744147a60d6a74f2ca0b0fb64a63bcd8dd80e94add9f5117272482394",
+      "phash": "c73c38c3ce38e1c6",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d3_f4.png": {
+      "sha256": "31161875a009b20ce518d61ba1d190581f356c274a16c8db2aeff04a95a907ad",
+      "phash": "c31e3ce1c73c70c3",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d3_f5.png": {
+      "sha256": "d3934bfb199b4a61c9e399d28d8821a4c210954dd0143b65aa44fd3dba57e132",
+      "phash": "c73c38c3c638e1c7",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d3_f6.png": {
+      "sha256": "d7d0d79d99ea16c4cc23ac24beb1d70d04a4cd91c09d9db5985343d8d1cb88fd",
+      "phash": "cc3333cc1933ce9c",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    },
+    "tools/blender/sprites/weapon_d3_f7.png": {
+      "sha256": "217d45356324076c6dcc759815939547d4b47da7e98f084aacb4761dfb50c47f",
+      "phash": "99646699c9669b99",
+      "barva": "0-0-0",
+      "seed": null,
+      "schvalil": "agent-init",
+      "schvaleno": "2026-09-30T23:07:32+00:00",
+      "poznamka": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima."
+    }
+  },
+  "_stav": "PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu. Sprity jsou ze schváleného milníku 1 (`assets/spec.json`, `_stav`), ale kontaktní arch ještě nikdo neprošel očima.",
+  "_ceka_na_lgtm": true
+}
