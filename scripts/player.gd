@@ -11,6 +11,14 @@ const SPEED := 130.0
 
 var velocity := Vector2.ZERO
 var level: Node2D
+# Player state
+var hp: int = 100
+var max_hp: int = 100
+var mana: int = 50
+var max_mana: int = 50
+var target: Node = null
+var inventory: Array = []
+var equipped: Node = null
 
 
 func _ready() -> void:
@@ -69,3 +77,52 @@ func flash() -> void:
 	modulate = Color(1, 0, 0)
 	await get_tree().create_timer(0.15).timeout
 	modulate = original
+
+# Move the player by a direction vector.
+func move(dir: Vector2) -> void:
+	var lvl = get_tree().get_first_node_in_group("level")
+	var velocity: Vector2 = dir
+	if lvl != null and lvl.has_method("is_walkable_at"):
+		# Use walkability check; if blocked, keep original velocity logic.
+		if not lvl.is_walkable_at(position + dir):
+			if lvl.has_method("iso_position"):
+				var iso := Vector2((dir.x - dir.y) * 0.5, (dir.x + dir.y) * 0.25)
+				if iso.length() > 0:
+					iso = iso.normalized()
+				velocity = iso * SPEED
+			else:
+				velocity = dir * SPEED
+	position = _step(position + velocity)
+
+# Inventory management
+func add_item(item: Node) -> void:
+	inventory.append(item)
+
+func remove_item(item: Node) -> void:
+	inventory.erase(item)
+
+# Handle player death
+func die() -> void:
+	var lvl = get_tree().get_first_node_in_group("level")
+	if lvl == null:
+		return
+	# Create corpse node
+	var corpse := Area2D.new()
+	corpse.name = "Corpse"
+	corpse.add_to_group("corpse")
+	# Transfer inventory items to corpse
+	for it in inventory:
+		corpse.add_child(it)
+	inventory.clear()
+	# Transfer equipped item
+	if equipped != null:
+		corpse.add_child(equipped)
+		equipped = null
+	# Add corpse to the scene
+	get_parent().add_child(corpse)
+	# Move player to spawn cell
+	if lvl.has_method("cell_center"):
+		var spawn_pos = lvl.cell_center(lvl.spawn_cell.x, lvl.spawn_cell.y)
+		position = spawn_pos
+	# Reset health
+	hp = 0
