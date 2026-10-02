@@ -1,90 +1,99 @@
 extends Node
+# Ukládání a načtení stavu přes ConfigFile do user://save.cfg.
+#
+# ODKUD BERE KOMPONENTY (rozhodnuto 2. 10. 2026): z registru kostry —
+# `game.gd` vystavuje `component(id) -> Node` (docs/ARCHITEKTURA.md:145).
+# Původní verze je hledala ve skupinách "attributes"/"skills"/"economy"/"world",
+# které v projektu NIKDO nezakládá. Následek (naměřeno 2. 10. 2026): `save()`
+# zapsalo 35 B — jen pozici hráče — a přesto vrátilo `true`. Tichý úspěch nad
+# neuloženým stavem je horší než chyba, protože se na něj někdo spolehne:
+# když není co uložit, `save()` teď vrátí `false` a ohlásí to.
+#
+# CO SE UKLÁDÁ: atributy, dovednosti, zlato a pozice hráče — tedy to, co
+# komponenty v `main` SKUTEČNĚ poskytují. Inventář a stav uzlů světa uložit
+# nelze: `scripts/player.gd` inventář nemá (granule `entity.player` ho nedodala)
+# a `scripts/world.gd` v repu není (smazán při izometrické migraci, commit
+# c651368). Až je komponenty dostanou, patří sem — a musí se to ohlásit,
+# ne tiše vynechat.
 
-# Save and load game state using ConfigFile.
-# Stores: attributes, skills, economy gold, player position,
-# and generic world node states (group "world").
+const SOUBOR := "user://save.cfg"
+const POTREBNE := ["Attributes", "Skills", "Economy", "Player"]
+
 
 func save() -> bool:
-    var cfg = ConfigFile.new()
+	var cfg := ConfigFile.new()
+	var komponenty := {}
+	var chybejici: Array = []
+	for id in POTREBNE:
+		komponenty[id] = _komponenta(id)
+		if komponenty[id] == null:
+			chybejici.append(id)
+	if chybejici.size() == POTREBNE.size():
+		push_error("save.gd: nad sebou nemám kostru s component(id) – neuložil jsem nic")
+		return false
+	if not chybejici.is_empty():
+		push_warning("save.gd: chybí komponenty %s – ukládám jen to, co je" % str(chybejici))
 
-    # Attributes
-    var attr_node = get_tree().get_first_node_in_group("attributes")
-    if attr_node:
-        cfg.set_value("attributes", "Str", attr_node.Str)
-        cfg.set_value("attributes", "Dex", attr_node.Dex)
-        cfg.set_value("attributes", "Int", attr_node.Int)
+	var atributy = komponenty["Attributes"]
+	if atributy != null:
+		cfg.set_value("attributes", "Str", atributy.Str)
+		cfg.set_value("attributes", "Dex", atributy.Dex)
+		cfg.set_value("attributes", "Int", atributy.Int)
 
-    # Skills
-    var skills_node = get_tree().get_first_node_in_group("skills")
-    if skills_node:
-        cfg.set_value("skills", "dovednosti", skills_node.dovednosti)
+	var skilly = komponenty["Skills"]
+	if skilly != null:
+		cfg.set_value("skills", "dovednosti", skilly.dovednosti)
 
-    # Economy (gold)
-    var economy_node = get_tree().get_first_node_in_group("economy")
-    if economy_node:
-        cfg.set_value("economy", "gold", economy_node._gold)
+	var ekonomika = komponenty["Economy"]
+	var hrac = komponenty["Player"]
+	if ekonomika != null and hrac != null:
+		cfg.set_value("economy", "gold", ekonomika.gold(hrac))
 
-    # Player position
-    var player = get_tree().get_first_node_in_group("player")
-    if player:
-        cfg.set_value("player", "position", player.position)
+	if hrac != null and "position" in hrac:
+		cfg.set_value("player", "position", hrac.position)
 
-    # World nodes state (any node in group "world")
-    var world_nodes = get_tree().get_nodes_in_group("world")
-    var idx = 0
-    for node in world_nodes:
-        var state = null
-        if node.has_method("get"):
-            state = node.get("state") if node.has("state") else null
-        elif node.has_variable("state"):
-            state = node.state
-        cfg.set_value("world", str(idx), {"name": node.name, "state": state})
-        idx += 1
+	return cfg.save(SOUBOR) == OK
 
-    var err = cfg.save("user://save.cfg")
-    return err == OK
 
 func load() -> bool:
-    var cfg = ConfigFile.new()
-    var err = cfg.load("user://save.cfg")
-    if err != OK:
-        return false
+	var cfg := ConfigFile.new()
+	if cfg.load(SOUBOR) != OK:
+		return false
 
-    # Attributes
-    var attr_node = get_tree().get_first_node_in_group("attributes")
-    if attr_node:
-        attr_node.Str = cfg.get_value("attributes", "Str", attr_node.Str)
-        attr_node.Dex = cfg.get_value("attributes", "Dex", attr_node.Dex)
-        attr_node.Int = cfg.get_value("attributes", "Int", attr_node.Int)
+	var pouzito := 0
+	var atributy = _komponenta("Attributes")
+	if atributy != null and cfg.has_section("attributes"):
+		atributy.Str = cfg.get_value("attributes", "Str", atributy.Str)
+		atributy.Dex = cfg.get_value("attributes", "Dex", atributy.Dex)
+		atributy.Int = cfg.get_value("attributes", "Int", atributy.Int)
+		pouzito += 1
 
-    # Skills
-    var skills_node = get_tree().get_first_node_in_group("skills")
-    if skills_node:
-        skills_node.dovednosti = cfg.get_value("skills", "dovednosti", skills_node.dovednosti)
+	var skilly = _komponenta("Skills")
+	if skilly != null and cfg.has_section_key("skills", "dovednosti"):
+		skilly.dovednosti = cfg.get_value("skills", "dovednosti", skilly.dovednosti)
+		pouzito += 1
 
-    # Economy (gold)
-    var economy_node = get_tree().get_first_node_in_group("economy")
-    if economy_node:
-        economy_node._gold = cfg.get_value("economy", "gold", economy_node._gold)
+	var ekonomika = _komponenta("Economy")
+	if ekonomika != null and cfg.has_section_key("economy", "gold"):
+		# economy.gd veřejný setter nemá (vlastní ho granule sim.economy),
+		# proto se sahá na její stav přímo. Až přibude `set_gold()`, patří sem.
+		ekonomika.set("_gold", int(cfg.get_value("economy", "gold", 0)))
+		pouzito += 1
 
-    # Player position
-    var player = get_tree().get_first_node_in_group("player")
-    if player:
-        player.position = cfg.get_value("player", "position", player.position)
+	var hrac = _komponenta("Player")
+	if hrac != null and cfg.has_section_key("player", "position") and "position" in hrac:
+		hrac.position = cfg.get_value("player", "position", hrac.position)
+		pouzito += 1
 
-    # World nodes state
-    var world_nodes = get_tree().get_nodes_in_group("world")
-    var idx = 0
-    while cfg.has_section_key("world", str(idx)):
-        var data = cfg.get_value("world", str(idx), {})
-        var name = data.get("name", "")
-        var state = data.get("state", null)
-        for node in world_nodes:
-            if node.name == name:
-                if node.has_method("set"):
-                    node.set("state", state)
-                elif node.has_variable("state"):
-                    node.state = state
-        idx += 1
+	if pouzito == 0:
+		push_error("save.gd: soubor uložený je, ale není kam stav vrátit (chybí komponenty)")
+		return false
+	return true
 
-    return true
+
+func _komponenta(id: String):
+	"""Komponenta z registru kostry (rodič umí `component(id)`), jinak null."""
+	var kostra := get_parent()
+	if kostra != null and kostra.has_method("component"):
+		return kostra.component(id)
+	return null
