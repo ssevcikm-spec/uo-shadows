@@ -112,11 +112,6 @@ jobs:
           # Granule s model=strong (size_lines > 60) smí zpracovat jen silný
           # model – pick-provider se pak zúží na strongModels z providers.json.
           FORGE_MIN_STRONG: ${{ inputs.model }}
-          # Číslo pokusu: pick-provider podle něj posune pořadí modelů, aby
-          # opakovaný pokus nezkoušel stejný model jako ten, co právě selhal.
-          # Naměřeno 30. 9. 2026: task #128 i #131 zkoušely 5× po sobě
-          # mistral/codestral a selhaly pokaždé stejně.
-          FORGE_ATTEMPT: ${{ inputs.attempt }}
         run: node .forge/pick-provider.mjs
       - name: Spusť agenta
         # Zadání jde do skriptu přes proměnnou, ne přes ${{ }} – jinak by se
@@ -145,6 +140,7 @@ jobs:
           # Prázdné ID není chyba: `files-to-edit.mjs` si cestu v tom případě
           # vytáhne ze zadání.
           FORGE_GRAIN: ${{ inputs.grain }}
+          FORGE_ATTEMPT: ${{ inputs.attempt }}
           # Klíče musí být i TADY, ne jen ve kroku s výběrem poskytovatele:
           # druhý pokus volá pick-provider.mjs znovu a bez klíčů by hlásil
           # „přeskočeno (chybí …)" u všech poskytovatelů. Naměřeno v běhu #57:
