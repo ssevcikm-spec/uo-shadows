@@ -63,7 +63,7 @@
       "owns": ["scripts/world.gd"],
       "depends_on": ["world.level"],
       "done": true,
-      "done_note": "PR #21 sloučené 30. 9.",
+      "done_note": "POZOR: PR #21 sloučené 30. 9., ale scripts/world.gd byl smazán při izometrické migraci (c651368) – v main dnes není (měřeno 2. 10. 2026; hlásí to i check-schema.py jako mrtvou větev)",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/world.gd vytvoř izometrickou projekci a surovinové uzly. iso_position(cx: int, cy: int) -> Vector2 vrací offset + Vector2((cx-cy)*cell/2, (cx+cy)*cell/4); cell_at(pos) -> Vector2i zpětný převod. Přidej seznam uzlů (žíla železa, strom, skála) s pozicí a stavem (vytěžen/aktivní) a respawn: vytěžený uzel se po čase (konstanta, např. 60 s) obnoví. Vystav gather(cell) -> bool a is_walkable(pos)."
     },
@@ -83,7 +83,7 @@
       "owns": ["scripts/player.gd"],
       "depends_on": ["core.attributes", "core.skills", "world.map", "entity.item"],
       "done": true,
-      "done_note": "PR #25 sloučené 1. 10.",
+      "done_note": "POZOR: PR #25 sloučené 1. 10. změnil jen project.godot – move(), inventář ani die() v scripts/player.gd nikdy nebyly (měřeno 2. 10. 2026: historie toho souboru žádný func move nezná)",
       "size_lines": "<= 120",
       "model": "strong",
       "acceptance": ["tests", "wiring"],
@@ -106,6 +106,8 @@
       "kind": "code",
       "owns": ["scripts/mining.gd"],
       "depends_on": ["core.skills", "world.map", "data.content"],
+      "done": true,
+      "done_note": "PR #30 sloučené 2. 10. 2026; oprava (registr komponent místo /root, Godot 4 API) v PR #31",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/mining.gd vytvoř gather(node) -> int: výtěžek = 1 + (skill_těžby_or_dřevorubectví - obtížnost suroviny)/10, nejmíň 0. Při těžbě zvyš add(skill, 1) pro příslušný skill (tezba u rudy/kamene, drevorubectvi u dřeva) a zavolej world.gather(cell) (označí uzel vytěžený). Vrať počet vytěžených kusů."
     },
@@ -171,7 +173,7 @@
       "done": true,
       "done_note": "PR #27 sloučené 1. 10.",
       "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/assist.gd vytvoř pravidla: add_rule(trigger, action) a evaluate(player) -> Array. Spouště: hp < X, mana < X, cíl mrtev. Akce: vypít lektvar, seslat kouzlo, přepnout cíl. Akce jen přes veřejné příkazy hráče (spotřebovávají skutečné zdroje), nikdy ne autonomní smyčky."
+      "prompt": "V scripts/assist.gd vytvoř pravidla: add_rule(trigger, action) a evaluate(player) -> Array. Spouště: hp < X, mana < X, target dead. Akce: vypít lektvar, seslat kouzlo, přepnout cíl. Akce jen přes veřejné příkazy hráče (spotřebovávají skutečné zdroje), nikdy ne autonomní smyčky."
     },
     {
       "id": "persist.save",
@@ -180,7 +182,7 @@
       "owns": ["scripts/save.gd"],
       "depends_on": ["core.skills", "core.attributes", "entity.player", "world.map", "sim.economy"],
       "done": true,
-      "done_note": "POZOR: v D1 hotovo (task 139), ale PR NENÍ sloučené – práce není v main",
+      "done_note": "PR #28 sloučené 2. 10. 2026 (oprava: registr komponent místo skupin, Godot 4 API)",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/save.gd vytvoř save() a load() přes ConfigFile do user://save.cfg: atributy, skilly, inventář, zlato, pozici hráče a stav uzlů světa (které jsou vytěžené). load() ošetří neexistující soubor (vrátí false). Vystav save() -> bool a load() -> bool."
     },
@@ -191,7 +193,7 @@
       "owns": ["scripts/hud.gd"],
       "depends_on": ["core.skills", "core.attributes", "entity.player", "sim.economy"],
       "done": true,
-      "done_note": "POZOR: v D1 hotovo (task 140), ale PR NENÍ sloučené – práce není v main",
+      "done_note": "PR #29 sloučené 2. 10. 2026 (oprava: Godot 4 API margin_* → offset_*, registr komponent)",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/hud.gd vytvoř update() -> void, které zobrazí: HP, atributy (Str/Dex/Int), dovednosti (tezba/drevorubectvi/kovarstvi/boj_na_blizko), zlato a vybavenou zbraň/zbroj. Čte jen veřejné gettery (attributes.get, skills.get, economy.gold, player). Label se umístí do rohu obrazovky."
     },

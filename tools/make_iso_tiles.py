@@ -258,10 +258,10 @@ def main() -> int:
 
     # Souhrnný pás (tileset) – 6 dlaždic vedle sebe, pro rychlý pohled očima.
     if not args.kontrola:
-        pás = Image.new("RGBA", (w * len(ROLE), h), (0, 0, 0, 0))
+        strip = Image.new("RGBA", (w * len(ROLE), h), (0, 0, 0, 0))
         for i, role in enumerate(ROLE):
-            pás.paste(Image.open(slozka / f"{role}.png"), (i * w, 0))
-        pás.save(slozka / "tileset.png", "PNG", optimize=True)
+            strip.paste(Image.open(slozka / f"{role}.png"), (i * w, 0))
+        strip.save(slozka / "tileset.png", "PNG", optimize=True)
 
         manifest = {
             "generated": __import__("datetime").datetime.now().isoformat(timespec="seconds"),

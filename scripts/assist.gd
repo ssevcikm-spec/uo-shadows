@@ -12,6 +12,6 @@ func evaluate(player: Node) -> Array:
             actions.append(rule.action)
         elif rule.trigger == "mana < X" and player.mana < player.max_mana * 0.3:
             actions.append(rule.action)
-        elif rule.trigger == "cíl mrtev" and player.target != null and player.target.hp <= 0:
+        elif rule.trigger == "target dead" and player.target != null and player.target.hp <= 0:
             actions.append(rule.action)
     return actions
