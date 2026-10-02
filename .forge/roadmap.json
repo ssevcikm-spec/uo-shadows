@@ -63,7 +63,7 @@
       "owns": ["scripts/world.gd"],
       "depends_on": ["world.level"],
       "done": true,
-      "done_note": "POZOR: PR #21 sloučené 30. 9., ale scripts/world.gd byl smazán při izometrické migraci (c651368) – v main dnes není (měřeno 2. 10. 2026; hlásí to i check-schema.py jako mrtvou větev)",
+      "done_note": "POZOR: PR #21 sloučené 30. 9.; kód je v _retired/world.gd (c651368 ho přesunul jako mrtvý kód s druhým číslem mřížky – izo projekce správně přešla do level.gd). Uzly surovin, gather() ani respawn ale nikde nejsou (level.gd je nemá) – práce v main není. Měřeno 2. 10. 2026",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/world.gd vytvoř izometrickou projekci a surovinové uzly. iso_position(cx: int, cy: int) -> Vector2 vrací offset + Vector2((cx-cy)*cell/2, (cx+cy)*cell/4); cell_at(pos) -> Vector2i zpětný převod. Přidej seznam uzlů (žíla železa, strom, skála) s pozicí a stavem (vytěžen/aktivní) a respawn: vytěžený uzel se po čase (konstanta, např. 60 s) obnoví. Vystav gather(cell) -> bool a is_walkable(pos)."
     },
@@ -83,7 +83,7 @@
       "owns": ["scripts/player.gd"],
       "depends_on": ["core.attributes", "core.skills", "world.map", "entity.item"],
       "done": true,
-      "done_note": "POZOR: PR #25 sloučené 1. 10. změnil jen project.godot – move(), inventář ani die() v scripts/player.gd nikdy nebyly (měřeno 2. 10. 2026: historie toho souboru žádný func move nezná)",
+      "done_note": "POZOR: PR #25 sloučené 1. 10. změnil JEN project.godot; move(), inventář ani die() nebyly nikdy v žádné větvi (git log -S napříč refs). Jiné komponenty je už volají: assist.gd čte hp/max_hp/mana/max_mana/target, economy.gd volá add_item/remove_item. Měřeno 2. 10. 2026",
       "size_lines": "<= 120",
       "model": "strong",
       "acceptance": ["tests", "wiring"],
