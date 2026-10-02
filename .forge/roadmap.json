@@ -96,9 +96,9 @@
       "owns": ["scripts/combat.gd"],
       "depends_on": ["core.attributes", "core.skills", "entity.item"],
       "done": true,
-      "done_note": "PR #26 sloučené 1. 10.",
+      "done_note": "PR #26 sloučené 1. 10.; oprava (Godot 4 API + tvar smlouvy + volající test) 2. 10. 2026",
       "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/combat.gd vytvoř resolve(attacker, defender) -> Dictionary. Hit chance = 0.5 + (Dex útočníka)/200 + (skill boj_na_blizko)/200; když zasáhne, damage = 1 + Str/10 + zbraň.damage, zmenšené o armor rating obránce. Vrať {hit: bool, damage: int}. Používej provides z attributes.gd a skills.gd, nic nečti napřímo."
+      "prompt": "V scripts/combat.gd vytvoř resolve(attacker, defender) -> Dictionary. TVAR DAT (kdo je kdo a čím se to prokazuje): attacker i defender jsou UZLY KOSTRY (extends Node). Čísla se NEČTOU z útočníka, ale z REGISTRU KOMPONENT na rodiči — get_parent().component(\"Attributes\") dá scripts/attributes.gd (hodnota(\"Str\"), hodnota(\"Dex\")), get_parent().component(\"Skills\") dá scripts/skills.gd (hodnota(\"boj_na_blizko\")). POZOR: žádný objekt v repu neumí hodnota(\"Dex\") i hodnota(\"boj_na_blizko\") zároveň — atributy a skilly jsou DVĚ komponenty. Zbraň je uzel s vlastností damage, visící na útočníkovi jako vybrana_zbran (starší název zbran); zbroj je vlastnost armor_rating na obránci. Hit chance = 0.5 + (Dex)/200 + (boj_na_blizko)/200; když zasáhne, damage = max(0, 1 + Str/10 + zbraň.damage − obránce.armor_rating). Vrať {hit: bool, damage: int} VŽDY, i když komponenty chybí. Godot 4 API: vlastnost se ptá přes `\"jmeno\" in uzel`, NIKDY `uzel.has(\"jmeno\")` — to je Godot 3 a v Godotu 4 neexistuje (Object.has tam není). PŘIJÍMACÍ KRITÉRIUM: test musí resolve() ZAVOLAT a ověřit, že zásah dá damage = 1 + Str/10 + zbraň − zbroj a minutí dá damage 0; `has_method(\"resolve\")` NESTAČÍ (naměřeno 2. 10. 2026: funkce volala has() a spadla při každém zásahu, test to neviděl)."
     },
     {
       "id": "sim.mining",

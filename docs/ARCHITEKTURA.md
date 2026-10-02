@@ -136,13 +136,50 @@ ne proti nedokončenému sousedovi).
 | Nepřítel | `scripts/enemy.gd` | `attack()`, `drop_loot()` | Předmět, Boj |
 | Těžba | `scripts/mining.gd` | `gather(node)` (výtěžek dle skillu × obtížnosti) | Skilly, Svět, Data |
 | Výroba | `scripts/crafting.gd` | `smelt()`, `forge()`, `repair()` | Skilly, Atributy, Předmět, Data |
-| Boj | `scripts/combat.gd` | `resolve(att, def)` (hit chance, damage) | Atributy, Skilly, Předmět |
+| Boj | `scripts/combat.gd` | `resolve(attacker: Node, defender: Node)` → `{hit, damage}` — **tvar dat viz §2.1** | Atributy, Skilly, Předmět |
 | Ekonomika | `scripts/economy.gd` | `price(item)`, `trade(player, item)` | Předmět, Data |
 | Offline | `scripts/offline.gd` | `resolve(char, úkol, doba)` (ohraničené) | Skilly, Těžba, Výroba, Boj |
 | Asistence | `scripts/assist.gd` | `add_rule(spoušť, akce)`, `evaluate(char)` | Hráč, Předmět |
 | Ukládání | `scripts/save.gd` | `save()`, `load()` | celý stav |
 | HUD | `scripts/hud.gd` | `update(...)` | Hráč, Skilly, Atributy, Ekonomika |
 | Kostra | `scripts/game.gd` | `component(name) -> Node` (registr), sestavení scény | všechny komponenty (přes registr) |
+
+### 2.1 Tvar dat a přijímací kritérium u smluv (doplněno 2. 10. 2026)
+
+**Proč to tu je:** do 2. 10. 2026 nesla tabulka výš jen JMÉNA API. Agent dostal
+`resolve(att, def)` bez typu, bez původu čísel a bez kritéria — a výsledek byl
+takový, jaký byl: `sim.combat` se zapsal jako `done` (úloha #135) s funkcí,
+která **nemohla fungovat** (volala `attacker.hodnota("Dex")`
+i `attacker.hodnota("boj_na_blizko")` na TÉMŽ objektu, ačkoli to jsou dvě různé
+komponenty), **nikdo ji nezavolal** a test se ptal jen `has_method("resolve")`.
+Naměřeno téhož dne: `combat.gd` volal `has()` — **Godot 3 API**, které
+v Godotu 4 neexistuje — a protože to bylo uvnitř `if hit:`, spadlo to jen
+při zásahu (≈ 50 %).
+
+**Vzor zápisu smlouvy (platí pro každou další):**
+
+```
+resolve(attacker: Node, defender: Node) -> Dictionary
+  attacker : Node  uzel kostry; čísla se berou z REGISTRU na rodiči
+  defender : Node  uzel kostry s vlastností armor_rating
+  vrací     {hit: bool, damage: int}   – VŽDY, i když komponenty chybí
+  odkud:     get_parent().component("Attributes").hodnota("Dex"/"Str")
+             get_parent().component("Skills").hodnota("boj_na_blizko")
+             attacker.vybrana_zbran (nebo .zbran) -> uzel s vlastností damage
+             defender.armor_rating
+  vzorec:    hit  = randf() < 0.5 + (Dex + boj_na_blizko) / 200
+             damage = max(0, 1 + Str/10 + zbraň.damage − obránce.armor_rating)
+  acceptance: test resolve() ZAVOLÁ a ověří {hit, damage} (zásah i minutí);
+             `has_method("resolve")` NESTAČÍ
+```
+
+**Tři pravidla, která z toho plynou:**
+
+1. **Kdo je kdo** — smlouva pojmenuje typ a roli obou stran, ne jen `(att, def)`.
+2. **Odkud jsou čísla** — u každé hodnoty se řekne, která komponenta ji drží.
+   Když jeden objekt poskytuje dvě různé věty, je to **dvě komponenty**.
+3. **Přijímací kritérium** — co musí test ZAVOLAT a co musí naměřit.
+   Slovem `acceptance` v roadmape se rozumí přesně tohle.
 
 ## 3. Granule (atomické jednotky)
 

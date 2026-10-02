@@ -616,11 +616,129 @@ func _run() -> void:
 			_check(not it.broken(), "repair() obnoví předmět")
 		_zavri(it)
 
+	# --------------------------------------------------------------- boj ----
+	# FUNKČNÍ kontrola, ne jen `has_method`. Naměřeno 2. 10. 2026: `combat.gd`
+	# volal `attacker.has("zbran")` a `defender.has("armor_rating")` — to je
+	# **Godot 3 API**, které v Godotu 4 NEEXISTUJE. Bylo to ale uvnitř `if hit:`,
+	# takže to spadlo jen při zásahu (≈ 50 %). Test se ptal jen
+	# `has_method("resolve")`, takže vadu neviděl — a `resolve()` nikdo nezavolal.
+	#
+	# Teď se `resolve()` VOLÁ a ověřuje se `{hit, damage}`.
+	#
+	# ⚠ POZOR NA TVAR ATRAPY (naměřeno při psaní tohohle testu): `TestAtributy`
+	# v tomhle souboru má `hodnota()`? **NEMÁ** — vystavuje `Str`/`Dex` rovnou
+	# (proto testy výš čtou atributy přes `Object.get("Str")`). První verze testu
+	# se ptala `cb.resolve()` s atrapou, která `hodnota()` neměla, a `combat.gd`
+	# na tom spadl: `Nonexistent function 'hodnota' in base 'Node (TestAtributy)'`.
+	# Atrapa tady proto schválně `hodnota()` NEMÁ — test tím měří i to, že si
+	# combat poradí s TVAREM, jaký má `attributes.gd` doopravdy.
 	var combat_sc = load("res://scripts/combat.gd")
-	if combat_sc != null:
-		var cb = _instantiate("boj", "res://scripts/combat.gd")
-		_check(cb.has_method("resolve"), "combat.gd poskytuje resolve(att, def)")
+	if combat_sc == null:
+		# Soubor, který součástí hry být MÁ, musí při nenačtení SELHAT.
+		_check(false, "combat.gd jde načíst (dřív se nenačtený přeskočil)")
+	else:
+		var kostra_b = _kostra_registru()
+		root.add_child(kostra_b)
+
+		var atr_b = TestBojAtributy.new()
+		atr_b.Str = 10
+		atr_b.Dex = 10
+		kostra_b.add_child(atr_b)
+		kostra_b.pridej("Attributes", atr_b)
+
+		var skl_b = TestBojSkilly.new()
+		skl_b.boj_na_blizko = 0
+		kostra_b.add_child(skl_b)
+		kostra_b.pridej("Skills", skl_b)
+
+		var cb = combat_sc.new()
+		if not (cb is Node):
+			_check(false, "combat.gd vrací potomka Node (ne RefCounted)")
+		else:
+			kostra_b.add_child(cb)
+			var utocnik_b = TestBojovnik.new()
+			kostra_b.add_child(utocnik_b)
+
+			var mec_b = TestZbran.new()
+			mec_b.damage = 3
+			utocnik_b.vybrana_zbran = mec_b
+
+			var obrance_b = TestBojovnik.new()
+			obrance_b.armor_rating = 1
+			kostra_b.add_child(obrance_b)
+
+			# HIT i MISS: `hit_chance` je 0,5, takže jeden seed nestačí — a bez
+			# obou větví by se netestovala polovina funkce. Semínka se hledají
+			# z pevného rozsahu, takže výsledek je reprodukovatelný.
+			var zasah_b = null
+			var minut_b = null
+			for s in range(1, 41):
+				seed(s)
+				var v = cb.resolve(utocnik_b, obrance_b)
+				if v.get("hit", false):
+					if zasah_b == null:
+						zasah_b = v
+				elif minut_b == null:
+					minut_b = v
+				if zasah_b != null and minut_b != null:
+					break
+
+			_check(zasah_b != null and minut_b != null,
+				"combat.resolve() umí zásah i minutí (zásah: %s, minutí: %s)"
+				% [str(zasah_b), str(minut_b)])
+			# Zásah: 1 + Str/10 (2) + zbraň (3) − zbroj (1) = 4.
+			# Kdyby se četla zbraň nebo zbroj přes `has()`, spadlo by to tady.
+			_check(zasah_b != null and int(zasah_b.get("damage", -1)) == 4,
+				"zásah: damage = 1 + Str/10 + zbraň − zbroj = 4 (naměřeno: %s)"
+				% str(zasah_b.get("damage", -1) if zasah_b != null else "žádný zásah"))
+			_check(minut_b != null and int(minut_b.get("damage", -1)) == 0,
+				"minutí: damage je 0, ne zásah naslepo (naměřeno: %s)"
+				% str(minut_b.get("damage", -1) if minut_b != null else "žádné minutí"))
+
+			# Druhý tvar smlouvy: atributy s `hodnota(attr)` — tak vypadá
+			# `attributes.gd`. `TestAtributy` výš má Str=10, Dex=10, takže
+			# hit_chance vyjde 0,55 místo 0,5; kdyby combat `hodnota()` neuměl,
+			# spadne na `Nonexistent function 'hodnota'`.
+			#
+			# Pozor na past: TADY SE NESMÍ TVRDIT KONKRÉTNÍ damage. Počet volání
+			# `randf()` před touhle kontrolou není pevný, takže „seed(1) → 4" by
+			# záviselo na tom, kolik zásahů našly smyčky výš. Měří se proto jen
+			# to, co je na cestě nezávislé: zásah nastane a poškození je kladné.
+			var atr_h = TestAtributy.new()
+			atr_h.Str = 10
+			atr_h.Dex = 10
+			kostra_b.add_child(atr_h)
+			kostra_b.pridej("Attributes", atr_h)
+			var skl_h = TestSkilly.new()
+			skl_h.dovednosti["boj_na_blizko"] = 0
+			kostra_b.add_child(skl_h)
+			kostra_b.pridej("Skills", skl_h)
+			var pres_hodnota = null
+			for s in range(1, 41):
+				seed(s)
+				var v3 = cb.resolve(utocnik_b, obrance_b)
+				if v3.get("hit", false):
+					pres_hodnota = v3
+					break
+			_check(pres_hodnota != null and int(pres_hodnota.get("damage", 0)) > 0,
+				"combat.resolve() čte i atributy s hodnota(attr) (zásah: %s)"
+				% str(pres_hodnota))
+
+			# `zbran` je starší název téhož — kdo ji má, nesmí být potrestaný.
+			utocnik_b.vybrana_zbran = null
+			utocnik_b.zbran = mec_b
+			seed(1)
+			var v2 = cb.resolve(utocnik_b, obrance_b)
+			_check(typeof(v2) == TYPE_DICTIONARY and v2.has("hit") and v2.has("damage"),
+				"combat.resolve() snese i vlastnost `zbran` (vrací {hit, damage})")
+
+			# Zbraň NENÍ v stromu (do uzlu se přidávat nemusí), takže se musí
+			# uvolnit ručně — jinak zůstane na konci běhu jako leak. Naměřeno:
+			# bez tohohle řádku hlásil Godot 5 leaků místo 3.
+			mec_b.free()
+
 		_zavri(cb)
+		_zavri(kostra_b)
 
 	# ------------------------------------------------------------ těžba ----
 	# FUNKČNÍ kontrola, ne jen `has_method`. Naměřeno 2. 10. 2026: `mining.gd`
@@ -831,13 +949,39 @@ func _run() -> void:
 		_check(not zdroj.contains("alchymie") and not zdroj.contains("cas_dne"),
 			"monolit je pryč: game.gd už nezná alchymii ani denní cyklus")
 
-	# Drift iso_position: hráč smí volat izo projekci jen na světě (world),
-	# ne na úrovni. Kontrola se zapne, až hráč dostane smluvní move().
-	if player != null and player.has_method("move"):
-		var player_zdroj := FileAccess.get_file_as_string("res://scripts/player.gd")
-		_check(not player_zdroj.contains("level.iso_position")
-			and not player_zdroj.contains("level.has_method(\"iso_position\")"),
-			"player volá izo projekci přes world, ne přes level")
+	# Drift iso_position: hráč NESMÍ brát izo projekci z úrovně.
+	#
+	# DŘÍV TU BYLA STATICKÁ KONTROLA, KTERÁ MĚŘILA PŘÍTOMNOST TEXTU (naměřeno
+	# 2. 10. 2026): hledala `level.iso_position` a `level.has_method("iso_position")`
+	# v CELÉM souboru player.gd. Jenže `player.gd:40` obsahuje právě to druhé –
+	# v `_physics_process`, který prompt granule `entity.player.api`
+	# (roadmap.json:90) PŘIKAZUJE ZACHOVAT. Kontrola byla nastražená: zakazovala
+	# legitimní kód a spustila by se přesně ve chvíli, kdy granule dodá `move()`.
+	#
+	# Vad bylo víc a každá se měří jinak:
+	#   * `level.gd` metodu `iso_position` VŮBEC NEMÁ (je jen v _retired/world.gd),
+	#     takže větev v `_physics_process` je mrtvá a test o izometrii netvrdil nic;
+	#   * kontrola byla podmíněná `has_method("move")`, takže se dnes tiše
+	#     přeskakovala (a `move()` v repu není).
+	#
+	# Nová kontrola kód ZAVOLÁ a změří, na kom se ptal (AGENTS.md: „brána, která
+	# se ptá na přítomnost, neměří chování").
+	if player != null:
+		var player_skript = player.get_script()
+		_check(player_skript != null, "player.gd jde načíst (dřív se nenačtený přeskočil)")
+		if player_skript != null and player.has_method("move"):
+			var uroven_spy := TestUrovenBezIzo.new()
+			uroven_spy.name = "UrovenBezIzo"
+			player.level = uroven_spy
+			player.move(Vector2(1, 0))
+			_check(uroven_spy.izo_pokusu == 0,
+				"player.move() nebere izo projekci z úrovně (pokusů: %d)"
+				% uroven_spy.izo_pokusu)
+			uroven_spy.free()
+		else:
+			# Není to tichý přeskok: kontrola, která se nemá čeho chytit, to řekne.
+			print("[test]      player: `move()` v player.gd není – kontrola izo "
+				+ "projekce se NEMĚŘÍ (dodá ji granule entity.player.api)")
 
 	_finish()
 
@@ -950,3 +1094,60 @@ class TestUzelSuroviny:
 	var resource_id := "iron_ore"
 	var difficulty := 10
 	var cell := Vector2i(1, 1)
+
+
+class TestUrovenBezIzo:
+	extends Node2D
+	"""Atrapa úrovně, která izo projekci NEMÁ – a počítá, kdo se na ni ptal.
+
+	Záměrně neimplementuje `iso_position`: `level.gd` ji taky nemá (je jen
+	v `_retired/world.gd`). Kdyby se ji `move()` pokusil zavolat, spadne to
+	v `move()` samém – a to je vidět (a je to nález, ne ticho).
+	"""
+	var izo_pokusu := 0
+	var walk_dotazu := 0
+
+	func ma_iso() -> bool:
+		izo_pokusu += 1
+		return false
+
+	func is_walkable_at(_pos: Vector2) -> bool:
+		walk_dotazu += 1
+		return true
+
+
+class TestBojAtributy:
+	extends Node
+	"""Atributy pro `combat.resolve()` — SCHVÁLNĚ BEZ `hodnota()`.
+
+	Přesně tak vypadá cesta, kterou atributy čtou ostatní testy: `TestAtributy`
+	v tomhle souboru `hodnota()` nemá a vystavuje `Str`/`Dex` rovnou.
+	Kdyby si combat poradil jen s `hodnota()`, tenhle test to odhalí.
+	"""
+	var Str := 10
+	var Dex := 10
+
+
+class TestBojSkilly:
+	extends Node
+	"""Dovednosti pro `combat.resolve()` — taky bez `hodnota()` (viz výš)."""
+	var boj_na_blizko := 0
+
+
+class TestBojovnik:
+	extends Node2D
+	"""Útočník i obránce pro `combat.resolve()`.
+
+	Vlastnosti musí být DEKLAROVANÉ ve skriptu — do uzlu z `Node2D.new()` se
+	vlastnost přidat nedá (CONVENTIONS.md §1b) a `combat.gd` se na ně ptá
+	přes `"jmeno" in uzel`.
+	"""
+	var vybrana_zbran = null
+	var zbran = null
+	var armor_rating := 0
+
+
+class TestZbran:
+	extends Node
+	"""Zbraň v ruce: jediné, co z ní `combat.resolve()` čte, je `damage`."""
+	var damage := 0
