@@ -696,21 +696,25 @@ func _run() -> void:
 				% str(minut_b.get("damage", -1) if minut_b != null else "žádné minutí"))
 
 			# Druhý tvar smlouvy: atributy s `hodnota(attr)` — tak vypadá
-			# `attributes.gd`. `TestAtributy` výš má Str=10, Dex=10, takže
-			# hit_chance vyjde 0,55 místo 0,5; kdyby combat `hodnota()` neuměl,
-			# spadne na `Nonexistent function 'hodnota'`.
+			# `attributes.gd`. A tady je **LÉK NA NÁLEZ H2/H12**, naměřený
+			# 2. 10. 2026 a doložený mutací (M3: vypuštění větve `hodnota()`):
 			#
-			# Pozor na past: TADY SE NESMÍ TVRDIT KONKRÉTNÍ damage. Počet volání
-			# `randf()` před touhle kontrolou není pevný, takže „seed(1) → 4" by
-			# záviselo na tom, kolik zásahů našly smyčky výš. Měří se proto jen
-			# to, co je na cestě nezávislé: zásah nastane a poškození je kladné.
-			var atr_h = TestAtributy.new()
-			atr_h.Str = 10
-			atr_h.Dex = 10
+			# `combat._cislo()` má DVĚ větve — napřed `komponenta.hodnota(klic)`,
+			# teprve pak vlastnost téhož jména. Aby test poznal, KTEROU z nich
+			# použil, musí atrapa dát **různá čísla pro každou větev**. Když se
+			# atrapa ptá na `hodnota("Str")` a vlastnost `Str` je 10, musí vyjít
+			# **13** — číslo, které umí dát JEN větev `hodnota()`:
+			#   hodnota("Str") = 100  →  1 + 100/10 = 11  →  +3 zbraň −1 zbroj = 13
+			#   vlastnost  Str =  10  →  1 +  10/10 =  2  →  +3 zbraň −1 zbroj =  4
+			# Kdyby se ptalo na vlastnost, vyjde 4 a kontrola SPADNE. Atrapa
+			# **v rozporu se sebou samou** je to, co z větve dělá měřenou věc.
+			#
+			# (Předchozí verze tvrdila jen `damage > 0`; to splní i hodnota 4,
+			# takže mutace M3 prošla — nález H12. Proto je tu teď rovnost.)
+			var atr_h = TestAtributyHodnota.new()
 			kostra_b.add_child(atr_h)
 			kostra_b.pridej("Attributes", atr_h)
-			var skl_h = TestSkilly.new()
-			skl_h.dovednosti["boj_na_blizko"] = 0
+			var skl_h = TestSkillyHodnota.new()
 			kostra_b.add_child(skl_h)
 			kostra_b.pridej("Skills", skl_h)
 			var pres_hodnota = null
@@ -720,9 +724,15 @@ func _run() -> void:
 				if v3.get("hit", false):
 					pres_hodnota = v3
 					break
-			_check(pres_hodnota != null and int(pres_hodnota.get("damage", 0)) > 0,
-				"combat.resolve() čte i atributy s hodnota(attr) (zásah: %s)"
+			_check(pres_hodnota != null and int(pres_hodnota.get("damage", -1)) == 13,
+				"combat.resolve() čte atributy větví hodnota(attr): atrapa v rozporu (hodnota 100 vs vlastnost 10) musí dát damage = 13, ne 4 (zásah: %s)"
 				% str(pres_hodnota))
+			# A TWŘENÝ DŮKAZ, ŽE SE TA VĚTEV OPRAVDU POUŽILA: kdyby combat
+			# větví `hodnota()` neprošel, atrapa `TestAtributyHodnota` by taky
+			# zůstala na nule — a to se pozná podle čítače uvnitř atrapy.
+			_check(atr_h.vetev_hodnota >= 1,
+				"atrapa potvrzuje, že resolve() volal hodnota(attr) (volání: %d)"
+				% atr_h.vetev_hodnota)
 
 			# `zbran` je starší název téhož — kdo ji má, nesmí být potrestaný.
 			utocnik_b.vybrana_zbran = null
@@ -1132,6 +1142,47 @@ class TestBojSkilly:
 	extends Node
 	"""Dovednosti pro `combat.resolve()` — taky bez `hodnota()` (viz výš)."""
 	var boj_na_blizko := 0
+
+
+class TestAtributyHodnota:
+	extends Node
+	"""Atributy, kde je `hodnota(attr)` **V ROZPORU** s vlastností téhož jména.
+
+	PROČ SCHVÁLNĚ ROZPORNÉ (lék na nález H2/H12, naměřený 2. 10. 2026):
+	`combat._cislo()` zkouší nejdřív `hodnota(klic)` a teprve pak vlastnost.
+	Atrapa, kde obojí vrací TOTÉŽ číslo, tomu rozdílu **nemůže** nic naučit —
+	mutace „vypustit větev hodnota()" (M3) se v ní neprojeví. Tady se projeví:
+	`hodnota("Str")` je 100, ale vlastnost `Str` je 10. Správná větev dá
+	damage **13**, větev s vlastností by dala **4**.
+
+	Čítač `vetev_hodnota` je druhý, nezávislý důkaz: i kdyby obě větve daly
+	stejné číslo, je z něj vidět, KTERÁ se zavolala (nula = nevolala se).
+	"""
+	var Str := 10
+	var Dex := 10
+	var vetev_hodnota := 0
+
+	func hodnota(attr: String) -> int:
+		vetev_hodnota += 1
+		match attr:
+			"Str": return 100
+			"Dex": return 100
+			_: return 0
+
+
+class TestSkillyHodnota:
+	extends Node
+	"""Dovednosti pro tutéž sondu — `hodnota()` v rozporu s vlastností.
+
+	`hodnota("boj_na_blizko")` dává 100, vlastnost 0: kdyby combat četl
+	vlastnost, vyšlo by damage 4 místo 13. A zároveň platí, že
+	`_cislo(skilly, "boj_na_blizko")` **nesmí** spadnout na `Nonexistent
+	function` — přesně na tom padal combat před opravou 2. 10. 2026.
+	"""
+	var boj_na_blizko := 0
+
+	func hodnota(_skill: String) -> int:
+		return 100
 
 
 class TestBojovnik:
