@@ -202,11 +202,44 @@
       "title": "Kostra — game.gd jako registr komponent (migrace monolitu)",
       "kind": "code",
       "owns": ["scripts/game.gd"],
-      "depends_on": ["data.content", "core.attributes", "core.skills", "world.level", "world.map", "entity.item", "entity.player", "entity.npc", "entity.enemy", "sim.mining", "sim.crafting", "sim.combat", "sim.economy", "sim.offline", "sim.assist", "persist.save", "ui.hud"],
+      "depends_on": ["data.content", "core.attributes", "core.skills", "world.level", "world.map", "entity.item", "entity.player", "entity.npc", "entity.enemy", "sim.mining", "sim.crafting", "sim.combat", "sim.economy", "sim.offline", "sim.assist", "persist.save", "ui.hud", "world.nodes", "entity.player.api"],
       "size_lines": "<= 120",
       "model": "strong",
       "acceptance": ["tests", "wiring", "render"],
-      "prompt": "Přepiš scripts/game.gd (starý monolit s vlastními dovednostmi tezba/kovarstvi/alchymie, surovinami, save/load a NPC=tavení) na KOSTRU s registrem komponent. Komponenty se instancují z pevného seznamu (Skills, Attributes, World, Level, Item, Player, Npc, Enemy, Mining, Crafting, Combat, Economy, Offline, Assist, Save, Hud) jako poduzly; chybějící soubor se přeskočí, hra musí zůstat hratelná. Vystav component(id: String) -> Node — POZOR: parametr NEPOJMENUJ `name`, to je rezervovaný člen Node a skript se nenaparsuje (CONVENTIONS.md §1f). Scénu sestav z veřejných provides komponent (world.iso_position, level.cell_center, player.move) – ne ze soukromých polí. Z monolitu SMAŽ: dovednosti (alchymie, denní cyklus cas_dne), vlastní suroviny, save/load, tavení u NPC – převzaly je komponenty (skills/attributes/save/crafting). Dovednosti sjednoť na 4 skilly z dat: tezba, drevorubectvi, kovarstvi, boj_na_blizko. ZACHOVEJ: uzel Player se scriptem scripts/player.gd na spawnu, uzel Label 'Hud' se skóre (testy ho čtou – scripts/hud.gd instancuj jako 'HudInfo' a volej jeho update(), 'Hud' zůstává Label), úroveň z main.json, mince, hudbu/pozadí a průchodnost. Nic jiného neměň (tests/, .forge/, project.godot se nesmí dotknout)."
+      "prompt": "Přepiš scripts/game.gd (starý monolit s vlastními dovednostmi tezba/kovarstvi/alchymie, surovinami, save/load a NPC=tavení) na KOSTRU s registrem komponent. Komponenty se instancují z pevného seznamu (Skills, Attributes, World, Level, Item, Player, Npc, Enemy, Mining, Crafting, Combat, Economy, Offline, Assist, Save, Hud) jako poduzly; chybějící soubor se přeskočí, hra musí zůstat hratelná. Vystav component(id: String) -> Node — POZOR: parametr NEPOJMENUJ `name`, to je rezervovaný člen Node a skript se nenaparsuje (CONVENTIONS.md §1f). Scénu sestav z veřejných provides komponent (level.cell_center (izometrie je v level.gd), player.move, world.is_walkable) – ne ze soukromých polí. Z monolitu SMAŽ: dovednosti (alchymie, denní cyklus cas_dne), vlastní suroviny, save/load, tavení u NPC – převzaly je komponenty (skills/attributes/save/crafting). Dovednosti sjednoť na 4 skilly z dat: tezba, drevorubectvi, kovarstvi, boj_na_blizko. ZACHOVEJ: uzel Player se scriptem scripts/player.gd na spawnu, uzel Label 'Hud' se skóre (testy ho čtou – scripts/hud.gd instancuj jako 'HudInfo' a volej jeho update(), 'Hud' zůstává Label), úroveň z main.json, mince, hudbu/pozadí a průchodnost. Nic jiného neměň (tests/, .forge/, project.godot se nesmí dotknout)."
+    },
+    {
+      "id": "world.nodes",
+      "title": "Svět — uzly surovin, těžba a respawn (náhrada za přesunutý _retired/world.gd)",
+      "kind": "code",
+      "owns": ["scripts/world.gd", "assets/levels/main.json"],
+      "depends_on": ["world.level", "data.content"],
+      "size_lines": "<= 140",
+      "model": "strong",
+      "acceptance": ["tests", "wiring"],
+      "prompt": "Vytvoř scripts/world.gd jako komponentu Svět (soubor začíná `extends Node`, žádné class_name, _init() bez povinného argumentu). SMLOUVA — přesně tohle volají jiné komponenty, nic víc: (1) gather(cell: Vector2i) -> bool — označí uzel v tom poli za vytěžený a vrátí true; pro totéž pole podruhé vrátí false. Volá ji scripts/mining.gd. (2) is_walkable(pos: Vector2) -> bool — nevytěžený uzel suroviny není průchozí, vytěžený je. (3) Uzel se po RESPAWN_TIME (konstanta 60.0) obnoví: čas porovnávej při dotazu přes Time.get_ticks_msec() (žádný Timer navíc, žádné await). (4) nodes() -> Array — kopie seznamu uzlů (pro HUD a ukládání). (5) snapshot() -> Array a restore(stav: Array) -> void — stav pro ukládání: jen slovníky, čísla a řetězce, NIKDY objekty (ConfigFile je neumí). KAŽDÝ uzel v nodes() MUSÍ mít vlastnosti resource_id: String, difficulty: int, cell: Vector2i — mining.gd je čte jako node.resource_id / node.difficulty / node.cell (nebo přes gettery get_resource_id() a get_difficulty()). ODKUD BERE UZLY: z mapy. Do assets/levels/main.json přidej 8–12 markerů ve tvaru {\"type\": \"resource\", \"resource_id\": \"iron_ore\", \"cell\": [x, y]} — resource_id ber z assets/data/materials.json (iron_ore obtížnost 1, wood 1, stone 2; iron_ingot je meziprodukt, ten se netěží) a obtížnost si vezmi odtud, neopisuj ji do kódu. Markery dávej na PRŮCHODNÁ pole (testy kontrolují, že každá značka leží na průchozím poli). PROJEKCI NEŘEŠ: izometrii má scripts/level.gd (cell_center, cell_at) — neopisuj ji sem a nezaváděj vlastní konstantu velikosti buňky; přesně kvůli druhému číslu mřížky byl starý world.gd přesunut do _retired/. Služby ber z registru rodiče: get_parent().component(id) — vzor je v scripts/mining.gd — a nikdy ne z /root/ (žádný autoload v projektu není). Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "entity.player.api",
+      "title": "Hráč — stav (hp/mana/cíl), move() a inventář (co už volají jiné komponenty)",
+      "kind": "code",
+      "owns": ["scripts/player.gd"],
+      "depends_on": ["core.attributes", "core.skills", "entity.item", "world.level"],
+      "size_lines": "<= 180",
+      "model": "strong",
+      "acceptance": ["tests", "wiring"],
+      "prompt": "Rozšiř scripts/player.gd (dnes umí jen pohyb klávesami přes _physics_process + _step a flash()). DOPLŇ PŘESNĚ TOHLE — jiné komponenty to už volají, nic víc: (1) move(dir: Vector2) -> void — posun o dir; izometrické osy ber z levelu, ne z vlastní konstanty (get_tree().get_first_node_in_group(\"level\") a jeho is_walkable_at; vzor je v _physics_process). (2) Stav: hp: int, max_hp: int, mana: int, max_mana: int, target (uzel nebo null) — čte je scripts/assist.gd. (3) Inventář: inventory: Array, add_item(item) -> void, remove_item(item) -> void a equipped (vybavená zbraň/zbroj) — volá je scripts/economy.gd (add_item/remove_item) a čte scripts/hud.gd (equipped). (4) die() -> void — vytvoří mrtvolu (Area2D se jménem Corpse ve skupině corpse) s předměty z těla, hráč zahodí výbavu a inventář, přijde o všechno na těle a přesune se na spawn (level.spawn_cell přes cell_center). (5) ZACHOVEJ beze změny: _step(target: Vector2) -> Vector2, _physics_process, flash(), signál collected a add_to_group(\"player\") v _ready() — testy je volají přímo. Struktura: začni `extends Area2D` (tak to je dnes), _init() bez povinného argumentu (CONVENTIONS.md §1f/§1g). Služby (atributy, skilly, předměty) ber z registru rodiče: get_parent().component(id) — vzor je v scripts/mining.gd; nikdy ne z /root/ (žádný autoload v projektu není). Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "persist.save.state",
+      "title": "Ukládání — inventář hráče a stav uzlů světa (co dnes uložit nelze)",
+      "kind": "code",
+      "owns": ["scripts/save.gd"],
+      "depends_on": ["persist.save", "entity.player.api", "world.nodes"],
+      "size_lines": "<= 140",
+      "model": "strong",
+      "acceptance": ["tests", "wiring"],
+      "prompt": "Rozši scripts/save.gd. Dnes ukládá atributy, dovednosti, zlato a pozici hráče (viz hlavička souboru) a když není co uložit, vrací false — to ZACHOVEJ. Přidej: (1) Inventář hráče a výbavu: player.inventory je pole předmětů; z každého ukládej jen DATA, ne objekt — slovník {\"id\": ..., \"trvanlivost\": ..., \"kvalita\": ...} (ConfigFile neumí ukládat objekty, spadlo by to až při ukládání). Při load() předměty znovu postav přes scripts/item.gd (GameItem) a vlož hráči add_item(); u vybavené zbraně/zbroje obnov, co hráč drží. (2) Stav uzlů světa: component(\"World\").snapshot() do sekce world a při load() restore(data). (3) Když komponenta chybí, ulož jen to, co jde, a OHLAS to přes push_warning (tichý úspěch je v tomhle souboru zakázaný — byl to nález z 2. 10. 2026). Zachovej save() -> bool a load() -> bool a chování bez registru (vrací false). Služby ber z registru rodiče: get_parent().component(id) (vzor v scripts/mining.gd), nikdy ne z /root/. Neměň tests/, .forge/ ani project.godot."
     }
   ]
 }
