@@ -248,6 +248,50 @@ Osa dlaždice je `(48, 24)` → sklon **0,5**. Hráč teď jde po stejných osá
 jako mapa. **Je to viditelná změna ovládání** — rozhodl o ní uživatel
 3. 10. 2026.
 
+### 2.3 Smlouva `Ukládání → pozice hráče` — ROZHODNUTO 3. 10. 2026
+
+**Proč to tu je:** `scripts/save.gd` ukládá i načítá pozici hráče **podmíněně**
+(`:52` `if hrac != null and "position" in hrac:`, `:84` totéž při načítání).
+Do 3. 10. 2026 ta podmínka **nikdy nebyla splněna** — `scripts/player.gd` sice
+dědí z `Area2D`, ale stav hráče v souboru nebyl, takže se pozice **neukládala
+ani nevracela** a nikdo si toho nevšiml (test se ptal jen `has_method("save")`).
+Po dodání stavu hráče (3. 10. 2026) **podmínka projde** — a tím se **změnilo
+chování ukládání**: `load()` teď přepíše spawn pozicí ze souboru. To nebylo
+naplánované, a proto je to tady zapsané jako smlouva, ne jako náhodný důsledek.
+
+```
+ukládání pozice hráče → user://save.cfg, sekce [player], klíč position
+  kdo vlastní:  scripts/player.gd — pozice je VLASTNOST HRÁČE (dědí z Area2D).
+                `save.gd` ji jen čte (`:53`) a vrací (`:85`); NIKDY ji nepočítá
+                a nezná spawn — to je jiná cesta (viz respawn níž)
+  tvar dat:     Vector2 (ConfigFile umí nativně); ukládá se VŽDY, když hráč
+                existuje. Podmínka `"position" in hrac` je pojistka proti
+                atrapě, která pozici nemá — a když nastane, `save()` to
+                OHLÁSÍ (`push_warning`), ne tiše vynechá
+  respawn:      `level.spawn_cell` je jediné místo, kam se hráč vrací po smrti;
+                dělá to `player.die()` přes `level.cell_center(spawn_cell.x,
+                spawn_cell.y)` — NE `save.gd`
+  odkud:        `save.gd` bere hráče z registru komponenty na rodiči
+                (`get_parent().component("Player")`, viz §2.1 a řádek 145)
+  acceptance:   test `save()` ZAVOLÁ s hráčem na známé pozici, pak pozici ZMĚNÍ
+                a `load()` ZAVOLÁ; musí platit, že se pozice vrátila na uloženou
+                hodnotu. Měří to `tests/run_tests.gd` („save() uloží pozici
+                hráče“ + „load() vrátí uložený stav … position == Vector2(48, 96)“).
+```
+
+**Tři pravidla, která z toho plynou:**
+
+1. **Pozici vlastní `player.gd`, `save.gd` je sklad.** Kdyby ji počítal i on,
+   existují dva zdroje pravdy o tom, kde hráč stojí.
+2. **Načtení a smrt jsou DVĚ cesty, ne jedna.** Po `load()` stojí hráč tam,
+   kde hrál (uložený stav); po `die()` se vrací na `level.spawn_cell`. Kdyby
+   obojí dělal `save.gd`, nešlo by je od sebe odlišit — a smrt by „vracela
+   do rozehrané hry“.
+3. **Podmíněný zápis musí být vidět.** Když hráč pozici nemá, je to
+   **ohlášená** mez, ne tiché vynechání: `save()` nad neuloženým stavem nesmí
+   vypadat jako úspěch (tatáž zásada jako `save()` vracející `false` místo
+   `true`, viz hlavička `save.gd`).
+
 ## 3. Granule (atomické jednotky)
 
 Každá granule = jeden soubor, vlastní `owns`, deklaruje `depends_on` a je

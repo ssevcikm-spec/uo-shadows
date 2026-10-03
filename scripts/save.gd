@@ -51,6 +51,11 @@ func save() -> bool:
 
 	if hrac != null and "position" in hrac:
 		cfg.set_value("player", "position", hrac.position)
+	elif hrac != null:
+		# ⚠ Podmíněný zápis musí být VIDĚT (docs/ARCHITEKTURA.md §2.3): kdyby
+		# hráč pozici neměl, `load()` by tiše nechal spawn a vypadalo by to
+		# jako uložený stav. Atrapa bez pozice je proto OHLÁŠENÁ mez.
+		push_warning("save.gd: hráč nemá 'position' – pozici NEUKLÁDÁM")
 
 	return cfg.save(SOUBOR) == OK
 
@@ -84,6 +89,10 @@ func load() -> bool:
 	if hrac != null and cfg.has_section_key("player", "position") and "position" in hrac:
 		hrac.position = cfg.get_value("player", "position", hrac.position)
 		pouzito += 1
+	elif hrac != null and cfg.has_section_key("player", "position"):
+		# Týž důvod jako v `save()`: uložená pozice, kterou není komu vrátit,
+		# se nesmí zamlčet — jinak `load()` vypadá jako úspěch.
+		push_warning("save.gd: uložená pozice je, ale hráč 'position' nemá – nevracím ji")
 
 	if pouzito == 0:
 		push_error("save.gd: soubor uložený je, ale není kam stav vrátit (chybí komponenty)")
