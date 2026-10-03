@@ -128,10 +128,10 @@ ne proti nedokončenému sousedovi).
 | Data | `assets/data/*.json` | materiály, skilly, recepty, příšery, předměty | — |
 | Atributy | `scripts/attributes.gd` | `get(attr)`, `derived()` (damage, hit chance, attack speed, mana, carry) | — |
 | Skilly | `scripts/skills.gd` | `add(skill, n)`, `get(skill)` | — |
-| Úroveň | `scripts/level.gd` | `load_file()`, `is_walkable()`, `cell_center()` | data levelů |
-| Svět | `scripts/world.gd` | `iso_position(cx,cy)`, `cell_at(pos)`, uzly + respawn | Úroveň |
+| Úroveň | `scripts/level.gd` | `load_file()`, `is_walkable_cell()`, `cell_center()` (nese izo projekci hry), `cell_at()`, `spawn_cell` | data levelů |
+| Svět | `scripts/world.gd` | uzly surovin: `gather(cell)`, `is_walkable(pos)`, respawn (**PRÁCE V `main` NENÍ** — viz §2.2) | Úroveň |
 | Předmět | `scripts/item.gd` | def, trvanlivost, materiál, kvalita | Data |
-| Hráč | `scripts/player.gd` | `move()`, inventář, `die()` (mrtvola) | Atributy, Skilly, Svět, Předmět |
+| Hráč | `scripts/player.gd` | `move(dir)`, stav `hp`/`max_hp`/`mana`/`max_mana`/`target`, `inventory` + `add_item()`/`remove_item()`, `equipped`, `die()` — **tvar dat viz §2.2** | Úroveň (kolize), Předmět, Atributy, Skilly |
 | NPC | `scripts/npc.gd` | `trade(player)` (koupit/prodat) | Předmět, Ekonomika |
 | Nepřítel | `scripts/enemy.gd` | `attack()`, `drop_loot()` | Předmět, Boj |
 | Těžba | `scripts/mining.gd` | `gather(node)` (výtěžek dle skillu × obtížnosti) | Skilly, Svět, Data |
@@ -180,6 +180,73 @@ resolve(attacker: Node, defender: Node) -> Dictionary
    Když jeden objekt poskytuje dvě různé věty, je to **dvě komponenty**.
 3. **Přijímací kritérium** — co musí test ZAVOLAT a co musí naměřit.
    Slovem `acceptance` v roadmape se rozumí přesně tohle.
+
+### 2.2 Smlouva `Hráč → move(dir)` — ROZHODNUTO 3. 10. 2026
+
+**Proč to tu je:** granule `entity.player` byla zapsaná jako `done`, ale
+`scripts/player.gd` v `main` **neměl `move()`, inventář ani `die()`** — a přitom
+je volaly jiné komponenty (`economy.gd:39,47` volá `add_item`/`remove_item`,
+`assist.gd:11–15` čte `hp`, `max_hp`, `mana`, `max_mana`, `target`). Vznikla
+z toho **dvojí vada**: `assist.evaluate()` vypsal `SCRIPT ERROR` a **vrátil
+`[]`** (asistence tiše nic nedělala) a `hud.gd` chybějící `hp` **obcházel**
+přes `has_method("get_hp")` → ukazoval **HP: 0**, což vypadá jako naměřená nula.
+Do 3. 10. 2026 nebylo nikde napsané, co je smlouva — a testy se ptaly jen
+`has_method("evaluate")`.
+
+```
+move(dir: Vector2, delta: float = -1.0) -> void
+  dir    : Vector2  směr VE HŘE (ne v pixelech): „vpravo“ (1,0), „dolů“ (0,1)
+  delta  : float    čas kroku;  delta < 0  znamená „posun o JEDEN krok
+                    SPEED/60“ — používají testy, které nesmějí čekat na snímek
+  posun  : hráč se posune O JEDNU Z IZOMETRICKÝCH OS dlaždic, ne po obrazovce
+  odkud:   izo poměr je (dx−dy)·0,5 a (dx+dy)·0,25 — TÝŽ poměr, jaký má
+           kreslení dlaždic v `scripts/level.gd` → `cell_center()` a jaký
+           deklaruje `assets/spec.json` (izometrie 2:1). Kolize se ptá
+           `level.is_walkable_at(pos)`; poslední krok dělá `_step(target)`
+           (klouzání po jedné ose) a `move()` drží hráče v obrazovce
+  volá ho: `_physics_process()` (čtení kláves) — JEDINÁ cesta, kterou se mění
+           pozice; testy a budoucí `engine.shell` taky
+  acceptance: test `move()` ZAVOLÁ, změří POSUN a porovná jeho sklon se sklonem
+           osy dlaždice, který si PŘEČTE z `level.cell_center` (ne z konstanty
+           opsané do testu). `has_method("move")` NESTAČÍ.
+```
+
+**Stav hráče a inventář (co už volají jiné komponenty):**
+
+| Prvek | Typ | Výchozí | Kdo to volá / čte |
+|---|---|---|---|
+| `hp`, `max_hp` | `int` | 100 | `assist.gd:11`, `hud.gd:47` |
+| `mana`, `max_mana` | `int` | 50 | `assist.gd:13` |
+| `target` | `Node` nebo `null` | `null` | `assist.gd:15` (`target.hp <= 0`) |
+| `inventory` | `Array` | `[]` | `save.gd` (granule `persist.save.state`) |
+| `add_item(item)`, `remove_item(item)` | `void` | — | `economy.gd:39,47` |
+| `equipped` | `Node` nebo `null` | `null` | `hud.gd:44` |
+| `die()` | `void` | — | smlouva (`REQ-death`); staví mrtvolu `Area2D` ve skupině `corpse` a vrací hráče na `level.spawn_cell` |
+
+**Tři pravidla, která z toho plynou (obecně, ne jen pro hráče):**
+
+1. **Rozhraní je jedna cesta.** Kdyby pohyb počítalo i `_physics_process`
+   zvlášť, existují dvě implementace téhož a měří se ta nepoužívaná.
+2. **Mrtvá větev se nepozná podle testu, který ji „kryje".** `player.gd` měl
+   `if level.has_method("iso_position")` — metodu, kterou `level.gd` NIKDY
+   neměl (má ji jen `_retired/world.gd`), takže se vždy použila větev `else`
+   a hráč chodil **1:1 podle obrazovky** místo 2:1 po dlaždicích. Test to
+   „kryl" tak, že v souboru hledal řetězec `level.iso_position` — tedy měřil
+   PŘÍTOMNOST TEXTU a navíc zakazoval legitimní kód.
+3. **Kdo nese projekci, musí být napsané.** Projekci nese `level.gd`
+   (`cell_center`/`cell_at`); `world.gd` ji **nesmí opisovat** — přesně kvůli
+   druhému číslu mřížky byl starý `world.gd` přesunut do `_retired/`.
+
+**Naměřený rozdíl (sonda `tests/_sonda-pohyb.gd`):**
+
+| směr | PŘED (1:1) | PO (izo osy) |
+|---|---|---|
+| vpravo | (2,167; 0) sklon 0 | (1,938; 0,969) sklon 0,5 |
+| vpravo+dolů | (1,532; 1,532) 45° | (0; 2,167) svisle |
+
+Osa dlaždice je `(48, 24)` → sklon **0,5**. Hráč teď jde po stejných osách
+jako mapa. **Je to viditelná změna ovládání** — rozhodl o ní uživatel
+3. 10. 2026.
 
 ## 3. Granule (atomické jednotky)
 

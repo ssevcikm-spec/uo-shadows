@@ -11,8 +11,9 @@ extends CanvasLayer
 # Godot 4 (obojí naměřeno 2. 10. 2026, soubor se kvůli tomu vůbec nepřidal):
 #   * `Control.margin_left` NEEXISTUJE → je to `offset_left`/`offset_top`
 #     (v Godotu 3 se to jmenovalo `margin_*`). Přiřazení shodí `_ready()`.
-#   * `has_property()` NEEXISTUJE → vlastnost se ptá přes `"jmeno" in uzel`
-#     (vlastnost `hp` navíc bere i `get_hp()`, protože ji hráč zatím nemá).
+#   * `has_property()` NEEXISTUJE → vlastnost se ptá přes `"jmeno" in uzel`.
+#     Obejití `hp` přes `has_method("get_hp")` je OD 3. 10. 2026 ODSTRANĚNO:
+#     hráč stav má, takže lišta čte `_player.hp` přímo (dřív ukazovala HP: 0).
 
 var _label: Label
 
@@ -37,13 +38,15 @@ func update() -> void:
 	var hp: int = 0
 	var vybaveno := ""
 	if _player != null:
-		if _player.has_method("get_hp"):
-			hp = _player.get_hp()
-		elif "hp" in _player:
-			hp = _player.hp
-		if _player.has_method("get_equipped"):
-			vybaveno = str(_player.get_equipped())
-		elif "equipped" in _player:
+		# PŘÍMÝ PŘÍSTUP, ŽÁDNÉ OBEJITÍ (od 3. 10. 2026). Do té doby tu byla
+		# větev `has_method("get_hp")` a fallback `elif "hp" in _player:` →
+		# `hp = 0`. Bylo to OBEJITÍ chybějícího stavu: `player.gd` `hp` neměl
+		# (A4 zadání), a tak lišta tiše ukazovala **HP: 0** — což vypadá jako
+		# naměřená nula, ale byla to nepřítomnost. `scripts/assist.gd` se
+		# přitom na `player.hp` ptal přímo a dostával `SCRIPT ERROR`.
+		# `player.gd` stav má, takže obejití jen schovávalo vadu (Úkol 1 bod 4).
+		hp = _player.hp
+		if _player.equipped != null:
 			vybaveno = str(_player.equipped)
 
 	var sila: int = 0

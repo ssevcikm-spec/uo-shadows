@@ -959,39 +959,179 @@ func _run() -> void:
 		_check(not zdroj.contains("alchymie") and not zdroj.contains("cas_dne"),
 			"monolit je pryč: game.gd už nezná alchymii ani denní cyklus")
 
-	# Drift iso_position: hráč NESMÍ brát izo projekci z úrovně.
+	# Izometrie hráče: `move()` MUSÍ jít po osách dlaždic, ne po obrazovce.
 	#
-	# DŘÍV TU BYLA STATICKÁ KONTROLA, KTERÁ MĚŘILA PŘÍTOMNOST TEXTU (naměřeno
-	# 2. 10. 2026): hledala `level.iso_position` a `level.has_method("iso_position")`
-	# v CELÉM souboru player.gd. Jenže `player.gd:40` obsahuje právě to druhé –
-	# v `_physics_process`, který prompt granule `entity.player.api`
-	# (roadmap.json:90) PŘIKAZUJE ZACHOVAT. Kontrola byla nastražená: zakazovala
-	# legitimní kód a spustila by se přesně ve chvíli, kdy granule dodá `move()`.
+	# DŘÍV TU BYLA KONTROLA, KTERÁ SE TIŠE PŘESKAKOVALA (naměřeno 2. 10. 2026):
+	# byla podmíněná `has_method("move")` a `move()` v repu nebyl → vypsala jen
+	# poznámku „kontrola se NEMĚŘÍ" a `exit 0` to nerozlišil. A ještě před tím
+	# tu byla verze, která ZAKAZOVALA řetězec `level.iso_position`, který
+	# `player.gd` obsahoval odjakživa – „nastražená brána" z `AGENTS.md`.
 	#
-	# Vad bylo víc a každá se měří jinak:
-	#   * `level.gd` metodu `iso_position` VŮBEC NEMÁ (je jen v _retired/world.gd),
-	#     takže větev v `_physics_process` je mrtvá a test o izometrii netvrdil nic;
-	#   * kontrola byla podmíněná `has_method("move")`, takže se dnes tiše
-	#     přeskakovala (a `move()` v repu není).
-	#
-	# Nová kontrola kód ZAVOLÁ a změří, na kom se ptal (AGENTS.md: „brána, která
-	# se ptá na přítomnost, neměří chování").
+	# Teď je `move()` skutečné API (`_physics_process` ho volá) a kontrola:
+	#   1. ho ZAVOLÁ na úrovni s izometrickou mřížkou,
+	#   2. změří POSUN a porovná jeho sklon se sklonem OSY DLAŽDICE, který si
+	#      vezme z `level.cell_center` – ne z konstanty opsané do testu.
+	# Když se dlaždice předělají na 1:1 nebo hráč přestane izometrii brát,
+	# kontrola spadne. Ověřeno mutací (vypuštění izo přepočtu → FAIL).
 	if player != null:
 		var player_skript = player.get_script()
 		_check(player_skript != null, "player.gd jde načíst (dřív se nenačtený přeskočil)")
-		if player_skript != null and player.has_method("move"):
-			var uroven_spy := TestUrovenBezIzo.new()
-			uroven_spy.name = "UrovenBezIzo"
-			player.level = uroven_spy
-			player.move(Vector2(1, 0))
-			_check(uroven_spy.izo_pokusu == 0,
-				"player.move() nebere izo projekci z úrovně (pokusů: %d)"
-				% uroven_spy.izo_pokusu)
-			uroven_spy.free()
-		else:
-			# Není to tichý přeskok: kontrola, která se nemá čeho chytit, to řekne.
-			print("[test]      player: `move()` v player.gd není – kontrola izo "
-				+ "projekce se NEMĚŘÍ (dodá ji granule entity.player.api)")
+		_check(player_skript != null and player.has_method("move"),
+			"player.gd poskytuje smluvní move(dir) (dřív chyběl a kontrola se přeskočila)")
+
+		# MĚŘÍ SE NA SKUTEČNÉM HRÁČI A SKUTEČNÉ ÚROVNI z main.tscn.
+		#
+		# PROČ NE NA ATRAPĚ (a je to naměřená past): `move()` na konci drží hráče
+		# v obrazovce (`clampf(8, vp - 8)`), a atrapa s vlastním `offset` ho
+		# snadno vystrčí mimo → clamp posun ZKRÁTÍ a naměřený sklon vyjde 0,12
+		# místo 0,50 (přesně to se stalo první verzi téhle kontroly). Skutečná
+		# mapa má spawn uprostřed obrazovky, takže se odtud dá ujít celý krok,
+		# aniž by do měření clamp zasáhl.
+		var uroven_hry = player.level
+		var puvodni_pos: Vector2 = player.position
+		var krok: float = player.SPEED / 60.0
+		var sklon_mapy := -1.0
+		if uroven_hry != null and uroven_hry.has_method("cell_center"):
+			var osa: Vector2 = uroven_hry.cell_center(1, 0) - uroven_hry.cell_center(0, 0)
+			if not is_zero_approx(osa.x):
+				sklon_mapy = absf(osa.y / osa.x)
+		_check(is_equal_approx(sklon_mapy, 0.5),
+			"osa dlaždice v main.json je izometrie 2:1 (sklon %.4f)" % sklon_mapy)
+
+		# Izometrii měří KAŽDÝ ze čtyř směrů; stačí, že projde jeden (u zdi
+		# nebo u okraje obrazovky posun zkrátí `_step()`, resp. clamp).
+		var zmereno := 0
+		var chyb := 0
+		var hlasky: Array = []
+		for smer in [Vector2(1, 0), Vector2(-1, 0), Vector2(0, 1), Vector2(0, -1)]:
+			player.position = puvodni_pos
+			var start: Vector2 = player.position
+			player.move(smer)
+			var posun: Vector2 = player.position - start
+			# Zkrácený krok = zasáhl `_step()` (zeď) nebo clamp; to není vada
+			# izometrie, takže se tenhle směr jen vynechá a měří se dál.
+			if not is_equal_approx(posun.length(), krok):
+				continue
+			zmereno += 1
+			var sklon: float = absf(posun.y / posun.x) if not is_zero_approx(posun.x) else -1.0
+			if not is_equal_approx(sklon, sklon_mapy):
+				chyb += 1
+			hlasky.append("%s sklon %.4f" % [str(smer), sklon])
+		player.position = puvodni_pos
+
+		_check(zmereno > 0,
+			"player.move() ujde plný krok SPEED/60 = %.4f px aspoň v jednom směru (změřeno %d ze 4: %s)"
+			% [krok, zmereno, str(hlasky)])
+		_check(chyb == 0,
+			"player.move() jde po ose dlaždic ve všech měřených směrech (sklon dlaždice %.4f, chyb %d: %s)"
+			% [sklon_mapy, chyb, str(hlasky)])
+
+		# `_physics_process` musí `move()` SKUTEČNĚ volat – jinak by existovaly
+		# dvě cesty k témuž a měřila by se ta nepoužívaná.
+		var zdroj_hrace := FileAccess.get_file_as_string("res://scripts/player.gd")
+		_check(zdroj_hrace.contains("move(dir, delta)"),
+			"_physics_process volá move() (smlouva je jedna cesta, ne dvě)")
+
+	# Stav hráče, který UŽ VOLAJÍ jiné komponenty (A4/A5 zadání): `assist.gd`
+	# čte `player.hp`, `max_hp`, `mana`, `max_mana`, `target`, `economy.gd`
+	# volá `add_item`/`remove_item`. Do 3. 10. 2026 to `player.gd` NEMĚL →
+	# `assist.evaluate()` vypsal SCRIPT ERROR a vrátil `[]`, takže asistence
+	# tiše nic nedělala a HUD ukazoval HP: 0 (obejití přes `has_method`).
+	if player != null:
+		for klic in ["hp", "max_hp", "mana", "max_mana", "target", "inventory", "equipped"]:
+			_check(klic in player, "player.gd má stav '%s' (čtou ho jiné komponenty)" % klic)
+		for metoda in ["add_item", "remove_item", "die"]:
+			_check(player.has_method(metoda),
+				"player.gd poskytuje '%s' (volá ho economy.gd, resp. smlouva)" % metoda)
+
+		# Asistence se musí opravdu ROZHODNOUT – ne jen nespadnout.
+		var asist_sc = load("res://scripts/assist.gd")
+		_check(asist_sc != null, "assist.gd jde načíst (dřív se nenačtený přeskočil)")
+		if asist_sc != null:
+			var asist = asist_sc.new()
+			root.add_child(asist)
+			asist.add_rule("hp < X", "vypit lektvar")
+			asist.add_rule("mana < X", "seslat kouzlo")
+			asist.add_rule("target dead", "prepnit cil")
+
+			var zaloha_hp: int = player.hp
+			var zaloha_mana: int = player.mana
+			player.hp = player.max_hp
+			player.mana = player.max_mana
+			player.target = null
+			_check(asist.evaluate(player).is_empty(),
+				"assist: při plném zdraví a maně a bez cíle se nic nespustí")
+
+			player.hp = int(player.max_hp * 0.1)
+			var akce: Array = asist.evaluate(player)
+			_check(akce.has("vypit lektvar"),
+				"assist: nízké hp spustí pravidlo 'hp < X' (akce %s)" % str(akce))
+
+			player.hp = player.max_hp
+			player.mana = int(player.max_mana * 0.1)
+			akce = asist.evaluate(player)
+			_check(akce.has("seslat kouzlo"),
+				"assist: nízká mana spustí pravidlo 'mana < X' (akce %s)" % str(akce))
+
+			player.mana = player.max_mana
+			var mrtvy := TestCil.new()
+			mrtvy.hp = 0
+			root.add_child(mrtvy)
+			player.target = mrtvy
+			akce = asist.evaluate(player)
+			_check(akce.has("prepnit cil"),
+				"assist: mrtvý cíl spustí pravidlo 'target dead' (akce %s)" % str(akce))
+
+			player.target = null
+			mrtvy.free()
+			player.hp = zaloha_hp
+			player.mana = zaloha_mana
+			asist.free()
+
+		# Inventář: co do něj `economy.gd` vloží, musí jít i vyjmout.
+		var predmet := TestPredmet.new()
+		root.add_child(predmet)
+		player.inventory.clear()
+		player.add_item(predmet)
+		_check(player.inventory.has(predmet), "player.add_item() vloží předmět do inventáře")
+		player.remove_item(predmet)
+		_check(not player.inventory.has(predmet),
+			"player.remove_item() předmět vyjme (inventář: %d)" % player.inventory.size())
+		predmet.free()
+
+	# HUD musí HP SKUTEČNĚ ZOBRAZIT – ne jen nespadnout (do 3. 10. 2026
+	# ukazoval HP: 0, protože hráč `hp` neměl a `hud.gd` to obcházel).
+	# HUD bere komponenty z registru na RODIČI, proto se staví zkušební kostra.
+	if player != null:
+		var hud_skript = load("res://scripts/hud.gd")
+		_check(hud_skript != null, "hud.gd jde načíst i mimo blok ukládání")
+		if hud_skript != null:
+			var kostra := TestKostra.new()
+			kostra.name = "KostraHud"
+			root.add_child(kostra)
+			var hud_uzel = hud_skript.new()
+			hud_uzel.name = "HudInfo"
+			kostra.add_child(hud_uzel)
+			var atr_hud := TestAtributy.new()
+			kostra.add_child(atr_hud)
+			var skl_hud := TestSkilly.new()
+			kostra.add_child(skl_hud)
+			var eko_hud := TestEkonomika.new()
+			kostra.add_child(eko_hud)
+			kostra.pridej("Player", player)
+			kostra.pridej("Attributes", atr_hud)
+			kostra.pridej("Skills", skl_hud)
+			kostra.pridej("Economy", eko_hud)
+
+			var zaloha_hp2: int = player.hp
+			player.hp = 77
+			hud_uzel.update()
+			var text: String = str(hud_uzel._label.text)
+			_check(text.contains("HP: 77"),
+				"HUD zobrazuje skutečné HP hráče (text začíná '%s')"
+				% text.split("\n")[0])
+			player.hp = zaloha_hp2
+			kostra.free()
 
 	_finish()
 
@@ -1086,6 +1226,29 @@ class TestEkonomika:
 
 class TestHrac:
 	extends Node2D
+	"""Atrapa hráče pro `save.gd` a `hud.gd`.
+
+	PROČ MÁ STAV (doplněno 3. 10. 2026): `hud.gd` čte `_player.hp` a
+	`_player.equipped` PŘÍMO (obejití přes `has_method("get_hp")` bylo
+	odstraněno, protože hráč stav dostal). Atrapa bez těch vlastností shodí
+	`hud.update()` na `Invalid access to property 'hp'` – a HUD pak neukáže
+	ani atributy, ani zlato. Naměřeno: tři kontroly HUD spadly, přestože
+	byly správné. Atrapa musí odpovídat smlouvě, kterou testuje.
+	"""
+	var hp := 100
+	var max_hp := 100
+	var mana := 50
+	var max_mana := 50
+	var target: Node = null
+	var inventory: Array = []
+	var equipped: Node = null
+
+	func add_item(item: Node) -> void:
+		if item != null and not inventory.has(item):
+			inventory.append(item)
+
+	func remove_item(item: Node) -> void:
+		inventory.erase(item)
 
 
 class TestSvet:
@@ -1106,24 +1269,63 @@ class TestUzelSuroviny:
 	var cell := Vector2i(1, 1)
 
 
-class TestUrovenBezIzo:
+class TestUrovenIzo:
 	extends Node2D
-	"""Atrapa úrovně, která izo projekci NEMÁ – a počítá, kdo se na ni ptal.
+	"""Atrapa úrovně pro měření POHYBU: izometrická mřížka 5×5, celá průchozí.
 
-	Záměrně neimplementuje `iso_position`: `level.gd` ji taky nemá (je jen
-	v `_retired/world.gd`). Kdyby se ji `move()` pokusil zavolat, spadne to
-	v `move()` samém – a to je vidět (a je to nález, ne ticho).
+	PROČ SE JMENUJE JINAK NEŽ DŘÍV (`TestUrovenBezIzo`): ta stará atrapa
+	dostala smysl v tom, že `iso_position` NEMÁ – jenže to, jestli ji level má,
+	dnes už pohyb neřídí (mrtvá větev je pryč). Nová atrapa měří opak:
+	že posun hráče jde po stejných osách, po jakých se kreslí dlaždice.
+	Proto má `cell_center`/`cell_at` s TÝMIŽ vzorci jako `level.gd`.
+
+	Musí být průchozí CELÁ: kdyby `_step()` narazil na zeď, mohl by vrátit
+	start a naměřený posun nula by vznikl z docela jiného důvodu, než jaký
+	test měří (past `overovani` §9.4 – „naměřeno 0“ má tři různé významy).
 	"""
-	var izo_pokusu := 0
+	const CELL_W := 96.0
+	const CELL_H := 48.0
+
+	var cell_w := CELL_W
+	var cell_h := CELL_H
+	var offset := Vector2.ZERO
+	var spawn_cell := Vector2i(2, 2)
 	var walk_dotazu := 0
 
-	func ma_iso() -> bool:
-		izo_pokusu += 1
-		return false
+	func je_izometricka() -> bool:
+		return true
+
+	func cell_center(cx: int, cy: int) -> Vector2:
+		return offset + Vector2(float(cx - cy) * cell_w / 2.0,
+								float(cx + cy) * cell_h / 2.0)
+
+	func cell_at(pos: Vector2) -> Vector2i:
+		var p := pos - offset
+		var a := p.x / (cell_w / 2.0)
+		var b := p.y / (cell_h / 2.0)
+		return Vector2i(int(floor((b + a) / 2.0)), int(floor((b - a) / 2.0)))
 
 	func is_walkable_at(_pos: Vector2) -> bool:
 		walk_dotazu += 1
 		return true
+
+
+class TestCil:
+	extends Node
+	"""Cíl hráče (nepřítel) pro pravidlo `target dead` v `assist.gd`.
+
+	Vlastnost `hp` musí být DEKLAROVANÁ ve skriptu – do uzlu z `Node.new()`
+	se vlastnost přidat nedá (CONVENTIONS.md §1b).
+	"""
+	var hp := 0
+
+
+class TestPredmet:
+	extends Node
+	"""Předmět do inventáře – minimální tvar, který čte `economy.gd`."""
+
+	func use() -> void:
+		pass
 
 
 class TestBojAtributy:

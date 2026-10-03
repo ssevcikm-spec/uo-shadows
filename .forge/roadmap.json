@@ -31,6 +31,7 @@
       "kind": "code",
       "owns": ["scripts/attributes.gd"],
       "depends_on": [],
+      "done": true,
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/attributes.gd vytvoř atributy Str, Dex, Int (každý 0–100, výchozí 10) a funkci hodnota(attr: String) -> int. POZOR: funkci NIKDY nepojmenuj get() — koliduje s vestavěnou Object.get() a Godot skript odmítne naparsovat (CONVENTIONS.md §1f). Testy čtou atributy přes Object.get(\"Str\"), takže musí být veřejné vlastnosti (var Str := 10), ne schované za funkcí. Přidej derived() vracející slovník odvozených statů: damage = 1 + Str/10, hit_chance = 0.5 + Dex/200, attack_speed = 1.0 + Dex/100, mana = Int, carry = 40 + Str. Nic víc — je to základ, na který navazují boj, magie i výroba."
     },
@@ -53,6 +54,7 @@
       "depends_on": [],
       "done": true,
       "done_note": "PR #13 sloučené 29. 9. (level.gd načítá main.json, průchodnost, markery)",
+      "size_lines": "<= 300",
       "acceptance": ["tests", "render"],
       "prompt": "Uprav scripts/level.gd tak, aby načetlo úroveň z assets/levels/main.json: load_file(path) -> bool (vrátí false, když soubor chybí nebo je poškozený), vlastnosti grid, cell, offset, spawn_cell, a funkce is_walkable_cell(cx, cy), cell_center(cx, cy), walkable_count(), reachable_count(). Logika průchodnosti: 0 = zeď, jinak průchozí."
     },
@@ -62,7 +64,7 @@
       "kind": "code",
       "owns": ["scripts/world.gd"],
       "depends_on": ["world.level"],
-      "done": true,
+      "done": false,
       "done_note": "POZOR: PR #21 sloučené 30. 9.; kód je v _retired/world.gd (c651368 ho přesunul jako mrtvý kód s druhým číslem mřížky – izo projekce správně přešla do level.gd). Uzly surovin, gather() ani respawn ale nikde nejsou (level.gd je nemá) – práce v main není. Měřeno 2. 10. 2026",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/world.gd vytvoř izometrickou projekci a surovinové uzly. iso_position(cx: int, cy: int) -> Vector2 vrací offset + Vector2((cx-cy)*cell/2, (cx+cy)*cell/4); cell_at(pos) -> Vector2i zpětný převod. Přidej seznam uzlů (žíla železa, strom, skála) s pozicí a stavem (vytěžen/aktivní) a respawn: vytěžený uzel se po čase (konstanta, např. 60 s) obnoví. Vystav gather(cell) -> bool a is_walkable(pos)."
@@ -73,6 +75,7 @@
       "kind": "code",
       "owns": ["scripts/item.gd"],
       "depends_on": ["data.content"],
+      "done": true,
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/item.gd vytvoř reprezentaci předmětu načtenou z assets/data/items.json: id, název, materiál, trvanlivost (výchozí 20), damage nebo armor_rating, kvalita. Funkce use() -> void (sníží trvanlivost o 1, nejmíň 0), repair() -> void (obnoví trvanlivost na 20) a broken() -> bool (true, když je trvanlivost 0). STRUKTURA SOUBORU (testy berou load(...).new() a volají metody přímo): (1) soubor ZAČÍNÁ `extends Node`, (2) `class_name GameItem` může následovat, ale NIKDY nesmí být i jménem vnořené `class` v témž souboru — vnořená třída přebije globální jméno, `new()` pak vrátí ji a testy spadnou; soubor SÁM JE ta třída, žádnou vnořenou nedefinuj. (3) `_init()` nesmí mít povinný argument — `new()` se volá bez parametrů, data načti v `_ready()`. (4) NEPIŠ `class_name Item` — koliduje s globálním jménem (CONVENTIONS.md §1d). (5) Vlastnost trvanlivosti pojmenuj `trvanlivost` (testy ji čtou přes Object.get a přijímají i `durability`)."
     },
@@ -82,7 +85,7 @@
       "kind": "code",
       "owns": ["scripts/player.gd"],
       "depends_on": ["core.attributes", "core.skills", "world.map", "entity.item"],
-      "done": true,
+      "done": false,
       "done_note": "POZOR: PR #25 sloučené 1. 10. změnil JEN project.godot; move(), inventář ani die() nebyly nikdy v žádné větvi (git log -S napříč refs). Jiné komponenty je už volají: assist.gd čte hp/max_hp/mana/max_mana/target, economy.gd volá add_item/remove_item. Měřeno 2. 10. 2026",
       "size_lines": "<= 120",
       "model": "strong",
@@ -97,6 +100,7 @@
       "depends_on": ["core.attributes", "core.skills", "entity.item"],
       "done": true,
       "done_note": "PR #26 sloučené 1. 10.; oprava (Godot 4 API + tvar smlouvy + volající test) 2. 10. 2026",
+      "size_lines": "<= 130",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/combat.gd vytvoř resolve(attacker, defender) -> Dictionary. TVAR DAT (kdo je kdo a čím se to prokazuje): attacker i defender jsou UZLY KOSTRY (extends Node). Čísla se NEČTOU z útočníka, ale z REGISTRU KOMPONENT na rodiči — get_parent().component(\"Attributes\") dá scripts/attributes.gd (hodnota(\"Str\"), hodnota(\"Dex\")), get_parent().component(\"Skills\") dá scripts/skills.gd (hodnota(\"boj_na_blizko\")). POZOR: žádný objekt v repu neumí hodnota(\"Dex\") i hodnota(\"boj_na_blizko\") zároveň — atributy a skilly jsou DVĚ komponenty. Zbraň je uzel s vlastností damage, visící na útočníkovi jako vybrana_zbran (starší název zbran); zbroj je vlastnost armor_rating na obránci. Hit chance = 0.5 + (Dex)/200 + (boj_na_blizko)/200; když zasáhne, damage = max(0, 1 + Str/10 + zbraň.damage − obránce.armor_rating). Vrať {hit: bool, damage: int} VŽDY, i když komponenty chybí. Godot 4 API: vlastnost se ptá přes `\"jmeno\" in uzel`, NIKDY `uzel.has(\"jmeno\")` — to je Godot 3 a v Godotu 4 neexistuje (Object.has tam není). PŘIJÍMACÍ KRITÉRIUM: test musí resolve() ZAVOLAT a ověřit, že zásah dá damage = 1 + Str/10 + zbraň − zbroj a minutí dá damage 0; `has_method(\"resolve\")` NESTAČÍ (naměřeno 2. 10. 2026: funkce volala has() a spadla při každém zásahu, test to neviděl)."
     },
@@ -108,6 +112,7 @@
       "depends_on": ["core.skills", "world.map", "data.content"],
       "done": true,
       "done_note": "PR #30 sloučené 2. 10. 2026; oprava (registr komponent místo /root, Godot 4 API) v PR #31",
+      "size_lines": "<= 80",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/mining.gd vytvoř gather(node) -> int: výtěžek = 1 + (skill_těžby_or_dřevorubectví - obtížnost suroviny)/10, nejmíň 0. Při těžbě zvyš add(skill, 1) pro příslušný skill (tezba u rudy/kamene, drevorubectvi u dřeva) a zavolej world.gather(cell) (označí uzel vytěžený). Vrať počet vytěžených kusů."
     },
@@ -183,6 +188,7 @@
       "depends_on": ["core.skills", "core.attributes", "entity.player", "world.map", "sim.economy"],
       "done": true,
       "done_note": "PR #28 sloučené 2. 10. 2026 (oprava: registr komponent místo skupin, Godot 4 API)",
+      "size_lines": "<= 100",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/save.gd vytvoř save() a load() přes ConfigFile do user://save.cfg: atributy, skilly, inventář, zlato, pozici hráče a stav uzlů světa (které jsou vytěžené). load() ošetří neexistující soubor (vrátí false). Vystav save() -> bool a load() -> bool."
     },
@@ -194,6 +200,7 @@
       "depends_on": ["core.skills", "core.attributes", "entity.player", "sim.economy"],
       "done": true,
       "done_note": "PR #29 sloučené 2. 10. 2026 (oprava: Godot 4 API margin_* → offset_*, registr komponent)",
+      "size_lines": "<= 100",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/hud.gd vytvoř update() -> void, které zobrazí: HP, atributy (Str/Dex/Int), dovednosti (tezba/drevorubectvi/kovarstvi/boj_na_blizko), zlato a vybavenou zbraň/zbroj. Čte jen veřejné gettery (attributes.get, skills.get, economy.gold, player). Label se umístí do rohu obrazovky."
     },
