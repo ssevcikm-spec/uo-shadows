@@ -2,7 +2,8 @@ import sys
 from PIL import Image
 import numpy as np
 
-im = Image.open(r'C:\Users\Ssevc\Local-Deepseek\gameforge\projects\uo-sandbox\tools\blender\preview.png').convert('RGBA')
+import pathlib as _pl
+im = Image.open(str(_pl.Path(__file__).resolve().parent / 'preview.png')).convert('RGBA')
 a = np.array(im)
 alpha = a[:, :, 3]
 rgb = a[:, :, :3].astype(np.int32)

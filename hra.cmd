@@ -10,7 +10,7 @@ rem nepridava do PATH). Kdyz tam neni, nastav FORGE_GODOT.
 setlocal
 set "HRA=%~dp0"
 if "%FORGE_GODOT%"=="" (
-  set "FORGE_GODOT=%HRA%..\..\orchestra\tools\godot\Godot_v4.7.2-stable_win64_console.exe"
+  set "FORGE_GODOT=E:\Tools\godot\Godot_v4.7.2-stable_win64_console.exe"
 )
 if not exist "%FORGE_GODOT%" (
   echo CHYBA: Godot nenalezen na "%FORGE_GODOT%"
