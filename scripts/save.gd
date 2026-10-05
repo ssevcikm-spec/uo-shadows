@@ -57,6 +57,22 @@ func save() -> bool:
 		# jako uložený stav. Atrapa bez pozice je proto OHLÁŠENÁ mez.
 		push_warning("save.gd: hráč nemá 'position' – pozici NEUKLÁDÁM")
 
+	# --- Inventory saving ---
+	if hrac != null and "inventory" in hrac:
+		var inv_data = []
+		for item in hrac.inventory:
+			if item != null:
+				inv_data.append({"id": item.id, "trvanlivost": item.trvanlivost, "kvalita": item.kvalita})
+		cfg.set_value("inventory", "items", inv_data)
+		if hrac.equipped != null:
+			cfg.set_value("inventory", "equipped_id", hrac.equipped.id)
+
+	# --- World state saving ---
+	var world = _komponenta("World")
+	if world != null and world.has_method("snapshot"):
+		var world_data = world.snapshot()
+		cfg.set_value("world", "data", world_data)
+
 	return cfg.save(SOUBOR) == OK
 
 
@@ -93,6 +109,32 @@ func load() -> bool:
 		# Týž důvod jako v `save()`: uložená pozice, kterou není komu vrátit,
 		# se nesmí zamlčet — jinak `load()` vypadá jako úspěch.
 		push_warning("save.gd: uložená pozice je, ale hráč 'position' nemá – nevracím ji")
+
+	# --- Inventory loading ---
+	var inv_items = cfg.get_value("inventory", "items", [])
+	if inv_items is Array:
+		var player = _komponenta("Player")
+		if player != null:
+			var item_script = preload("res://scripts/item.gd")
+			for dict_item in inv_items:
+				var itm = item_script.new()
+				itm.id = dict_item.get("id", "")
+				itm.trvanlivost = dict_item.get("trvanlivost", 20)
+				itm.kvalita = dict_item.get("kvalita", 0)
+				player.add_item(itm)
+			var equipped_id = cfg.get_value("inventory", "equipped_id", "")
+			if equipped_id != "":
+				for itm in player.inventory:
+					if itm.id == equipped_id:
+						player.equip(itm)
+						break
+
+	# --- World state loading ---
+	var world_data = cfg.get_value("world", "data", null)
+	if world_data != null:
+		var world = _komponenta("World")
+		if world != null and world.has_method("restore"):
+			world.restore(world_data)
 
 	if pouzito == 0:
 		push_error("save.gd: soubor uložený je, ale není kam stav vrátit (chybí komponenty)")
