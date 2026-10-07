@@ -14,6 +14,13 @@
 > návrh, ne záznam. Jakmile se podle některého z nich začne pracovat, patří do
 > hlavičky **datum spotřeby** a co se provedlo.
 >
+> **Vzniklo ze dvou nezávislých měření.** Vedle tohoto dokumentu existuje
+> paralelní audit `E:\Workspaces\_audit-uos\AUDIT-PLANU-uo-shadows.md` (36 kB,
+> vlastní skripty, mutační sonda a sonda „smaž soubor"). Čísla se shodují; jeho
+> dva nejsilnější nálezy (smazání souboru hotové granule projde zelené; mutace
+> v `attributes`/`economy` zůstane zelená) jsem **přeměřil sám** — viz §7.1.
+> Do herního repa nezapsal nic.
+>
 > **Autor není reviewer.** Dokument vznikl v session, která sama nic v herním repu
 > neopravovala (jediný zápis je tento soubor a snímek v `_analyza/`).
 
@@ -24,10 +31,10 @@
 1. **Hypotéza uživatele platí a je měřitelná:** zadání „jak se hra hraje" v celém
    repu **neexistuje** — herní smyčka je tam **jednou větou v odrážce rozsahu**,
    ovládání, UI, prvních pět minut ani „jak hráč pozná úspěch" nikde.
-2. **Plán není špatný nápadem, ale je rozbitý ve třech konkrétních místech:**
-   `engine.shell` (jediná granule, která měla hru složit) je **blokovaná mrtvou
-   granulí**, tři soubory vlastní dvě granule současně a **`provides`/`consumes`
-   nemá ani jedna z 22 granul**.
+2. **Nejlevnější vada je účetní, ne technická:** čtyři granule mají svou práci
+   **sloučenou v `main` a `done` nemají** — dvě z nich drží `engine.shell`.
+   A `world.map` (soubor 0 B) blokuje 5 granul, přičemž ji už nahradila
+   `world.nodes`; **obě dnes vlastní tentýž soubor a obě jsou „připravené"**.
 3. **Pro slabší modely organizovaný není:** agent dostane `--map-tokens 0`, tedy
    **žádnou mapu repa**, plus `CONVENTIONS.md`, své soubory a **ručně psanou prózu
    o mediánu 530 znaků**. Design hry k němu **nedorazí nikdy** — orchestra nemá
@@ -36,10 +43,10 @@
    **tři** (a dvě z nich jsou týž soubor). Zbylých **10 hotových granulí hra nikdy
    nezavolá** — leží v repu jako knihovna bez konzumenta.
 5. **Brány jsou zelené a je to zelená, která nic neznamená:** testy hlásí
-   `91 kontrol, 0 selhání`, ale **tři kontroly `core.skills` se tiše přeskočí**,
-   `economy` a `assist` (obě `done`) se testují **jen na přítomnost metody**,
-   a `check-schema.py` sám vypíše, že kontrola „dvě různé představy o mřížce"
-   **NEPROBĚHLA**.
+   `91 kontrol, 0 selhání`, ale **41 ze 132 kontrol (31 %) se nikdy nespustí**,
+   a **smažete-li soubor hotové granule, testy zůstanou zelené** (ověřeno:
+   `attributes.gd` pryč → 89 kontrol, 0 selhání, `exit 0`) — což `AGENTS.md`
+   výslovně zakazuje.
 6. **Hra, kterou dnes hráč spustí, je sběračka dvou mincí** na izometrické mapě
    30×16 — se startovní chybou `tween_property` a nápovědou inzerující pět
    kláves, které kód neobsluhuje.
@@ -194,6 +201,9 @@ Vše níž je **naměřeno 7. 10. 2026** na `HEAD = 932dc6f`, ne převzato z dok
 | závislostí mířících na nehotovou granuli | **10** |
 | z toho z **hotové** granule na nehotovou | **2** (`sim.mining`→`world.map`, `persist.save`→`world.map`) |
 | granul s `owns` mimo `scripts/`/`assets/` | **1** (`tests.harness` → nemůže se sloučit sama) |
+| granul, jejichž **práce je v `main`, ale nejsou `done`** | **4** — `sim.crafting` (#34), `sim.offline` (#35), `persist.save.state` (#37), `tests.harness` (`279f584`); ověřeno `git merge-base --is-ancestor` = `True` |
+| granul překračujících svůj deklarovaný `size_lines` | **5** (`entity.player` 191>120, `entity.player.api` 191>180, `persist.save` 150>100, `persist.save.state` 150>140, `tests.harness` 1406>1200) + `engine.shell` (377>120, ještě neproběhla) |
+| kontrol v `tests/run_tests.gd`, které se **nikdy nespustí** | **41 ze 132 (31 %)**; hláškou je ohlášená **jedna** (kryje 3 kontroly) |
 | součet délek zadání | **15 886 znaků**; medián **530**, min **211**, max **2 080** |
 | zadání odkazujících na externí kontext (`CONVENTIONS.md §…`, „vzor je v…") | **8 z 22** |
 
@@ -204,6 +214,23 @@ chybějící `model`, ani chybějící `provides`. **V CI hry se nespouští vů
 
 ### 2.2 Vady plánu seřazené podle dopadu
 
+**V0 — Kritická cesta je zablokovaná účetnictvím, ne chybějící prací.**
+**Nejlevnější a nejdopadovější nález celého auditu.** Čtyři granule mají svou
+práci **sloučenou v `main`**, ale v roadmapě `done` nemají (ověřeno
+`git merge-base --is-ancestor` = `True`):
+
+| Granule | Commit v `main` | `done` |
+|---|---|---|
+| `sim.crafting` | `9876586` (PR #34) | **ne** |
+| `sim.offline` | `ee7af53` (PR #35) | **ne** |
+| `persist.save.state` | `7ad8d04` (PR #37) | **ne** |
+| `tests.harness` | `279f584` | **ne** |
+
+`engine.shell` přitom na `sim.crafting` a `sim.offline` **závisí**. Část kritické
+cesty tedy není zatarasená chybějící prací, ale **zastaralým zápisem** — a
+`sim.crafting` je navíc dnes v množině „připraveno", takže ji conductor
+**vydá znovu** a vznikne zbytečný PR (a konflikt na `scripts/crafting.gd`).
+
 **V1 — Kritická cesta vede přes mrtvou granuli.**
 `engine.shell` je jediná granule, která měla přepsat monolit `game.gd` na kostru
 s registrem komponent — tedy **jediné místo, kde by hotové komponenty dostaly
@@ -212,6 +239,8 @@ je `done: false`, její soubor `scripts/world.gd` má **0 bajtů**, její práce
 skončila v `_retired/world.gd`, a **nahradila ji nová granule `world.nodes`** —
 ale `world.map` z plánu nikdo neodstranil. Drží tedy `engine.shell`, blokuje
 5 dalších granul a **vlastní tentýž soubor jako `world.nodes`**.
+**A obě jsou dnes v množině „připraveno"** — conductor je smí vydat **paralelně
+na tentýž soubor**, což je přesně to, čemu má `owns` zabránit.
 
 **V2 — Tři soubory vlastní dvě granule.**
 `world.gd`, `player.gd`, `save.gd`. Vždy je to stejný vzor: první granule byla
@@ -475,23 +504,23 @@ jaké **bude mít** `game.gd`*".
 | 3 | `core.skills` | ✅ | `skills.gd` (15) | ne | **API dobré, zadání rozporné**; 3 kontroly se přeskočí |
 | 4 | `world.level` | ✅ | `level.gd` (283) | **ano** | **nejlepší granule** — izometrie ověřená měřením sklonu |
 | 5 | `world.map` | ❌ | `world.gd` (**0 B**) | ne | **mrtvá granule**, blokuje 5 dalších |
-| 6 | `entity.item` | ✅ | `item.gd` (39) | ne | funguje; `material` a `quality` v datech **nejsou** |
-| 7 | `entity.player` | ✅ | `player.gd` (191) | **ano** | dobrá; historicky `done` bez práce |
+| 6 | `entity.item` | ✅ | `item.gd` (39) | ne | funguje; `material`/`quality` v datech **nejsou**; **`repair()` sníží trvanlivost ze 100 na 20** |
+| 7 | `entity.player` | ✅ | `player.gd` (191) | **ano** | dobrá; historicky `done` bez práce; **`die()` nemá jediné volání**; limit 120 **překročen** |
 | 8 | `sim.combat` | ✅ | `combat.gd` (127) | ne | **vzorová smlouva** (§2.1); funkčně testovaná |
 | 9 | `sim.mining` | ✅ | `mining.gd` (72) | ne | funkčně testovaná; **závisí na mrtvém `world.map`** |
-| 10 | `sim.crafting` | — | `crafting.gd` (78) | ne | jen `has_method`; **dělá si vlastní instanci `skills.gd`** |
-| 11 | `sim.economy` | ✅ | `economy.gd` (47) | ne | **jen `has_method`**; čte neexistující `item.quality` |
+| 10 | `sim.crafting` | — | `crafting.gd` (78) | ne | **práce je v `main` (`9876586`), ale `done` chybí** → dnes „připraveno" a vydá se znovu; dělá si vlastní instanci `skills.gd` |
+| 11 | `sim.economy` | ✅ | `economy.gd` (47) | ne | **jen `has_method`**; **`price()` = 0 pro každý předmět** (`SCRIPT ERROR`) → obchod zdarma |
 | 12 | `entity.npc` | — | **chybí** | — | zadání 211 znaků, nedodáno |
 | 13 | `entity.enemy` | — | **chybí** | — | **5 neúspěšných běhů** |
-| 14 | `sim.offline` | — | `offline.gd` (57) | ne | soubor je, granule není `done`; jen `has_method` |
+| 14 | `sim.offline` | — | `offline.gd` (57) | ne | **práce je v `main` (`ee7af53`), ale `done` chybí**; jen `has_method` |
 | 15 | `sim.assist` | ✅ | `assist.gd` (17) | ne | funkčně testovaná; **slovník triggerů nikde** |
 | 16 | `persist.save` | ✅ | `save.gd` (150) | ne | funkčně testovaná; **závisí na mrtvém `world.map`** |
 | 17 | `ui.hud` | ✅ | `hud.gd` (92) | ne | funkčně testovaná; `<= 100` **bez `model`** |
 | 18 | `engine.shell` | — | `game.gd` (377) | — | **NIKDY NEPROBĚHLA** — hra je pořád monolit |
 | 19 | `world.nodes` | ❌ | `world.gd` (0 B) | ne | PR #32 sloučen, doručil **prázdný soubor** |
 | 20 | `entity.player.api` | ✅ | `player.gd` (191) | **ano** | oprava předchozí vady, ne nová práce |
-| 21 | `tests.harness` | — | `run_tests.gd` (1 406) | — | **owns mimo `scripts/`** → nemůže se sloučit |
-| 22 | `persist.save.state` | — | `save.gd` (150) | ne | oprava předchozí vady |
+| 21 | `tests.harness` | — | `run_tests.gd` (1 406) | — | **owns mimo `scripts/`** → nemůže se sloučit; **práce je v `main` (`279f584`)**, `done` chybí; limit 1200 překročen; **hodnotí sám sebe** (`acceptance: [tests]`) |
+| 22 | `persist.save.state` | — | `save.gd` (150) | ne | oprava předchozí vady; **práce je v `main` (`7ad8d04`)**, `done` chybí |
 
 **Řádky jsou z blobu (`git show HEAD:…`), protože `Get-Content | Measure-Object -Line`
 naměřilo u téhož souboru o 4–45 řádků méně** — autorita je blob, ne přepočet.
@@ -519,11 +548,46 @@ Poctivě: **víc než by verdikt „hra je sběračka mincí" naznačoval.**
 ### 4.5 Kde to selhává
 
 **(a) Zelená, která nic neznamená.** Běh testů: `[test] 91 kontrol, 0 selhání`,
-`exit 0`. Přitom:
+`exit 0`. Naměřeno třemi nezávislými sondami:
 
-- **3 kontroly `core.skills` se tiše přeskočí** (`run_tests.gd:549`) — protože
-  zadání té granule si odporuje (§2.3c). Vypíše se hláška, ale běh zůstane
-  zelený a počet kontrol se o ně **nezvýší**.
+**(a1) 41 ze 132 kontrol se nikdy nespustí.** Ze 132 volání `_check(` je jen
+**17 mimo každý `if`/`for`** — ostatních **107 je podmíněných** a **94 z nich je
+přítomnostních** (`has_method`, `!= null`, `has(`, `.size()`). Empiricky se
+spustí **91** kontrol, **41 se nikdy nespustí (31 %)**. A **ohlášena je jediná
+výjimka** — hláška u skillů, která kryje 3 kontroly. **Zbylých 38 se přeskočí
+bez slova.**
+
+**(a2) Smaž soubor hotové granule — testy zůstanou zelené.** Ověřeno mnou
+v kopii repa 7. 10. 2026:
+
+| Běh | Výsledek |
+|---|---|
+| baseline | `91 kontrol, 0 selhání`, `exit 0` |
+| **smazáno `scripts/attributes.gd`** (`done: true`) | **`89 kontrol, 0 selhání`, `exit 0`** |
+| **smazáno i `scripts/economy.gd`** (`done: true`) | **`88 kontrol, 0 selhání`, `exit 0`** |
+
+`AGENTS.md` to zakazuje výslovně: „*Soubor, který součástí hry být MÁ, musí při
+nenačtení **SELHAT***." V souhrnné sondě přes 20 souborů prošlo smazání
+**9× tiše** (kromě uvedených i `crafting.gd`, `offline.gd`, `world.gd`
+a 4 z 5 datových souborů `data.content`).
+
+**(a3) Mutace v hotové komponentě zůstane zelená.** Sonda (20 mutací, v kopii,
+s ověřením provedení mutace): **12 odhaleno, 7 neodhaleno**. Neodhalené:
+`player.die()` nezahodí inventář · `attributes.hodnota()` vrací vždy 0 ·
+`attributes.derived()` damage ×100 · strop skillu 1000 · `economy.gold()`
+vrací 999 · `offline` strop 10× · `crafting` kvalita vždy 0.
+**Proč:** blok „funkčních kontrol" ukládání a HUDu běží proti **atrapám**
+(`TestAtributy`, `TestSkilly`, `TestEkonomika`, `TestHrac`), ne proti skutečným
+komponentám. `run_tests.gd` má **16 tříd-atrap na 315 řádcích (22 %)**.
+
+**(a4) Dokument slibuje `get()`, kód má `hodnota()`.** `docs/ARCHITEKTURA.md:129–130`
+deklaruje `get(attr)` a `get(skill)`; `CONVENTIONS.md:127` `get` **zakazuje**;
+kód má `hodnota()`. `run_tests.gd` je napsaný **podle dokumentu**, takže
+`sk.get("tezba")` se trefí do enginového `Object.get()` → `null` → **tři
+kontroly stropu skillu se přeskakují od napsání souboru** (§2.3c).
+
+Dále:
+
 - **`sim.economy` a `sim.assist` (obě `done`) mají jen `has_method`**
   (`run_tests.gd:809`, `:835`) — a to i přesto, že soubor o dvě stě řádků výš
   (`:620`, `:754`) nese komentář „*FUNKČNÍ kontrola, ne jen `has_method`*".
@@ -633,10 +697,19 @@ uživatele:
 
 ### P0 — bez tohohle se hra nikdy nespustí jako hra
 
+0. **Srovnat `done` se skutečností v gitu — je to nejlevnější krok s největším
+   dopadem.** Čtyři granule mají práci v `main` a `done` nemají (§2.2 V0);
+   dvě z nich drží `engine.shell`. Postup: u každé granule, která má `done`
+   chybějící, ověřit `git merge-base --is-ancestor <commit PR> HEAD`, a když
+   je `True`, zapsat `done: true` + `done_note` s PR a datem.
+   **Zároveň to znamená, že `sim.crafting` se nesmí vydat** — je dnes
+   v „připraveno" a spálila by běh na práci, která je hotová.
 1. **Zrušit `world.map`.** Je mrtvá, vlastní tentýž soubor jako `world.nodes`
    a blokuje kritickou cestu. Buď ji odstranit z roadmapy, nebo ji přepsat na
    `done: true` s odkazem na `world.nodes` — a **v `docs/ARCHITEKTURA.md` §3
    doplnit 4 chybějící granule**, aby dokument a plán říkaly totéž.
+   **Nutně před dalším tikem conductora** — obě granule jsou dnes připravené
+   a vlastní tentýž soubor.
 2. **Dát `engine.shell` průchod.** Dokud neproběhne, je 10 hotových granulí
    mrtvá knihovna. Pozor: **`entity.enemy` je před `engine.shell` nesplnitelná**
    — `combat.resolve()` potřebuje registr, který vzniká až v `engine.shell`.
@@ -645,53 +718,77 @@ uživatele:
 3. **Rozhodnout, co je `tests.harness`.** Granule, která vlastní `tests/`, se
    **nemůže sloučit sama** — patří buď do ruční fronty (a být to napsané), nebo
    se má vzdát vlastnictví testů ve prospěch člověka.
+4. **Opravit dvě živé vady v kódu, které dnes dělají hru nehratelnou i kdyby se
+   komponenty zapojily:**
+   - **`economy.price()` vrací `0` pro každý skutečný předmět** — čte
+     `item.material` a `item.quality`, ale `item.gd` má `kvalita` a `items.json`
+     nemá ani `material`, ani `quality`. Na skutečném předmětu to skončí
+     `SCRIPT ERROR` a `0 * 0 = 0` → **obchod je zdarma**.
+   - **`item.repair()` sníží trvanlivost ze 100 na 20** — `items.json`
+     deklaruje `durability` 100 (meč) a 150 (zbroj), `item.gd:36` nastaví
+     natvrdo **20**. „Oprava" tedy předmět **zničí**.
 
 ### P1 — aby plán unesl smlouvy
 
-4. **Zavést `provides`/`consumes` a strukturované `acceptance`** do roadmapy
+5. **Zavést `provides`/`consumes` a strukturované `acceptance`** do roadmapy
    (přesně jak navrhuje `NAVRH-ORCHESTRA-NG.md` §8.4). Bez toho se smlouvy
    nemají kam psát a agent je nikdy nedostane.
-5. **Přepsat `docs/ARCHITEKTURA.md` podle `JAK-PSAT…` §5.1.** Dnes je hotová
+6. **Přepsat `docs/ARCHITEKTURA.md` podle `JAK-PSAT…` §5.1.** Dnes je hotová
    **3 z 18 smluv** (§2.1–2.3). Chybí datové formáty, definice hotovo
    (v `CONVENTIONS.md` je slovo „hotovo" **0×**) a **non-goals** (v `ARCHITEKTURA.md`
    **0×**) — a non-goals jsou přesně to, co má zabránit druhému číslu mřížky.
    **Tuhle práci nedělat v session, která opravuje kód** (`AGENTS.md`).
-6. **Přidat `model: strong` pěti granulím**, které mají `size_lines > 60`
+   Zároveň **srovnat smluvní jména s kódem**: dokument slibuje `get(attr)`,
+   `get(skill)`, `trade(player, item)` a `component(name)` — kód má `hodnota()`,
+   `buy/sell/gold` a `game.gd` registr **vůbec nemá**.
+7. **Přidat `model: strong` pěti granulím**, které mají `size_lines > 60`
    (`world.level` 300, `sim.combat` 130, `sim.mining` 80, `persist.save` 100,
    `ui.hud` 100) — nebo jim limit snížit.
+8. **Srovnat `size_lines` s realitou.** Pět granul s prací v `main` už svůj
+   deklarovaný limit překračuje (`entity.player` 191>120, `entity.player.api`
+   191>180, `persist.save` 150>100, `persist.save.state` 150>140,
+   `tests.harness` 1406>1200). Deklarace je vstup pro gate auto-merge — když
+   neodpovídá, je každý další odhad velikosti špatný.
 
 ### P2 — aby zadání zvládl slabý model
 
-7. **Dát agentovi design.** Nejbližší cestou je **přidat `docs/ARCHITEKTURA.md`
+9. **Dát agentovi design.** Nejbližší cestou je **přidat `docs/ARCHITEKTURA.md`
    do `--read`** v `agent.yml` — nebo ještě lépe **generovat `prompt` ze schématu**
    (což metodika žádá a praxe nedělá: 22 ručních próz).
-8. **Zavést „feasibility před dispatchem"** — priorita 1 podle
+10. **Zavést „feasibility před dispatchem"** — priorita 1 podle
    `POUCENI-A-VZORY.md` §10.2. Konkrétně: **kontrola, že každá smlouva, kterou
    granule spotřebovává, existuje v `main` a jde zavolat.** `entity.enemy`
    by se pak nevydala pětkrát.
-9. **Opravit tři nepravdivá tvrzení v trvalých pravidlech** — ne přepsáním
-   (historie se needitue), ale **označením „ve svém čase správná"** a doplněním
-   dnešního stavu: `AGENTS.md:108–110` (`"cíl mrtev"` → dnes `"target dead"`),
-   `CONVENTIONS.md:273` (26 → 91 kontrol), `CONVENTIONS.md:252` (`_safe_spot`
-   neexistuje) a `AGENTS.md:91` (DESIGN.md už není zdroj pravdy).
-10. **Odstranit z `CONVENTIONS.md` §3 radu „nepřidávej nové soubory"** — je
+11. **Opravit tři nepravdivá tvrzení v trvalých pravidlech** — ne přepsáním
+    (historie se needitue), ale **označením „ve svém čase správná"** a doplněním
+    dnešního stavu: `AGENTS.md:108–110` (`"cíl mrtev"` → dnes `"target dead"`),
+    `CONVENTIONS.md:273` (26 → 91 kontrol), `CONVENTIONS.md:252` (`_safe_spot`
+    neexistuje) a `AGENTS.md:91` (DESIGN.md už není zdroj pravdy).
+    **Navíc:** `docs/ARCHITEKTURA.md` je „jediný závazný" a chybí v něm
+    **4 granule z 22**; tvrdí „18 granulí v 6 vlnách" (je **22 v 5 vlnách**),
+    „13 granulí na `<= 60`" (je **8**) a „16 závislostí `engine.shell`" (je **19**).
+12. **Odstranit z `CONVENTIONS.md` §3 radu „nepřidávej nové soubory"** — je
     v přímém rozporu s architekturou, kterou má agent stavět.
 
 ### P3 — aby zelená něco znamenala
 
-11. **Zrušit tiché přeskakování v testech.** Tři kontroly `core.skills` se
-    musí buď spustit, nebo **selhat**. Totéž kontroly migrace monolitu
-    (`run_tests.gd:952`) — dnes se nikdy nespustí a nikde to není vidět.
-12. **Doplnit funkční kontroly `sim.economy` a `sim.assist`** — obě jsou `done`
+13. **Zrušit tiché přeskakování v testech.** **41 ze 132 kontrol (31 %) se dnes
+    nikdy nespustí** a jen 3 to ohlásí. Soubor, který součástí hry být MÁ, musí
+    při nenačtení **SELHAT** — dnes smazání `attributes.gd` i `economy.gd`
+    (obě `done`) projde se zeleným CI.
+14. **Doplnit funkční kontroly `sim.economy` a `sim.assist`** — obě jsou `done`
     a obě mají jen `has_method`, přestože stejný soubor o 200 řádků výš má
-    komentář, že to nestačí.
-13. **`check-wiring.py` nesmí počítat `tests/`** jako důkaz použití produkčním
+    komentář, že to nestačí. A **nahradit atrapy skutečnými komponentami**
+    v bloku ukládání/HUDu (`run_tests.gd:854–931`) — kvůli nim zůstane zelená
+    i mutace `economy.gold()` vracející 999.
+15. **`check-wiring.py` nesmí počítat `tests/`** jako důkaz použití produkčním
     kódem — jinak zůstane slepý přesně na „funguje to, ale nic to nedělá",
-    což je vada, kterou má hledat.
+    což je vada, kterou má hledat. Naměřeno: přesun `tests/` mimo cíl zvedne
+    počet hlášených mrtvých funkcí z **4 na 13**.
 
 ### P4 — aby se metodika přestala učit jen z minulosti
 
-14. **Oživit `JAK-PSAT-DESIGN-A-PLANOVAT-VYVOJ.md`.** Je to jediná metodika
+16. **Oživit `JAK-PSAT-DESIGN-A-PLANOVAT-VYVOJ.md`.** Je to jediná metodika
     designu a plánování, kterou harness má, je označená jako **rostoucí** a její
     §7 nařizuje každé session doplnit naměřený případ. **Od 2. 10. 2026 nemá ani
     jeden nový případ.** Tenhle audit je sám o sobě **~12 nových naměřených
@@ -719,13 +816,44 @@ na „co má hráč dělat a jak pozná, že si vede dobře" se opravit nedá �
 
 ---
 
-## 7. Meze tohohle auditu
+## 7. Metody, meze a nezávislé ověření
 
-- **Nepřeměřoval jsem běhy orchestra.** Čísla o úspěšnosti modelů (11,3 %,
-  240 běhů) jsou **citace** z analýz orchestra s datem, ne moje měření.
-- **Nepouštěl jsem `vision.mjs`** (potřebuje klíč) ani `baseline.py`.
-- **Linter plánu jsem spustil, ale je poradní** — jeho `exit 0` nic neznamená.
-- **Sloupec „řádků" je z blobu** (`git show HEAD:`), protože přepočet přes
-  `Get-Content | Measure-Object -Line` dává u téhož souboru až o 45 řádků méně.
-- **Dokument vznikl v jedné session.** Podle `AGENTS.md` („autor není nezávislý
-  reviewer") by čísla o kvalitě granulí měla ověřit jiná session.
+### 7.1 Čím byla která čísla naměřena
+
+| Číslo | Postup |
+|---|---|
+| 22 granul, 13 `done`, visící závislosti, kolize `owns`, délky zadání | Python nad `.forge/roadmap.json` |
+| řádky souborů | `git show HEAD:<soubor>` + `splitlines()` — **autorita je blob** |
+| „práce je v `main`, ale není `done`" | `git merge-base --is-ancestor <commit> HEAD` |
+| `provides`/`consumes`/`acceptance` = 0 čtenářů | Python walk nad `conductor/`, `repo/`, `tools/` s vyloučením dokumentace |
+| 91 kontrol / 0 selhání | `Godot --headless --script res://tests/run_tests.gd` |
+| smazání souboru hotové granule | kopie repa → `Remove-Item` → testy (baseline 91/0, po smazání 89/0 a 88/0, `exit 0`) |
+| mutace v hotové komponentě | kopie repa, 20 mutací, před každou revert z originálu + ověření, že mutace proběhla |
+| 41 ze 132 kontrol se nikdy nespustí | statická analýza `_check(` proti obalujícím `if`/`for` + empirický počet spuštěných |
+| co hra dělá | `Godot --headless --quit-after`, snímek přes `--write-movie` |
+| nasazení | Node `fetch` HEAD na `index.png` + GitHub API na `commits/main` |
+
+### 7.2 Co naměřeno NEBYLO (a je to vidět)
+
+- **Běhy orchestra jsem nepřeměřoval.** Úspěšnost modelů (11,3 %, 240 běhů) je
+  **citace** z analýz orchestra s datem, ne moje měření.
+- **Nepouštěl jsem `vision.mjs`** (potřebuje klíč z GitHub Secrets; v CI
+  neblokuje) ani `baseline.py`.
+- **Linter plánu je poradní** — spustil jsem ho, jeho `exit 0` nic neznamená.
+- **Jedna mutace z 20 se neprovedla** (vzor nenalezen) — je vedená jako
+  **nezměřená**, ne jako „prošlo".
+- **`verify-level-render.py`** dal `207/208 = 99,5 %` (1 chyba `(21,14) brick
+  vs dirt`) — to je převzato z paralelního auditu, sám jsem ho nespouštěl.
+
+### 7.3 Nezávislé ověření
+
+Tenhle audit vznikl **dvakrát, nezávisle**. Paralelní měření
+(`E:\Workspaces\_audit-uos\AUDIT-PLANU-uo-shadows.md`, 36 kB, vlastní skripty)
+dospělo ke **shodným číslům** u DAG, běhů bran, řádků i promptů — a přineslo
+navíc **mutační sondu**, **sondu „smaž soubor"** a dvě živé vady v kódu
+(`price()` = 0, `repair()` 100 → 20). Jeho klíčové závěry jsem **přeměřil sám**
+(smazání `attributes.gd` i `economy.gd` → testy zelené; `size_lines` překročen;
+4 granule s prací v `main` bez `done`) a shodují se.
+
+Podle `AGENTS.md` („autor není nezávislý reviewer") je tohle přesně ten postup,
+který má být: **dvě měření, jeden závěr**.
