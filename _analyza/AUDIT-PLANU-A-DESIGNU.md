@@ -1,0 +1,731 @@
+# Audit: vývojový plán a game design UO-Shadows proti praxi harnessu
+
+> **Co tenhle dokument JE:** **analýza** (audit) — odpověď na otázku „je plán a design
+> této hry dobře formulovaný a organizovaný pro slabší AI modely, a co z toho plyne".
+> Není to zadání, není to stav projektu a není to záznam o provedení.
+>
+> **Zadavatel a datum:** uživatel, 7. 10. 2026.
+> **Vzniklo:** 7. 10. 2026.
+> **Kde brát současný stav:** `.forge/roadmap.json` (co se má dělat),
+> `docs/ARCHITEKTURA.md` (co je závazné), `git HEAD` (co je hotové),
+> `E:\Workspaces\forge-orchestra\HANDOFF.md` (stav orchestra).
+>
+> **Co z něj bylo provedeno:** k datu vzniku **nic** — všechna doporučení v §5 jsou
+> návrh, ne záznam. Jakmile se podle některého z nich začne pracovat, patří do
+> hlavičky **datum spotřeby** a co se provedlo.
+>
+> **Autor není reviewer.** Dokument vznikl v session, která sama nic v herním repu
+> neopravovala (jediný zápis je tento soubor a snímek v `_analyza/`).
+
+---
+
+## 0. Odpověď v šesti větách
+
+1. **Hypotéza uživatele platí a je měřitelná:** zadání „jak se hra hraje" v celém
+   repu **neexistuje** — herní smyčka je tam **jednou větou v odrážce rozsahu**,
+   ovládání, UI, prvních pět minut ani „jak hráč pozná úspěch" nikde.
+2. **Plán není špatný nápadem, ale je rozbitý ve třech konkrétních místech:**
+   `engine.shell` (jediná granule, která měla hru složit) je **blokovaná mrtvou
+   granulí**, tři soubory vlastní dvě granule současně a **`provides`/`consumes`
+   nemá ani jedna z 22 granul**.
+3. **Pro slabší modely organizovaný není:** agent dostane `--map-tokens 0`, tedy
+   **žádnou mapu repa**, plus `CONVENTIONS.md`, své soubory a **ručně psanou prózu
+   o mediánu 530 znaků**. Design hry k němu **nedorazí nikdy** — orchestra nemá
+   design jako vynucený objekt (0 čtenářů v kódu conductora).
+4. **Důsledek je naměřený:** 13 granul je `done`, ale běžící hra jich používá
+   **tři** (a dvě z nich jsou týž soubor). Zbylých **10 hotových granulí hra nikdy
+   nezavolá** — leží v repu jako knihovna bez konzumenta.
+5. **Brány jsou zelené a je to zelená, která nic neznamená:** testy hlásí
+   `91 kontrol, 0 selhání`, ale **tři kontroly `core.skills` se tiše přeskočí**,
+   `economy` a `assist` (obě `done`) se testují **jen na přítomnost metody**,
+   a `check-schema.py` sám vypíše, že kontrola „dvě různé představy o mřížce"
+   **NEPROBĚHLA**.
+6. **Hra, kterou dnes hráč spustí, je sběračka dvou mincí** na izometrické mapě
+   30×16 — se startovní chybou `tween_property` a nápovědou inzerující pět
+   kláves, které kód neobsluhuje.
+
+---
+
+## 1. Co praxe harnessu říká, že má správný plán a design obsahovat
+
+### 1.1 Metodika, kterou stanice má
+
+Zlaté pravidlo (`~\.dsh\skills\game-developer\SKILL.md:16`):
+
+```
+Cíl → Požadavky → Architektura → Smlouvy → Granule → DAG → Brány → Ověření proti cíli
+```
+
+**Kde metodika sedí a kde má díru.** Pro **rozpad** a pro **zápis smluv** je
+propracovaná a opřená o naměřené případy. Pro **herní design jako takový
+neexistuje** — a to není dojem, to je měření:
+
+> **Plošný sken (Python walk, ne `grep`) přes `C:\Users\Ssevc\Local-Deepseek`,
+> `E:\Workspaces\forge-orchestra`, `E:\Workspaces\uo-shadows` a
+> `C:\Users\Ssevc\.dsh\skills`, jen soubory `.md`:**
+> zkratka `GDD` — **0 výskytů**; „game design document" — **0**;
+> „jak se hraje" — **0**; „herní smyčka / core loop / play loop" — **0**;
+> „prvních 5 minut" — **0**.
+
+Co je místo toho, je **jediné normativní místo** — `JAK-PSAT-DESIGN-A-PLANOVAT-VYVOJ.md`
+§2 (`:36–76`) — a je to **šest kontrolních otázek o smlouvách, ne o hře**:
+tvar dat, přijímací kritérium, definice hotovo, explicitní non-goals, vlastnictví
+souborů, „závislost = hotové a funkční". Plus šestibodový checklist před vydáním
+granule.
+
+**A ta jediná věta o hře, kterou KB má:** „*Cíl — jedna věta: co hráč dělá a jaký
+je zážitek*" (`game-developer\SKILL.md:45`). Jedna věta. Zbytek metodiky je
+architektura. Když se hledá „jak se hra hraje", najdou se v celé KB **tři místa
+a dohromady jedna věta** (`SKILL.md:45`; `NAVRH-ORCHESTRA-NG.md:486–487`
+s `goal.acceptance = ["hratelnost: hráč se pohne a nasbírá rudu"]`;
+`:1009–1010`).
+
+> **Žádný dokument neříká, jak herní smyčku popsat, jak ji rozepsat na okamžiky
+> hraní, jak zapsat ovládání, obtížnost, tempo ani pocit ze hry.**
+
+**A ten dokument, který měl tuhle mezeru zacelit, stojí.** `JAK-PSAT…` je
+**„rostoucí dokument"** a jeho §7 (`:233–236`) nařizuje: „*každá session, která
+při práci narazí na naměřenou vadu designu nebo plánování… Přidá oddíl do §4*".
+Naměřeno 7. 10. 2026: **od 2. 10. do něj nepřibyl ani jeden případ** — poslední
+commit, který se souboru dotkl, je přesun na `E:`, obsah je bajt na bajt shodný
+se snapshotem z 2. 10. Hlavička pořád tvrdí „*Stav: 1. sezení, 6 naměřených
+případů*". **Mechanismus, kterým se metodika měla učit z praxe, je přerušený.**
+
+Poznámka k místu: `JAK-PSAT…` **není v knowledge base stanice** — leží
+v `E:\Workspaces\forge-orchestra\` (a ve dvou identických snapshotted v jeho
+`_analyza\`). Kdo ho hledá v `Local-Deepseek`, nenajde ho.
+
+### 1.2 Co orchestra SKUTEČNĚ vynucuje — a co je jen text
+
+Rozdíl mezi tím, co plán **deklaruje**, a tím, co orchestra **vymáhá**, je
+v tomhle projektu hlavní zdroj iluze. Měřeno v `conductor/src/index.ts`,
+šabloně `repo/` a v kopiích, které reálně běží v této hře:
+
+| Pole granule | Čte ho conductor? | Co se stane, když chybí |
+|---|---|---|
+| `id`, `title`, `prompt` | ano | **shodí celý tik** — nevydá se NIC, pro žádnou hru, každou minutu |
+| `owns` | ano (zámek souběhu) | bez něj agent nedostane soubor v chatu → model odmítne editovat |
+| `depends_on` | ano | `[]` → granule se vydá okamžitě |
+| `size_lines` | ano (jen limit auto-merge) | default 60 → větší změna je zamítnuta |
+| `model` | ano | `any` → dostane ji první slabý free model |
+| `done` | ano | přeskočí se a **počítá se jako hotová pro závislosti** |
+| **`acceptance`** | **NE — 0 čtenářů** | nic. Granule projde i s `acceptance: ["nesmysl"]` |
+| **`provides` / `consumes`** | **NE — 0 čtenářů** | nic |
+| `done_note` | NE | nic |
+
+**Tři pravidla, která platí jen jako text** (a proto se v praxi porušují):
+
+1. **`size_lines > 60 ⟹ model: strong`** — kód obě pole čte nezávisle. Není to
+   vynucené. V této roadmapě to porušuje **5 granul** včetně `world.level`
+   s limitem **`<= 300` a bez `model`** → **slabý model dostane třísetřádkovou
+   granuli**.
+2. **`acceptance` je smlouva o ověření** — nemá ani čtenáře. Brány jsou natvrdo
+   v `ci.yml` a `agent.yml`, bez ohledu na deklaraci.
+3. **`owns` = soubory, které granule vlastní** — gate auto-merge povolí **jen
+   `scripts/` a `assets/`**. Granule, jejíž `owns` je jinde, **se nemůže sloučit
+   sama, nikdy**. V této roadmapě je taková právě jedna — `tests.harness`
+   (vlastní `tests/run_tests.gd`), tedy granule, která vlastní testy.
+
+### 1.3 Kde je v orchestra game design — **není**
+
+Tohle je pro otázku uživatele klíčový nález, doložený na pěti místech:
+
+1. **Žádné pole.** `RoadmapItem` ani registr her design neznají; `POST /game`
+   bere jen `game_id`, `repo`, `roadmap_file`.
+2. **Agent ho nečte.** `--read` obsahuje **jen** `CONVENTIONS.md` a soubory
+   závislostí. Do `--read` se design nemá jak dostat — **žádná granule `docs/`
+   nevlastní**.
+3. **V šabloně herního repa design není.** `repo/` obsahuje `.gitattributes`,
+   `CONVENTIONS.md`, `.forge/`, `.github/`. **Žádné `docs/`.** Nová hra si design
+   ani nedoveze.
+4. **Jediný kód, který `DESIGN.md` otevře**, je `release.yml`
+   (`cat docs/DESIGN.md >> poznámky k vydání`) — **kosmetika pro člověka**.
+5. **Konductor má design jen v komentáři** (`conductor/schema.sql:84`,
+   `src/index.ts:1366`) — kód ho nečte.
+
+**Co z toho plyne a je to nejdůležitější věta tohohle auditu:**
+
+> **Designový dokument není pro orchestra dokument — je to zdroj, ze kterého se
+> musí dát přepsat `prompt` granule. Co se do promptu nepřepíše, k modelu
+> nedorazí. Design, který není zkompilovatelný do zadání, je dekorace.**
+
+### 1.4 Co stanice sama navrhla a neprovedla
+
+Není pravda, že by harness nevěděl, jak má správný plán vypadat. **Ví to a má to
+sepsané** — jen to nezavedl:
+
+- **`NAVRH-ORCHESTRA-NG.md` §8.4 `plan.json`** — plán jako **strom s povinnou
+  stopovatelností**: `goal → requirements → capabilities → contracts (s tvarem
+  dat) → grains`, kde granule má **povinné** `capability`, `size_lines`, `model`,
+  **strukturované** `acceptance` (`{gate, call, expect}`, ne `["tests","wiring"]`)
+  a `non_goals`. A tabulka vynucení: co se při porušení stane (`fail`, granule se
+  nevydá).
+- **`POUCENI-A-VZORY.md` §10.1 (O1–O12), §10.4 (pět vrstev), §11 (checklist pro
+  nový projekt)** — dvanáct pravidel odvozených z naměřených omylů, včetně
+  „žádný stav bez protějšku", „žádná tichá cesta", „rozhodnutí se měří, netvrdí".
+- **§10.4 pět vrstev:** `1. KONTRAKT` (rozhoduje o ~0 nákladů) → `2. ZADÁNÍ`
+  (rozhoduje o 55 % běhů) → `3. PROVEDENÍ` (který model — **až třetí páka**)
+  → `4. OVĚŘENÍ` → `5. PRODUKT`.
+
+**To je odpověď na „jak má vypadat správný plán": má vypadat jako §8.4. A plán
+UO-Shadows nevypadá — je to předchozí generace.**
+
+---
+
+## 2. Verdikt: je plán UO-Shadows dobře formulovaný?
+
+### 2.1 Měřený stav plánu
+
+Vše níž je **naměřeno 7. 10. 2026** na `HEAD = 932dc6f`, ne převzato z dokumentace.
+
+| Veličina | Naměřeno |
+|---|---|
+| granul celkem | **22** |
+| `done: true` | **13** |
+| nedokončených | **9** |
+| granul bez `size_lines` | **8** |
+| granul se `size_lines > 60` a **bez** `model` | **5** (`world.level` 300, `sim.combat` 130, `sim.mining` 80, `persist.save` 100, `ui.hud` 100) |
+| granul s `provides`/`consumes` | **0 z 22** |
+| granul s klíčem `capability` (vazba na cíl) | **0 z 22** |
+| granul s `non_goals` | **0 z 22**; v `docs/ARCHITEKTURA.md` slovo `non_goals` **0×** |
+| výskytů slova „hotovo" v `CONVENTIONS.md` | **0×** (definice hotovo v repu není) |
+| granul s `acceptance` | 22 — ale **19× doslova `["tests","wiring"]`** |
+| souborů vlastněných dvěma granulemi | **3** (`scripts/world.gd`, `scripts/player.gd`, `scripts/save.gd`) |
+| závislostí mířících na nehotovou granuli | **10** |
+| z toho z **hotové** granule na nehotovou | **2** (`sim.mining`→`world.map`, `persist.save`→`world.map`) |
+| granul s `owns` mimo `scripts/`/`assets/` | **1** (`tests.harness` → nemůže se sloučit sama) |
+| součet délek zadání | **15 886 znaků**; medián **530**, min **211**, max **2 080** |
+| zadání odkazujících na externí kontext (`CONVENTIONS.md §…`, „vzor je v…") | **8 z 22** |
+
+**Linter plánu** (`forge-orchestra\tools\lint-roadmapa.py`, spuštěn na této roadmapě)
+hlásí **3 blokující problémy** (tři kolize `owns`) a 13 poradních. **Skončí ale
+`exit 0`** — je poradní, ne brána. A nehlásí ani rozpad konzistence `done`, ani
+chybějící `model`, ani chybějící `provides`. **V CI hry se nespouští vůbec.**
+
+### 2.2 Vady plánu seřazené podle dopadu
+
+**V1 — Kritická cesta vede přes mrtvou granuli.**
+`engine.shell` je jediná granule, která měla přepsat monolit `game.gd` na kostru
+s registrem komponent — tedy **jediné místo, kde by hotové komponenty dostaly
+konzumenta**. Je blokovaná šesti granulemi, z toho **`world.map` je zombie**:
+je `done: false`, její soubor `scripts/world.gd` má **0 bajtů**, její práce
+skončila v `_retired/world.gd`, a **nahradila ji nová granule `world.nodes`** —
+ale `world.map` z plánu nikdo neodstranil. Drží tedy `engine.shell`, blokuje
+5 dalších granul a **vlastní tentýž soubor jako `world.nodes`**.
+
+**V2 — Tři soubory vlastní dvě granule.**
+`world.gd`, `player.gd`, `save.gd`. Vždy je to stejný vzor: první granule byla
+zapsaná jako `done`, práce v repu nebyla, tak se **dodatečně založila druhá
+granule na tentýž soubor**. To je obcházení pravidla „1 granule = 1 soubor"
+místo opravy plánu — a znamená to, že plán **nemá jak vyjádřit „tuhle granuli
+ještě jednou, pořádně"**.
+
+**V3 — `done` je pro ostatní granule důvěryhodné jen papírově.**
+`done: true` se používá jako splněná závislost. Dvě hotové granule ale závisí na
+nehotové (`world.map`). Historicky se `done` **už jednou muselo opravovat ručně**
+(`entity.player`, `world.map`) a linter ho sám označuje za **„naměřeno jako
+NESPOLEHLIVÉ"**. Přesto se na něm staví celý DAG.
+
+**V4 — Plán nenese rozhraní.**
+`provides`/`consumes` **0 z 22**. Rozhraní tedy existuje jen jako **prozaický text
+uvnitř `prompt`**. Smlouvy v `docs/ARCHITEKTURA.md` §2 existují — ale agent ten
+soubor nikdy nevidí. **Plán a smlouvy jsou ve dvou světech, které se nepotkají.**
+
+**V5 — `acceptance` je pečeť, ne kritérium.**
+19 z 22 granul má doslova `["tests","wiring"]`. Metodika přitom žádá **konkrétní
+volání s očekávanou hodnotou** (`gather(uzel, 5) == 6`). Třiadvacetkrát opsaná
+dvojice slov nenese žádnou informaci — a **stejně ji nikdo nečte**.
+
+**V6 — Pravidlo velikosti se porušuje u 5 granul.**
+`world.level` smí mít **300 řádků a nemá `model`** → orchestrace ji pošle slabému
+modelu. To je přesně ta vada, kterou metodika označuje za nejdražší.
+
+**V7 — Granule, která vlastní testy, se nemůže sloučit.**
+`tests.harness` vlastní `tests/run_tests.gd`. Gate auto-merge povolí jen
+`scripts/` a `assets/` → **PR z této granule zůstane otevřený vždy** a po pěti
+pokusech úloha skončí `failed`. Není to náhoda v datech, je to **návrh plánu
+proti gate**.
+
+**V8 — Dokument a strojový plán se rozešly.**
+`docs/ARCHITEKTURA.md` — který se sám hlásí jako **„jediný závazný"** — vyjmenovává
+v §3 **18 granul**. Strojový plán jich má **22**. Čtyři (`world.nodes`,
+`entity.player.api`, `persist.save.state`, `tests.harness`) v závazném dokumentu
+**nejsou vůbec**, a `world.map` v něm naopak figuruje jako živá granule.
+Dokument, který je autorita, **popisuje jiný plán, než jaký se vykonává**.
+
+### 2.3 Je plán organizovaný pro slabší modely?
+
+**Ne — a je to měřitelné, ne dojmové.** Tři měření:
+
+**(a) Co model skutečně dostane.** Přesné složení kontextu
+(`.github/workflows/agent.yml:224–236`):
+
+```
+aider --model openai/$FORGE_MODEL
+      --read CONVENTIONS.md            # natvrdo, vždy
+      --read <soubory závislostí>      # z owns granul v depends_on, jen existující
+      --file <soubory granule>         # editovatelné, z owns
+      --map-tokens 0                   # ŽÁDNÁ mapa repa
+      --edit-format diff
+      --message "$FORGE_PROMPT"        # ručně psaná próza z roadmapy
+```
+
+**`--map-tokens 0` znamená, že model nevidí strukturu projektu.** Jeho svět je:
+276 řádků `CONVENTIONS.md` + vlastní soubory + soubory přímých závislostí +
+**jeden odstavec zadání**. Žádný design, žádná architektura, žádná mapa.
+
+**(b) Zadání jsou krátká a nestejnoměrně kvalitní.** Medián 530 znaků (≈ 90 slov).
+Nejslabší:
+
+- `entity.npc` — **211 znaků**: „*Vytvoř obchodníka (Area2D): při dotyku hráče
+  otevře obchod — buy/sell přes economy.gd. Vystav trade(player) -> void…*"
+  **„Otevře obchod" není specifikace** — jaké UI? odkud ceny? co když hráč nemá
+  zlato? Model si musí vymyslet tři věci, které pak nikdo netestuje.
+- `sim.economy` — **258 znaků**: „*ceny předmětů (price(item) -> int odvozená
+  z materiálu a kvality)*" — **vzorec není**, a `player` začíná s **0 zlatem**,
+  takže `buy()` nemůže nikdy uspět. Zadání je nesplnitelné a nikde to není.
+
+**(c) Zadání si navzájem odporují.** Naměřený případ, který je pro otázku
+„zvládne to hloupější model" nejvýmluvnější — **granule `core.skills`**:
+
+Zadání té granule (`roadmap.json`) obsahuje **obě** tyhle věty současně:
+
+> „*vytvoř dovednosti jako VLASTNOST s konkrétním jménem: `var dovednosti:
+> Dictionary = {"tezba": 0, …}`*"
+>
+> „*testy je čtou takto: `sk.get("tezba")` … Když skript vlastní `get()` nemá,
+> `sk.get("tezba")` vrátí hodnotu vlastnosti.*"
+
+**Obě nemůžou platit.** Když je celý stav v jednom slovníku `dovednosti`, pak
+`Object.get("tezba")` **nemá co vrátit** — `tezba` není vlastnost. Naměřeno
+spuštěním: `sk.get("tezba")` vrací `null`, test to zjistí, **vypíše hlášku
+a tři kontroly přeskočí**. Běh přesto hlásí `91 kontrol, 0 selhání`, `exit 0`.
+
+A aby to bylo horší: `core.skills` je `done`, **visí na ní 10 dalších granul**
+a v `ARCHITEKTURA.md` §2 je její smlouva zapsaná jako **`get(skill)`** — což
+`CONVENTIONS.md:127` **výslovně zakazuje** („*Nikdy nepoužívej jako název funkce:
+`get`, …*"). Smlouva a konvence si v témž repu přímo odporují.
+
+**Verdikt:** plán je pro slabší modely organizovaný **na úrovni infrastruktury**
+(DAG, zámky `owns`, brány, rotace modelů — to je promyšlené a funguje), ale
+**ne na úrovni zadání**. Zadání je ruční próza bez schématu, bez rozhraní
+a v nejméně jednom případě **vnitřně rozporná**.
+
+---
+
+## 3. Verdikt: game design
+
+### 3.1 Původ: design nepsal designér, vygeneroval ho plánovač
+
+`docs/DESIGN.md:3–7` to říká sám:
+
+> „**Zrušeno jako zdroj pravdy.** … Tenhle dokument **vygeneroval plánovač
+> (`forge plan`)** pro první nástřel a popisuje starý 6-úkolový plán — orchestr
+> ho už nepoužívá."
+
+A `docs/ARCHITEKTURA.md:6–7` dodává, že jeho **autorská kopie je mimo repo**
+(`gameforge/projects/uo-sandbox/docs/ARCHITEKTURA.md`) — jenže **GameForge byl
+30. 9. 2026 zrušen a smazán**. Autorská kopie závazného dokumentu tedy
+**neexistuje**.
+
+Co designér zadal, je dohledatelné v `DESIGN.md:27` jako **„Původní obsah
+(zmrazený)"** — **jeden odstavec české prózy** začínající „*Nova hra podle
+principu Ultima Online, ale v rozsahu, ktery zvladne maly tym…*". To je celé
+zadání, ze kterého vznikla hra.
+
+**Takže:** hra nevznikla z designu. Vznikla z **odstavce**, ze kterého plánovač
+vygeneroval design, z designu architekturu a z architektury 22 granul.
+To je přesně mechanismus, který vyrábí „popis vrstev místo smluv" — a metodika
+to pojmenovává (`JAK-PSAT…:188–191`).
+
+### 3.2 Zadání „jak se hra hraje" neexistuje — měření
+
+Prohledány `docs/DESIGN.md`, `docs/ARCHITEKTURA.md`, `CONVENTIONS.md`,
+`AGENTS.md`, `docs/BRANY-HRY.md`, `project.godot`. **(README v repu není.)**
+
+| Otázka | Odpověď v repu |
+|---|---|
+| Jaké je ovládání (klávesy, myš)? | **NIKDE.** `project.godot` nemá definovanou ani jednu vstupní akci. Jediné místo v repu, kde je ovládání popsané, je běhová nápověda `game.gd:221` — **a ta je nepravdivá** (viz §4.1). |
+| Co hráč dělá v prvních 5 minutách? | **NIKDE.** |
+| Co je vidět na obrazovce, jak vypadá UI? | **NIKDE.** `ARCHITEKTURA.md:97` říká jen „prezentace \| HUD, kamera \| `scripts/hud.gd`". Skutečný obsah lišty je jen v kódu. |
+| Jak hráč pozná úspěch? (vítězná podmínka, feedback) | **NIKDE** — nemá ji ani `DESIGN.md`. |
+| Jak zní hra? | `DESIGN.md:52–53` zvuk popisuje; **`ARCHITEKTURA.md` o zvuku nemá ani slovo**; `assets/audio/` v repu **neexistuje**. |
+
+**Jediné, co existuje, je jedna věta** (`ARCHITEKTURA.md:32`):
+
+> „*smyčka: `těžit → tavit → kovat → používat → opravovat`*"
+
+To je celý popis hraní v celém repu.
+
+**A co je jako „zdroj pravdy o tom, jak se hra hraje", označeno dnes:**
+
+- `docs/DESIGN.md` se **sám zrušil** (`:3`).
+- `AGENTS.md:137` posílá na `.forge/roadmap.json` — což je DAG granulí
+  (`owns`, `depends_on`), o hraní neříká nic.
+- **`AGENTS.md:91` přitom STÁLE tvrdí**, že „`docs/DESIGN.md` — co hra je a jak se
+  má chovat". To je **přímý rozpor uvnitř trvalých pravidel**: jeden řádek
+  odkazuje na dokument, který se o dvě sekce výš hlásí jako zrušený.
+
+### 3.3 Rozpory mezi dokumenty
+
+**Nejostřejší rozpor je uvnitř `DESIGN.md` samotného** — denní cyklus je na
+`:14–16` **out-of-scope**, na `:42` v seznamu mechanik a na `:57` v rozsahu
+implementace. Tři místa, tři odpovědi.
+
+Dále: **`DESIGN.md` a `ARCHITEKTURA.md` se neshodnou na osmi mechanikách.**
+`DESIGN.md` má navíc alchymii, léčení, tatažství, **NPC reakce na činy** a zvuk;
+`ARCHITEKTURA.md` má navíc offline režim, asistenci, smrt se ztrátou věcí,
+zlato s obchodníkem, trvalý svět s respawnem a tvar světa (ostrov + důl + les).
+Průnik „out-of-scope" jsou jen **MMO a magie**.
+
+**Nejhorší důsledek:** `DESIGN.md` alchymii a denní cyklus **pojmenovává a ruší**
+— je tedy dohledatelné, že byly vyřazeny. `ARCHITEKTURA.md` je **nemá vůbec**,
+takže **není dohledatelné, že byly vyřazeny**. Co není vyřazené, se dá omylem
+vrátit — a `game.gd` je dodnes pořád má (`:20` `alchymie`, `:25` `cas_dne`).
+
+### 3.4 Kolik z „architektury" je vlastně design
+
+`docs/ARCHITEKTURA.md` má **395 řádků**. Rozdělení podle oddílů:
+
+| Druh obsahu | Řádků | Podíl |
+|---|---|---|
+| **game design** (§0 cíl, pilíře, rozsah, požadavky, schopnosti, obsah) | ~75 | **19 %** |
+| architektura (vrstvy, smlouvy, tvary dat) | ~202 | 51 % |
+| proces a plán orchestry (granule, DAG, vlny, tooling) | ~98 | 25 % |
+| hlavička | 8 | 2 % |
+
+I když k designu připočteme vzorce a tabulku stavů hráče z §2.1–2.3,
+je to **~95 řádků (24 %)**. A ani to **není popis hraní** — je to soupis
+schopností a datových tvarů.
+
+**Závazný dokument hry je z čtyř pětin o něčem jiném než o hře.**
+
+---
+
+## 4. Aktuální stav hry a kvalita zpracovaných granulí
+
+### 4.1 Co hra dnes skutečně dělá
+
+Naměřeno spuštěním (`--headless`, HEAD `932dc6f`) a snímkem
+(`_analyza/uo-shadows-stav-hry.png`):
+
+```
+[level] main: 30×16 políček, izometricka 96×48 px, dlaždic: 480, značek: 4
+[game] připraveno: hráč + 2 mincí, zvuků načteno: 0, dlaždice: ano, úroveň: main 30×16
+ERROR: Required object "rp_target" is null.   (game.gd:181, tween_property)
+```
+
+**Hra, kterou hráč spustí, je tohle:** izometrická mapa 30×16 (480 dlaždic),
+hráč, **dva identické sprity** (hráč a NPC — nerozeznatelné), **dvě mince**,
+Label „Skóre: 0 / 2 HODNOTA: 25", FPS a nápověda. Dá se **jen chodit**
+(šipky/WASD) a sbírat mince.
+
+**A tohle není zastaralý klon — je to i to, co je venku.** Ověřeno 7. 10. 2026:
+`https://ssevcikm-spec.github.io/uo-shadows/index.png` odpovídá `200`,
+`last-modified` **11:40:00 GMT**; `main` na GitHubu je **932dc6f** (11:38:58),
+lokální `HEAD` je **932dc6f** a `origin/main..HEAD` = **0**. Nasazení je tedy
+**aktuální** — sběračka mincí je skutečný, publikovaný stav hry.
+
+**Vady viditelné okamžitě:**
+
+- **Nápověda lže.** `game.gd:221` inzeruje „*E těžba rudy, C tavení, B kování,
+  X použít zbraň, R oprava, M hudba*". V `game.gd` je **0 výskytů `Input`/`KEY_`**
+  (naměřeno; jediné čtyři nálezy v celém `scripts/` jsou v `player.gd:74–81`).
+  **Pět z šesti inzerovaných kláves nedělá nic.**
+- **Ukládání neexistuje.** `game.gd:355–377` `_save_state()`/`_load_state()` jsou
+  definované a **nikdy se nevolají** — `check-wiring.py` to hlásí jako poznámku.
+- **NPC nikdy nic neudělá.** `game.gd:348` testuje `suroviny["ruda"] < 3`, ale
+  `suroviny` se nikde nezvyšuje.
+- **Chyba při startu** (`tween_property` na `null`).
+- `assets/audio/` a `assets/ui/` **neexistují** → „zvuků načteno: 0".
+
+### 4.2 Klíčová otázka: dostane se hotová práce k hráči?
+
+**Ne.** Měřeno:
+
+| Skript | Načten běžícím kódem? |
+|---|---|
+| `scripts/game.gd` | ano (`main.tscn`) |
+| `scripts/level.gd` | **ano** (`game.gd:155`) |
+| `scripts/player.gd` | **ano** (`game.gd:270`) |
+| `assist.gd`, `attributes.gd`, `combat.gd`, `crafting.gd`, `economy.gd`, `hud.gd`, `item.gd`, `mining.gd`, `offline.gd`, `save.gd`, `skills.gd` | **NE — jen z `tests/`** |
+| `npc.gd`, `enemy.gd` | **v repu vůbec nejsou** |
+| `world.gd` | **0 bajtů** |
+
+`game.gd` volá `load()` na skripty **dvakrát** — a to je celý seznam.
+**Z 13 hotových granulí jsou pro hru dosažitelné tři** (`world.level`,
+`entity.player`, `entity.player.api` — poslední dvě jsou týž soubor).
+**Deset hotových granulí hra nikdy nezavolá.**
+
+A protože **`game.gd` nemá funkci `component(name)`**, kterou komponenty
+vyžadují (berou z ní služby), komponenty by ani nefungovaly: testovací běh
+to říká nahlas — `ERROR: mining.gd: komponenta Skills není v registru`,
+`ERROR: save.gd: nad sebou nemám kostru s component(id)`.
+
+**Komponenty byly vyvíjeny a testovány proti atrapě**, která v běžící hře
+neexistuje (`run_tests.gd` `TestKostra`). Komentář to přiznává: „*totéž rozhraní,
+jaké **bude mít** `game.gd`*".
+
+### 4.3 Kvalita granulí po jedné
+
+| # | Granule | `done` | Soubor (řádků v HEAD) | Je vidět ve hře? | Kvalita |
+|---|---|---|---|---|---|
+| 1 | `data.content` | ✅ | 5× JSON (11–33) | ne (nikdo je nečte) | obsah je, konzument chybí |
+| 2 | `core.attributes` | ✅ | `attributes.gd` (21) | ne | **dobrá** — test volá `hodnota()`, ověřeno |
+| 3 | `core.skills` | ✅ | `skills.gd` (15) | ne | **API dobré, zadání rozporné**; 3 kontroly se přeskočí |
+| 4 | `world.level` | ✅ | `level.gd` (283) | **ano** | **nejlepší granule** — izometrie ověřená měřením sklonu |
+| 5 | `world.map` | ❌ | `world.gd` (**0 B**) | ne | **mrtvá granule**, blokuje 5 dalších |
+| 6 | `entity.item` | ✅ | `item.gd` (39) | ne | funguje; `material` a `quality` v datech **nejsou** |
+| 7 | `entity.player` | ✅ | `player.gd` (191) | **ano** | dobrá; historicky `done` bez práce |
+| 8 | `sim.combat` | ✅ | `combat.gd` (127) | ne | **vzorová smlouva** (§2.1); funkčně testovaná |
+| 9 | `sim.mining` | ✅ | `mining.gd` (72) | ne | funkčně testovaná; **závisí na mrtvém `world.map`** |
+| 10 | `sim.crafting` | — | `crafting.gd` (78) | ne | jen `has_method`; **dělá si vlastní instanci `skills.gd`** |
+| 11 | `sim.economy` | ✅ | `economy.gd` (47) | ne | **jen `has_method`**; čte neexistující `item.quality` |
+| 12 | `entity.npc` | — | **chybí** | — | zadání 211 znaků, nedodáno |
+| 13 | `entity.enemy` | — | **chybí** | — | **5 neúspěšných běhů** |
+| 14 | `sim.offline` | — | `offline.gd` (57) | ne | soubor je, granule není `done`; jen `has_method` |
+| 15 | `sim.assist` | ✅ | `assist.gd` (17) | ne | funkčně testovaná; **slovník triggerů nikde** |
+| 16 | `persist.save` | ✅ | `save.gd` (150) | ne | funkčně testovaná; **závisí na mrtvém `world.map`** |
+| 17 | `ui.hud` | ✅ | `hud.gd` (92) | ne | funkčně testovaná; `<= 100` **bez `model`** |
+| 18 | `engine.shell` | — | `game.gd` (377) | — | **NIKDY NEPROBĚHLA** — hra je pořád monolit |
+| 19 | `world.nodes` | ❌ | `world.gd` (0 B) | ne | PR #32 sloučen, doručil **prázdný soubor** |
+| 20 | `entity.player.api` | ✅ | `player.gd` (191) | **ano** | oprava předchozí vady, ne nová práce |
+| 21 | `tests.harness` | — | `run_tests.gd` (1 406) | — | **owns mimo `scripts/`** → nemůže se sloučit |
+| 22 | `persist.save.state` | — | `save.gd` (150) | ne | oprava předchozí vady |
+
+**Řádky jsou z blobu (`git show HEAD:…`), protože `Get-Content | Measure-Object -Line`
+naměřilo u téhož souboru o 4–45 řádků méně** — autorita je blob, ne přepočet.
+
+### 4.4 Co se daří
+
+Poctivě: **víc než by verdikt „hra je sběračka mincí" naznačoval.**
+
+1. **Komponentní vrstva je skutečně kvalitní.** `attributes`, `skills`,
+   `combat`, `mining` mají smluvní API a **testy je volají**. Smlouva `combat.resolve()`
+   v `ARCHITEKTURA.md` §2.1 je **učebnicový příklad toho, co metodika žádá** —
+   tvar dat, odkud jsou čísla, přijímací kritérium. Test navíc obsahuje
+   **atrapu v rozporu se sebou** (`hodnota` 100 vs vlastnost 10), aby se větvení
+   nedalo obejít.
+2. **Infrastruktura orchestra funguje.** DAG, zámky `owns`, rotace modelů,
+   auto-merge s gate, `--check-only`, `--import` — to je promyšlené a v praxi
+   to drží.
+3. **Dokumentace omylů je výjimečná.** `JAK-PSAT…`, `POUCENI-A-VZORY.md` (64 kB),
+   `KRONIKA-PROJEKTU.md`, `docs/BRANY-HRY.md` — každá poučka má **soubor, číslo
+   a datum**. Tohle je nejcennější aktivum celého harnessu a je nadstandardní.
+4. **Některé lekce se aplikovaly.** Poté, co tři PR prošla zeleným CI a nemohla
+   fungovat, se `combat` a `mining` přepsaly na **funkční** kontroly (ne
+   `has_method`) — a je to v kódu vidět i s odůvodněním.
+
+### 4.5 Kde to selhává
+
+**(a) Zelená, která nic neznamená.** Běh testů: `[test] 91 kontrol, 0 selhání`,
+`exit 0`. Přitom:
+
+- **3 kontroly `core.skills` se tiše přeskočí** (`run_tests.gd:549`) — protože
+  zadání té granule si odporuje (§2.3c). Vypíše se hláška, ale běh zůstane
+  zelený a počet kontrol se o ně **nezvýší**.
+- **`sim.economy` a `sim.assist` (obě `done`) mají jen `has_method`**
+  (`run_tests.gd:809`, `:835`) — a to i přesto, že soubor o dvě stě řádků výš
+  (`:620`, `:754`) nese komentář „*FUNKČNÍ kontrola, ne jen `has_method`*".
+  **Lekce se aplikovala na dvě granule a na dvě ne.**
+- **Kontroly migrace monolitu se nikdy nespustí** (`run_tests.gd:952`
+  `if main.has_method("component")` — `game.gd` `component()` nemá). Tedy
+  „kostra instancuje komponenty" i „monolit je pryč" se **nikdy neměří**.
+- **`combat.gd` to má ve vlastním komentáři**: „`resolve()` nikdo nevolal.
+  `combat.gd` je v D1 `done`, takže ji conductor znovu nevydá."
+
+**(b) Brány jsou zelené a samy přiznávají, že neměřily.** Spuštěno 7. 10. 2026:
+
+| Brána | Výsledek | Co nepřiznala jako vadu, ale jako poznámku |
+|---|---|---|
+| `check-schema.py` | `exit 0` „Schéma je v souladu" | „*level.gd nemá fallback buňky — kontrola fallbacku tedy nemá co měřit*"; „*scripts/world.gd existuje, ale jeho buňku se NEPODAŘILO přečíst — kontrola „dvě různé představy o mřížce" **NEPROBĚHLA***" |
+| `check-wiring.py` | `exit 0` „Vše v pořádku" | 4 poznámky o mrtvých funkcích; **korpus staví z `rglob("*.gd")` — včetně `tests/`**, takže funkce zmíněná jen v testu se počítá za použitou |
+| `check-assets.py` | `exit 0` „assety odpovídají specu" | „*animace chůze v projektu není – přeskočeno*"; „*hudba ve hře není – měření hudby přeskočeno*" |
+
+**Brána, která napíše „NEPROBĚHLA" a přesto vytiskne „v souladu", je přesně ta
+past, kterou metodika popisuje** („Nula a nezměřeno nejsou úspěch").
+
+**(c) Trvalá pravidla obsahují tvrzení, která už neplatí.** Tři naměřené:
+
+| Kde | Co tvrdí | Naměřeno 7. 10. 2026 |
+|---|---|---|
+| `AGENTS.md:108–110` | rozhraní `add_rule` „**míchá jazyky**" a kód má `"cíl mrtev"` česky | `assist.gd:15` má **`"target dead"`** — anglicky. `git show 2858c7e` dokládá, že se to přejmenovalo **2. 10.**; `AGENTS.md` vznikl **4. 10.**, ale popisuje stav před přejmenováním. **Dnešní kód je jazykově konzistentní** — kdo se řídí pravidlem, „opraví" správný kód. |
+| `CONVENTIONS.md:273` | „testy: **26 kontrol**, počet roste" | běh hlásí **91 kontrol** |
+| `CONVENTIONS.md:252` | „Použij `_safe_spot(vp)` **(už v `game.gd` je)**" | `_safe_spot` v `scripts/` — **0 nálezů**. Návod na neexistující funkci. |
+| `AGENTS.md:91` | „`docs/DESIGN.md` — **co hra je a jak se má chovat**" | `DESIGN.md:3` se hlásí jako **zrušený zdroj pravdy** |
+
+Tohle je obzvlášť zákeřné **pro slabý model**: dostane `CONVENTIONS.md` do
+kontextu jako `--read` při **každém** běhu. Tři z těch tvrzení jsou nepravdivá
+nebo rozporná — a jsou to právě ta, kterými se má řídit.
+
+**(d) `CONVENTIONS.md` radí opak architektury.** `:237`:
+
+> „*nepřidávej nové soubory, když to jde udělat v `scripts/game.gd`*"
+
+To je instrukce **k opaku celého plánu** — plán je postavený na tom, že se
+`game.gd` **rozloží** na komponenty (`engine.shell`). Model, který se řídí
+konvencemi, bude monolit **posilovat**.
+
+**(e) Slovníky rozhraní nikde.** Agent si musel vymyslet:
+
+- **ID komponent** — `ARCHITEKTURA.md:145` uvádí jen `component(name) -> Node`,
+  žádný seznam. Každá komponenta si je vymyslela sama (`hud.gd` volá
+  `component(id)`, dokumentace píše `component(name)`).
+- **Kvalitu předmětu dvakrát jinak** — `item.gd:10` má `kvalita: int`,
+  `economy.gd:21–30` čte `item.quality` jako **řetězec**
+  (`"common"…"legendary"`). Vlastnost `quality` **neexistuje** → `price()` na
+  skutečném předmětu selže. A `items.json` **nemá ani `material`** → `item.gd:25`
+  nastaví `""`.
+- **Tvar uzlu suroviny** — `mining.gd` čte `resource_id`, `difficulty`, `cell`;
+  ve smlouvě to není a mapa má **0 markerů surovin**.
+- **Zbraň hráče** — smlouva i `combat.gd` berou `vybrana_zbran`/`zbran`,
+  `player.gd` má **`equipped`** → `resolve()` na skutečném hráči **nenajde zbraň
+  a tiše dá damage 0**.
+
+**(f) Fronta je zaseknutá.** Živě naměřeno 7. 10. 2026: conductor hlásí
+`ok=true`, ale `/roadmap` je **prázdná**, ve frontě je `#235 entity.enemy`
+s **5 pokusy** (`failed`) a úlohy #227–#234 jsou **`blocked`**. `entity.npc`
+podle kroniky spálil **8 běhů**.
+
+**(g) Ví se to — a přesto to platí.** Tohle je asi nejužitečnější zjištění
+celého auditu. `docs/BRANY-HRY.md` (aktualizovaný **7. 10. 2026**) **sám
+popisuje** skoro každou vadu, kterou jsem naměřil:
+
+- `:116` — „*přečíst nelze („kontrola NEPROBĚHLA" není totéž jako „je to
+  v pořádku")*"
+- `:118` — „*mrtvé větve: `world.gd` se při migraci smazal, takže kontroly,
+  které na něj sahají, se už nikdy nespustí*"
+- `:90` — „*26 řádků s `has_method` (39 výskytů — naměřeno 7. 10. 2026)*"
+- `:73` — „*animace chůze v projektu není – přeskočeno*"
+
+**Diagnóza je tedy vynikající. Chybí vynucení.** Stejný vzor se opakuje na všech
+úrovních:
+
+| Kde je znalost | Kde chybí vynucení |
+|---|---|
+| `docs/BRANY-HRY.md` popisuje slepá místa | brány jsou zelené dál |
+| `JAK-PSAT…` §2 žádá tvar dat a přijímací kritérium | smlouvy mají tvar dat **3 z 18** |
+| `ARCHITEKTURA.md` žádá `model: strong` nad 60 řádků | kód to **nespojuje** — 5 granul to porušuje |
+| roadmapa má `acceptance` u všech 22 granul | **0 čtenářů v kódu** |
+| `NAVRH-ORCHESTRA-NG.md` §8.4 navrhuje vynucení | je to **návrh, ne stav** |
+| `lint-roadmapa.py` vady najde | skončí **`exit 0`** a v CI hry se nespouští |
+
+> **Harness není neinformovaný. Harness je neozbrojený.** Ví, co je špatně,
+> napsal to a **nemá nic, co by to vymohlo** — protože všechna vynucení, která
+> má, jsou v **cizím repu** (orchestra), ne v tom, kde se pracuje.
+
+### 4.6 Empirický závěr o slabých modelech
+
+Podle analýz orchestra (`ANALYZA-HLOUBKOVA-ORCHESTRA.md`, citováno, **nepřeměřoval
+jsem**): **240 běhů → 28 úspěšných (11,3 %)**; 95× agent nezměnil nic; 27 běhů
+spadlo na to, že model **uhodl rozhraní, které mu nikdo nedal**.
+
+A `POUCENI-A-VZORY.md:759–762` to shrnuje způsobem, který je odpovědí na otázku
+uživatele:
+
+> „*Naměřeno: hlavní ztráty nejsou v tom, že model **neumí**, ale v tom, že
+> **nedostal** (tvar dat, verzi enginu, soubor v chatu, vejitý prompt) — to jsou
+> vady **zadání**, ne modelu.*"
+
+---
+
+## 5. Doporučení
+
+### P0 — bez tohohle se hra nikdy nespustí jako hra
+
+1. **Zrušit `world.map`.** Je mrtvá, vlastní tentýž soubor jako `world.nodes`
+   a blokuje kritickou cestu. Buď ji odstranit z roadmapy, nebo ji přepsat na
+   `done: true` s odkazem na `world.nodes` — a **v `docs/ARCHITEKTURA.md` §3
+   doplnit 4 chybějící granule**, aby dokument a plán říkaly totéž.
+2. **Dát `engine.shell` průchod.** Dokud neproběhne, je 10 hotových granulí
+   mrtvá knihovna. Pozor: **`entity.enemy` je před `engine.shell` nesplnitelná**
+   — `combat.resolve()` potřebuje registr, který vzniká až v `engine.shell`.
+   To je **sémantický cyklus v DAG** a je potřeba ho rozseknout (např. dodat
+   minimální registr jako součást `engine.shell` a `entity.enemy` vydat až po něm).
+3. **Rozhodnout, co je `tests.harness`.** Granule, která vlastní `tests/`, se
+   **nemůže sloučit sama** — patří buď do ruční fronty (a být to napsané), nebo
+   se má vzdát vlastnictví testů ve prospěch člověka.
+
+### P1 — aby plán unesl smlouvy
+
+4. **Zavést `provides`/`consumes` a strukturované `acceptance`** do roadmapy
+   (přesně jak navrhuje `NAVRH-ORCHESTRA-NG.md` §8.4). Bez toho se smlouvy
+   nemají kam psát a agent je nikdy nedostane.
+5. **Přepsat `docs/ARCHITEKTURA.md` podle `JAK-PSAT…` §5.1.** Dnes je hotová
+   **3 z 18 smluv** (§2.1–2.3). Chybí datové formáty, definice hotovo
+   (v `CONVENTIONS.md` je slovo „hotovo" **0×**) a **non-goals** (v `ARCHITEKTURA.md`
+   **0×**) — a non-goals jsou přesně to, co má zabránit druhému číslu mřížky.
+   **Tuhle práci nedělat v session, která opravuje kód** (`AGENTS.md`).
+6. **Přidat `model: strong` pěti granulím**, které mají `size_lines > 60`
+   (`world.level` 300, `sim.combat` 130, `sim.mining` 80, `persist.save` 100,
+   `ui.hud` 100) — nebo jim limit snížit.
+
+### P2 — aby zadání zvládl slabý model
+
+7. **Dát agentovi design.** Nejbližší cestou je **přidat `docs/ARCHITEKTURA.md`
+   do `--read`** v `agent.yml` — nebo ještě lépe **generovat `prompt` ze schématu**
+   (což metodika žádá a praxe nedělá: 22 ručních próz).
+8. **Zavést „feasibility před dispatchem"** — priorita 1 podle
+   `POUCENI-A-VZORY.md` §10.2. Konkrétně: **kontrola, že každá smlouva, kterou
+   granule spotřebovává, existuje v `main` a jde zavolat.** `entity.enemy`
+   by se pak nevydala pětkrát.
+9. **Opravit tři nepravdivá tvrzení v trvalých pravidlech** — ne přepsáním
+   (historie se needitue), ale **označením „ve svém čase správná"** a doplněním
+   dnešního stavu: `AGENTS.md:108–110` (`"cíl mrtev"` → dnes `"target dead"`),
+   `CONVENTIONS.md:273` (26 → 91 kontrol), `CONVENTIONS.md:252` (`_safe_spot`
+   neexistuje) a `AGENTS.md:91` (DESIGN.md už není zdroj pravdy).
+10. **Odstranit z `CONVENTIONS.md` §3 radu „nepřidávej nové soubory"** — je
+    v přímém rozporu s architekturou, kterou má agent stavět.
+
+### P3 — aby zelená něco znamenala
+
+11. **Zrušit tiché přeskakování v testech.** Tři kontroly `core.skills` se
+    musí buď spustit, nebo **selhat**. Totéž kontroly migrace monolitu
+    (`run_tests.gd:952`) — dnes se nikdy nespustí a nikde to není vidět.
+12. **Doplnit funkční kontroly `sim.economy` a `sim.assist`** — obě jsou `done`
+    a obě mají jen `has_method`, přestože stejný soubor o 200 řádků výš má
+    komentář, že to nestačí.
+13. **`check-wiring.py` nesmí počítat `tests/`** jako důkaz použití produkčním
+    kódem — jinak zůstane slepý přesně na „funguje to, ale nic to nedělá",
+    což je vada, kterou má hledat.
+
+### P4 — aby se metodika přestala učit jen z minulosti
+
+14. **Oživit `JAK-PSAT-DESIGN-A-PLANOVAT-VYVOJ.md`.** Je to jediná metodika
+    designu a plánování, kterou harness má, je označená jako **rostoucí** a její
+    §7 nařizuje každé session doplnit naměřený případ. **Od 2. 10. 2026 nemá ani
+    jeden nový případ.** Tenhle audit je sám o sobě **~12 nových naměřených
+    případů** (viz §2.2 V1–V8, §3.2, §4.5) — patří do jeho §4.
+    **Zároveň je to otevřený bod celé stanice**:
+    `OTEVRENA-TEMATA.md:106` — „*DOKONČIT REVIZI SKILLU `game-developer` +
+    PŘEPSAT DESIGN UO-SHADOWS*" — je **nezaškrtnutý** a má stále stav
+    „6 případů, 1. sezení".
+
+---
+
+## 6. Co čeká na tebe (rozhodnutí, která nejsou na agentovi)
+
+| # | Rozhodnutí | Proč to není na agentovi | Cena | Doporučení | Cesta zpět |
+|---|---|---|---|---|---|
+| 1 | **Zrušit `world.map` z roadmapy** | mění rozsah plánu (co se má dělat) | 0 (granule je mrtvá) | zrušit | `git revert` commitu roadmapy |
+| 2 | **Přepsat `docs/ARCHITEKTURA.md` na smlouvy s tvarem dat** | mění závazný dokument hry; je to práce na samostatnou session | jeden večer | ano, podle §5.1 | soubor je v gitu |
+| 3 | **Dopsat game design: jak se hra hraje** | **to je ta chybějící část zadání** — ovládání, prvních 5 minut, UI, úspěch | 1–2 h lidsky | ano — bez toho nemá smysl psát další granule | nový `docs/HRANI.md` |
+| 4 | **Zavést `provides`/`consumes` do orchestra** | mění orchestra (jiný repozitář, jiný projekt) | dny | nejdřív návrh NG | orchestra má vlastní git |
+| 5 | **Doplnit `JAK-PSAT…` o naměřené případy z tohoto auditu** | dokument leží v **jiném repu** (`forge-orchestra`) — zápis do cizího projektu | hodina | ano, jeho §7 to nařizuje | `git revert` v orchestra |
+
+**To třetí je jádro.** Ostatní vady se dají opravit v plánu. Chybějící odpověď
+na „co má hráč dělat a jak pozná, že si vede dobře" se opravit nedá — a je to
+**jediná věc, kterou plán nemůže vymyslet za tebe**.
+
+---
+
+## 7. Meze tohohle auditu
+
+- **Nepřeměřoval jsem běhy orchestra.** Čísla o úspěšnosti modelů (11,3 %,
+  240 běhů) jsou **citace** z analýz orchestra s datem, ne moje měření.
+- **Nepouštěl jsem `vision.mjs`** (potřebuje klíč) ani `baseline.py`.
+- **Linter plánu jsem spustil, ale je poradní** — jeho `exit 0` nic neznamená.
+- **Sloupec „řádků" je z blobu** (`git show HEAD:`), protože přepočet přes
+  `Get-Content | Measure-Object -Line` dává u téhož souboru až o 45 řádků méně.
+- **Dokument vznikl v jedné session.** Podle `AGENTS.md` („autor není nezávislý
+  reviewer") by čísla o kvalitě granulí měla ověřit jiná session.
