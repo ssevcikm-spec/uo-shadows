@@ -747,6 +747,18 @@ func _run() -> void:
 			# bez tohohle řádku hlásil Godot 5 leaků místo 3.
 			mec_b.free()
 
+			# Test, že `resolve()` vrátí `{"hit": false, "damage": 0}` když je
+			# attacker null nebo není Node.
+			var v4 = cb.resolve(null, obrance_b)
+			_check(typeof(v4) == TYPE_DICTIONARY and not v4.get("hit", true) and v4.get("damage", -1) == 0,
+				"combat.resolve() vrátí `{\"hit\": false, \"damage\": 0}` když je attacker null (naměřeno: %s)"
+				% str(v4))
+
+			var v5 = cb.resolve("not a node", obrance_b)
+			_check(typeof(v5) == TYPE_DICTIONARY and not v5.get("hit", true) and v5.get("damage", -1) == 0,
+				"combat.resolve() vrátí `{\"hit\": false, \"damage\": 0}` když je attacker není Node (naměřeno: %s)"
+				% str(v5))
+
 		_zavri(cb)
 		_zavri(kostra_b)
 
