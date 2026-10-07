@@ -77,9 +77,14 @@ Brány žijí v `.forge/` a pouští je `ci.yml`. **Tvrdá brána** je jen
 > a pozor: **`vision.test.mjs` se mezi kopiemi ROZEŠEL** (šablona 36/36,
 > hra 28/28) a drift test ten soubor **nehlídá**.
 
-> **⚠ Podmíněný test je tiše zelený.** `tests/run_tests.gd` má 27 kontrol
-> tvaru `if main.has_method(...)` — funkce, která **není**, se **přeskočí**
+> **⚠ Podmíněný test je tiše zelený.** `tests/run_tests.gd` má **26 řádků
+> s `has_method`** (**39 výskytů** — naměřeno 7. 10. 2026; dřívější číslo „27
+> podmíněných kontrol" bylo nepravdivé) — funkce, která **není**, se **přeskočí**
 > a test projde. Test musí kód **ZAVOLAT** a ověřit výsledek.
+
+> **➡ Detail bran (co měří, kde mají slepá místa, past „TIŠE PŘESTALA MĚŘIT"):**
+> **`docs/BRANY-HRY.md`**. Sem se přesunul 7. 10. 2026 ze skillu `orchestra`
+> (ten se načítá i v session, kde je zbytečný) — `AGENTS.md` drží jen souhrn.
 
 ## Design a smlouvy
 
@@ -126,6 +131,7 @@ uhodnout jazyk — to je vada rozhraní, ne kosmetika.
 | Soubor | Co v něm je |
 |---|---|
 | `docs/DESIGN.md` | design hry |
+| `docs/BRANY-HRY.md` | **brány hry do detailu** — co která měří, naměřená slepá místa, past „TIŠE PŘESTALA MĚŘIT", šablona vs. hra |
 | `docs/ARCHITEKTURA.md` | architektura a **smlouvy** (vlastnictví stavu) |
 | `CONVENTIONS.md` | konvence pro psaní granulí (agent je dostává přes `--read`) |
 | `.forge/roadmap.json` | plán granulí (DAG) — **zdroj pravdy o tom, co se má dělat** |
