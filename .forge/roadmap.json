@@ -1,9 +1,16 @@
 {
   "_popis": [
-    "UO Shadows (uo-shadows) — milník 1 jako DAG granulí podle docs/ARCHITEKTURA.md.",
+    "UO Shadows (uo-shadows) — plán podle milníků M0-M6 z docs/GDD.md §12",
+    "(zdroj rozhodnutí: _analyza/DESIGN-REVIZE-2.md; smlouvy: docs/TDD.md §3).",
+    "ZMĚNA 8. 10. 2026: roadmapa přepsána z plánu „první hratelný řez“",
+    "(docs/ARCHITEKTURA.md §0.1, 22 granulí) na milníky M0-M6. Dokumenty",
+    "docs/GDD.md, docs/ADD.md a docs/TDD.md jsou nový zdroj pravdy.",
     "Každá granule = jeden soubor (owns), deklaruje depends_on a je samostatně ověřitelná.",
     "Conductor vydá granuli, až když jsou všechny depends_on sloučené (task='done')",
     "a její owns je disjunktní s owns běžících granulí — tak můžou běžet paralelně.",
+    "NOVÉ PRAVIDLO (naměřeno 8. 10. 2026): dva grains smí vlastnit TENTÝŽ soubor,",
+    "jen když je druhý depends_on první. Jinak vznikne past world.map/world.nodes —",
+    "obě granule byly připravené a obě vlastnily scripts/world.gd.",
     "Pravidla pro agenta: jen do owns, používat jen deklarované provides, neměnit",
     "tests/ ani .forge/ ani project.godot.",
     "Velikost granule se řídí modelem: bez deklarace platí size_lines <= 60 a",
@@ -11,7 +18,23 @@
     "strong — conductor je smí vydat jen silnému modelu a auto-merge posuzuje",
     "limit podle granule, ne globálně.",
     "acceptance = čím se ověřuje hotovo (tests = tests/run_tests.gd, wiring =",
-    "check-wiring, render = verify-level-render). done = sloučené, conductor je přeskakuje."
+    "check-wiring, render = verify-level-render). done = SLUČENÉ (práce je v main),",
+    "conductor je přeskakuje. POZOR: „sloučené“ NENÍ totéž co „hotové“ podle",
+    "definice hotovo (docs/GDD.md §12: soubor v main A brána zavolala funkci A",
+    "kritérium proběhlo s hodnotou A volá to produkční kód) — kde se to rozchází,",
+    "je to v done_note.",
+    "PROMPT SE GENERUJE ZE SMLOUVY v docs/TDD.md §3, ne ručně prózou: naměřeno,",
+    "že entity.npc a entity.enemy měly nejkratší zadání ze všech a nikdy neprošly",
+    "(58 běhů, 0 úspěchů).",
+    "VYŘAZENO 8. 10. 2026 (3 granule): world.map (mrtvá, duplikovala soubor),",
+    "entity.player.api (duplikát entity.player), tests.harness (granule nad",
+    "tests/ se nemůže sloučit sama a CONVENTIONS.md §5 zakazuje agentovi měnit testy).",
+    "PARKOVÁNO 8. 10. 2026 (2 granule, NEsmazány z historie — jsou v gitu a v",
+    "_analyza/NAVRH-ROADMAPY-M0-M6.md §3): entity.npc (patří do M4) a entity.enemy",
+    "(patří do M5). Byly JEDINÉ, které nikdy neprošly (58 běhů, 0 úspěchů) a měly",
+    "nejkratší zadání ze všech; v plánu byly READY, takže by je conductor vydal",
+    "okamžitě a mimo pořadí milníků. Vrátí se s promptem vygenerovaným ze smlouvy",
+    "docs/TDD.md §3.8 a §3.9 ve chvíli, kdy se milník M4/M5 otevře."
   ],
   "grains": [
     {
@@ -59,23 +82,13 @@
       "prompt": "Uprav scripts/level.gd tak, aby načetlo úroveň z assets/levels/main.json: load_file(path) -> bool (vrátí false, když soubor chybí nebo je poškozený), vlastnosti grid, cell, offset, spawn_cell, a funkce is_walkable_cell(cx, cy), cell_center(cx, cy), walkable_count(), reachable_count(). Logika průchodnosti: 0 = zeď, jinak průchozí."
     },
     {
-      "id": "world.map",
-      "title": "Svět — izo projekce, uzly surovin, respawn",
-      "kind": "code",
-      "owns": ["scripts/world.gd"],
-      "depends_on": ["world.level"],
-      "done": false,
-      "done_note": "POZOR: PR #21 sloučené 30. 9.; kód je v _retired/world.gd (c651368 ho přesunul jako mrtvý kód s druhým číslem mřížky – izo projekce správně přešla do level.gd). Uzly surovin, gather() ani respawn ale nikde nejsou (level.gd je nemá) – práce v main není. Měřeno 2. 10. 2026. DOPLNĚNO 3. 10. 2026: PR #32 (granule world.nodes) byl sice sloučen, ale doručil PRÁZDNÝ scripts/world.gd (0 B, 0 řádků) — gather(), is_walkable() ani uzly surovin v něm nejsou, takže práce v main pořád NENÍ a done zůstává false. CI to nechytilo: prázdný soubor nemá žádné funkce, takže check-wiring.py nemá co kontrolovat.",
-      "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/world.gd vytvoř izometrickou projekci a surovinové uzly. iso_position(cx: int, cy: int) -> Vector2 vrací offset + Vector2((cx-cy)*cell/2, (cx+cy)*cell/4); cell_at(pos) -> Vector2i zpětný převod. Přidej seznam uzlů (žíla železa, strom, skála) s pozicí a stavem (vytěžen/aktivní) a respawn: vytěžený uzel se po čase (konstanta, např. 60 s) obnoví. Vystav gather(cell) -> bool a is_walkable(pos)."
-    },
-    {
       "id": "entity.item",
       "title": "Předmět — definice, trvanlivost, materiál",
       "kind": "code",
       "owns": ["scripts/item.gd"],
       "depends_on": ["data.content"],
       "done": true,
+      "done_note": "PR #14 (data) + práce v main; ⚠ NAMĚŘENÁ VADA 8. 10. 2026: repair() nastaví trvanlivost na 20 natvrdo (item.gd:36), zatímco items.json deklaruje 100 (meč) a 150 (zbroj) — „oprava“ předmět ZNIČÍ. Opravuje se v M3 podle docs/TDD.md §3.6 a §10 vada 2.",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/item.gd vytvoř reprezentaci předmětu načtenou z assets/data/items.json: id, název, materiál, trvanlivost (výchozí 20), damage nebo armor_rating, kvalita. Funkce use() -> void (sníží trvanlivost o 1, nejmíň 0), repair() -> void (obnoví trvanlivost na 20) a broken() -> bool (true, když je trvanlivost 0). STRUKTURA SOUBORU (testy berou load(...).new() a volají metody přímo): (1) soubor ZAČÍNÁ `extends Node`, (2) `class_name GameItem` může následovat, ale NIKDY nesmí být i jménem vnořené `class` v témž souboru — vnořená třída přebije globální jméno, `new()` pak vrátí ji a testy spadnou; soubor SÁM JE ta třída, žádnou vnořenou nedefinuj. (3) `_init()` nesmí mít povinný argument — `new()` se volá bez parametrů, data načti v `_ready()`. (4) NEPIŠ `class_name Item` — koliduje s globálním jménem (CONVENTIONS.md §1d). (5) Vlastnost trvanlivosti pojmenuj `trvanlivost` (testy ji čtou přes Object.get a přijímají i `durability`)."
     },
@@ -109,7 +122,7 @@
       "title": "Těžba a dřevorubectví — výtěžek dle skillu × obtížnosti",
       "kind": "code",
       "owns": ["scripts/mining.gd"],
-      "depends_on": ["core.skills", "world.map", "data.content"],
+      "depends_on": ["core.skills", "world.nodes", "data.content"],
       "done": true,
       "done_note": "PR #30 sloučené 2. 10. 2026; oprava (registr komponent místo /root, Godot 4 API) v PR #31",
       "size_lines": "<= 80",
@@ -122,6 +135,8 @@
       "kind": "code",
       "owns": ["scripts/crafting.gd"],
       "depends_on": ["core.skills", "core.attributes", "entity.item", "data.content"],
+      "done": true,
+      "done_note": "SLUČENÉ (ne „hotové“ podle docs/GDD.md §12): práce je v main — commit 9876586 (3. 10. 2026), PR #34 „Výroba — tavení, kování, oprava“; scripts/crafting.gd má 78 řádků a smelt/forge/repair. Ověřeno 8. 10. 2026 čtením souboru a gitem. ⚠ Co podle definice hotovo CHYBÍ: komponentu nevolá produkční kód (hra jede monolit game.gd) — dodá engine.shell; proto se v M3 přepisuje (kvalita 0-5, opotřebení, zmetkovost) podle docs/TDD.md §3.11.",
       "size_lines": "<= 100",
       "model": "strong",
       "acceptance": ["tests", "wiring"],
@@ -134,29 +149,9 @@
       "owns": ["scripts/economy.gd"],
       "depends_on": ["entity.item", "data.content"],
       "done": true,
-      "done_note": "PR #22 sloučené 30. 9.",
+      "done_note": "PR #22 sloučené 30. 9. ⚠ NAMĚŘENÁ VADA 8. 10. 2026: price() vrací 0 pro každý skutečný předmět — čte item.material („wood/stone/metal“) a item.quality („common“…) , ale scripts/item.gd má `material` z items.json (kde klíč NENÍ) a `kvalita: int`; obchod je proto zdarma. Opravuje se v M4 podle docs/TDD.md §3.13 a §10 vada 1 (cena ze stavu světa).",
       "acceptance": ["tests", "wiring"],
       "prompt": "V scripts/economy.gd vytvoř ceny předmětů (price(item) -> int odvozená z materiálu a kvality) a obchod: buy(player, item) (hráč zaplatí zlato, dostane item) a sell(player, item) (hráč prodá, dostane zlato). Vystav gold(player) -> int. Hráč začíná s 0 zlatem."
-    },
-    {
-      "id": "entity.npc",
-      "title": "NPC — obchodník",
-      "kind": "code",
-      "owns": ["scripts/npc.gd"],
-      "depends_on": ["entity.item", "sim.economy"],
-      "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/npc.gd vytvoř obchodníka (Area2D): při dotyku hráče otevře obchod — buy/sell přes economy.gd. Vystav trade(player) -> void, které volá economy.buy/sell podle interakce. Obchodník stojí na pevné pozici."
-    },
-    {
-      "id": "entity.enemy",
-      "title": "Nepřítel — kostlivec, boj a loot",
-      "kind": "code",
-      "owns": ["scripts/enemy.gd"],
-      "depends_on": ["entity.item", "sim.combat"],
-      "size_lines": "<= 90",
-      "model": "strong",
-      "acceptance": ["tests", "wiring"],
-      "prompt": "V scripts/enemy.gd vytvoř kostlivce (Area2D) s hp (z assets/data/monsters.json) a attack(player) -> void přes combat.resolve. Když hp klesne na 0, drop_loot() -> void vytvoří loot (zlato + občas ruda) na místě smrti a nepřítel zmizí (s respawnem po čase). Vystav hp a is_dead()."
     },
     {
       "id": "sim.offline",
@@ -164,6 +159,8 @@
       "kind": "code",
       "owns": ["scripts/offline.gd"],
       "depends_on": ["core.skills", "sim.mining", "sim.crafting", "sim.combat"],
+      "done": true,
+      "done_note": "SLUČENÉ (ne „hotové“ podle docs/GDD.md §12): práce je v main — commit ee7af53 (3. 10. 2026), PR #35 „Offline — rozřešení nečinnosti s denním stropem“; scripts/offline.gd má 57 řádků a resolve(). Ověřeno 8. 10. 2026 čtením souboru a gitem. ⚠ Chybí: volání produkčním kódem (monolit) — dodá engine.shell; v M5 se přepisuje podle docs/TDD.md §3.14 (denní strop, předsady tempa).",
       "size_lines": "<= 100",
       "model": "strong",
       "acceptance": ["tests", "wiring"],
@@ -185,7 +182,7 @@
       "title": "Ukládání — stav postavy a světa",
       "kind": "code",
       "owns": ["scripts/save.gd"],
-      "depends_on": ["core.skills", "core.attributes", "entity.player", "world.map", "sim.economy"],
+      "depends_on": ["core.skills", "core.attributes", "entity.player", "world.nodes", "sim.economy"],
       "done": true,
       "done_note": "PR #28 sloučené 2. 10. 2026 (oprava: registr komponent místo skupin, Godot 4 API)",
       "size_lines": "<= 100",
@@ -206,14 +203,14 @@
     },
     {
       "id": "engine.shell",
-      "title": "Kostra — game.gd jako registr komponent (migrace monolitu)",
+      "title": "M0: Kostra — scéna z komponent přes registr (přepis monolitu)",
       "kind": "code",
       "owns": ["scripts/game.gd"],
-      "depends_on": ["data.content", "core.attributes", "core.skills", "world.level", "world.map", "entity.item", "entity.player", "entity.npc", "entity.enemy", "sim.mining", "sim.crafting", "sim.combat", "sim.economy", "sim.offline", "sim.assist", "persist.save", "ui.hud", "world.nodes", "entity.player.api"],
-      "size_lines": "<= 120",
+      "depends_on": ["engine.registry"],
+      "size_lines": "<= 140",
       "model": "strong",
       "acceptance": ["tests", "wiring", "render"],
-      "prompt": "Přepiš scripts/game.gd (starý monolit s vlastními dovednostmi tezba/kovarstvi/alchymie, surovinami, save/load a NPC=tavení) na KOSTRU s registrem komponent. Komponenty se instancují z pevného seznamu (Skills, Attributes, World, Level, Item, Player, Npc, Enemy, Mining, Crafting, Combat, Economy, Offline, Assist, Save, Hud) jako poduzly; chybějící soubor se přeskočí, hra musí zůstat hratelná. Vystav component(id: String) -> Node — POZOR: parametr NEPOJMENUJ `name`, to je rezervovaný člen Node a skript se nenaparsuje (CONVENTIONS.md §1f). Scénu sestav z veřejných provides komponent (level.cell_center (izometrie je v level.gd), player.move, world.is_walkable) – ne ze soukromých polí. Z monolitu SMAŽ: dovednosti (alchymie, denní cyklus cas_dne), vlastní suroviny, save/load, tavení u NPC – převzaly je komponenty (skills/attributes/save/crafting). Dovednosti sjednoť na 4 skilly z dat: tezba, drevorubectvi, kovarstvi, boj_na_blizko. ZACHOVEJ: uzel Player se scriptem scripts/player.gd na spawnu, uzel Label 'Hud' se skóre (testy ho čtou – scripts/hud.gd instancuj jako 'HudInfo' a volej jeho update(), 'Hud' zůstává Label), úroveň z main.json, mince, hudbu/pozadí a průchodnost. Nic jiného neměň (tests/, .forge/, project.godot se nesmí dotknout)."
+      "prompt": "Přepiš scripts/game.gd (dnes monolit, 377 řádků) na KOSTRU, která staví scénu z komponent přes registr (docs/TDD.md §1.1). Postup: (1) vytvoř uzel registru (scripts/registry.gd) jako SVÉHO POTOMKA a všechny komponenty přidávej POD registr — komponenty hledají registr přes `get_parent().component(id)` (naměřeno v hud.gd, save.gd, combat.gd, mining.gd, offline.gd); (2) registruj komponenty z PEVNÉHO seznamu jmen: Level, Player, Attributes, Skills, Economy, Save, Hud, Item, Mining, Crafting, Combat, Offline, World; (3) soubor, který v repu NENÍ, se PŘESKOČÍ a ohlásí se to `push_warning` (aditivní migrace — hra musí zůstat hratelná po celou dobu, viz docs/ARCHITEKTURA.md §3); (4) scénu sestav z veřejných API komponent, ne z jejich vnitřků; (5) z monolitu SMAŽ jen to, co komponenty převzaly (vlastní dovednosti, suroviny, ukládání) — a jen postupně: uzel `Hud` (Label se skóre) a `_physics_process` hráče zůstávají, dokud je komponenty nenahradí, protože na nich stojí testy i hratelnost. Zachovej uzly, které testy hledají podle jména: `Hud`, `HudPanel`, `Music`, `Fps`. Godot 4 API (offset_* místo margin_*, FileAccess/JSON, HORIZONTAL_ALIGNMENT_*), `extends Node2D` zůstává, explicitní typy u neotypovaných výrazů (`var x: Vector2 = ...`), žádné `position`/`name`/`size` jako vlastní členy. Chybějící komponenta = push_error + hra pokračuje; tichý `return` je zakázaný. Neměň tests/, .forge/ ani project.godot."
     },
     {
       "id": "world.nodes",
@@ -229,39 +226,61 @@
       "prompt": "Vytvoř scripts/world.gd jako komponentu Svět (soubor začíná `extends Node`, žádné class_name, _init() bez povinného argumentu). SMLOUVA — přesně tohle volají jiné komponenty, nic víc: (1) gather(cell: Vector2i) -> bool — označí uzel v tom poli za vytěžený a vrátí true; pro totéž pole podruhé vrátí false. Volá ji scripts/mining.gd. (2) is_walkable(pos: Vector2) -> bool — nevytěžený uzel suroviny není průchozí, vytěžený je. (3) Uzel se po RESPAWN_TIME (konstanta 60.0) obnoví: čas porovnávej při dotazu přes Time.get_ticks_msec() (žádný Timer navíc, žádné await). (4) nodes() -> Array — kopie seznamu uzlů (pro HUD a ukládání). (5) snapshot() -> Array a restore(stav: Array) -> void — stav pro ukládání: jen slovníky, čísla a řetězce, NIKDY objekty (ConfigFile je neumí). KAŽDÝ uzel v nodes() MUSÍ mít vlastnosti resource_id: String, difficulty: int, cell: Vector2i — mining.gd je čte jako node.resource_id / node.difficulty / node.cell (nebo přes gettery get_resource_id() a get_difficulty()). ODKUD BERE UZLY: z mapy. Do assets/levels/main.json přidej 8–12 markerů ve tvaru {\"type\": \"resource\", \"resource_id\": \"iron_ore\", \"cell\": [x, y]} — resource_id ber z assets/data/materials.json (iron_ore obtížnost 1, wood 1, stone 2; iron_ingot je meziprodukt, ten se netěží) a obtížnost si vezmi odtud, neopisuj ji do kódu. Markery dávej na PRŮCHODNÁ pole (testy kontrolují, že každá značka leží na průchozím poli). PROJEKCI NEŘEŠ: izometrii má scripts/level.gd (cell_center, cell_at) — neopisuj ji sem a nezaváděj vlastní konstantu velikosti buňky; přesně kvůli druhému číslu mřížky byl starý world.gd přesunut do _retired/. Služby ber z registru rodiče: get_parent().component(id) — vzor je v scripts/mining.gd — a nikdy ne z /root/ (žádný autoload v projektu není). Neměň tests/, .forge/ ani project.godot."
     },
     {
-      "id": "entity.player.api",
-      "title": "Hráč — stav (hp/mana/cíl), move() a inventář (co už volají jiné komponenty)",
-      "kind": "code",
-      "owns": ["scripts/player.gd"],
-      "depends_on": ["core.attributes", "core.skills", "entity.item", "world.level"],
-      "size_lines": "<= 180",
-      "model": "strong",
-      "done": true,
-      "done_note": "Měřeno 3. 10. 2026: práce JE v main (ffe9bd8) a splňuje body 1–5 promptu — move(dir, delta) (volatelné i jako move(dir)), stav hp/max_hp/mana/max_mana/target, inventory/add_item/remove_item/equipped, die() s mrtvolou Area2D ve skupině corpse a s návratem na level.spawn_cell, a zachované _step/_physics_process/flash()/signal collected/add_to_group. Ověřeno spuštěním: tests/run_tests.gd 91 kontrol / 0 selhání, .forge/check-wiring.py exit 0. ⚠ JEDNA ODCHYLKA od promptu (vědomá, ne vada): izometrické osy nebere VOLÁNÍM metody levelu, ale poměrem (dx-dy)*0.5 a (dx+dy)*0.25 — je to TÝŽ poměr, jaký má level.cell_center, zapsaný i s odůvodněním v hlavičce souboru; test měří sklon posunu proti sklonu osy dlaždice PŘEČTENÉMU z level.cell_center, takže na levelu závisí měřením.",
-      "acceptance": ["tests", "wiring"],
-      "prompt": "Rozšiř scripts/player.gd (dnes umí jen pohyb klávesami přes _physics_process + _step a flash()). DOPLŇ PŘESNĚ TOHLE — jiné komponenty to už volají, nic víc: (1) move(dir: Vector2) -> void — posun o dir; izometrické osy ber z levelu, ne z vlastní konstanty (get_tree().get_first_node_in_group(\"level\") a jeho is_walkable_at; vzor je v _physics_process). (2) Stav: hp: int, max_hp: int, mana: int, max_mana: int, target (uzel nebo null) — čte je scripts/assist.gd. (3) Inventář: inventory: Array, add_item(item) -> void, remove_item(item) -> void a equipped (vybavená zbraň/zbroj) — volá je scripts/economy.gd (add_item/remove_item) a čte scripts/hud.gd (equipped). (4) die() -> void — vytvoří mrtvolu (Area2D se jménem Corpse ve skupině corpse) s předměty z těla, hráč zahodí výbavu a inventář, přijde o všechno na těle a přesune se na spawn (level.spawn_cell přes cell_center). (5) ZACHOVEJ beze změny: _step(target: Vector2) -> Vector2, _physics_process, flash(), signál collected a add_to_group(\"player\") v _ready() — testy je volají přímo. Struktura: začni `extends Area2D` (tak to je dnes), _init() bez povinného argumentu (CONVENTIONS.md §1f/§1g). Služby (atributy, skilly, předměty) ber z registru rodiče: get_parent().component(id) — vzor je v scripts/mining.gd; nikdy ne z /root/ (žádný autoload v projektu není). Neměň tests/, .forge/ ani project.godot."
-    },
-    {
-      "id": "tests.harness",
-      "title": "Testovací Harness — jediný vlastník tests/run_tests.gd (brány projektu)",
-      "kind": "test",
-      "owns": ["tests/run_tests.gd"],
-      "depends_on": ["sim.combat", "core.attributes", "core.skills"],
-      "size_lines": "<= 1200",
-      "model": "strong",
-      "acceptance": ["tests"],
-      "prompt": "Vlastníš JEDINÝ soubor tests/run_tests.gd (dnes 1 205 řádků) — je to jediný spustitelný vstup testů, na který odkazuje CI (.github/workflows/ci.yml) i agent.yml v OBOU kopiích. NEROZDĚLUJ ho na víc souborů a NEMĚŇ nic jiného než tenhle soubor: scripts/ ani .forge/ ani project.godot nesmíš sáhnout, jinak by sis upravil kód, který testuješ. ÚPRAVY DĚLEJ ADITIVNĚ — stávající kontroly neruš, jen přidávej a zpřesňuj. TVRDÁ PRAVIDLA, každé je naměřená past: (1) Testy musí kód VOLAT a ověřit výsledek — has_method(\"x\") NESTAČÍ (naměřeno 2. 10. 2026: tři PR prošla zeleným CI, a přitom save() uložil 35 B, hud.gd se kvůli margin_left vůbec nepřidal a mining.gd spadl na node.has()). Soubor, který součástí hry být MÁ, musí při nenačtení SELHAT, ne se přeskočit. (2) KAŽDÁ kontrola musí umět SPADNOUT — dolož to mutací: vlož do kopie kódu vadu, spusť testy a ukaž, že spadnou; a ověř, že se mutace opravdu provedla (jinak testuješ nezměněný soubor). (3) Atrapa musí být V ROZPORU sama se sebou, když testuje VĚTEV: když kód zkouší napřed hodnota(attr) a teprve pak vlastnost téhož jména, musí atrapa dát pro každou cestu JINÉ číslo (např. hodnota(\"Str\") = 100 při vlastnosti Str = 10) — atrapa, kde obojí vrací totéž, tomu rozdílu nic nenaučí a mutace vypuštění větve projde (nález H2/H12). Vzor je v souboru hotový: TestAtributyHodnota a TestSkillyHodnota. (4) NETESTUJ granule, které nejsou done: engine.shell, world.nodes, entity.player.api a persist.save.state jsou rozpracované — testuj jen to, co je v main. (5) Každá nová kontrola musí mít v hlášení NAMĚŘENOU hodnotu (ne jen OK), aby z výstupu bylo vidět, CO se měřilo. (6) Skript extends SceneTree pracuje v _process(), ne v _initialize() — v _initialize() ještě není strom. (7) Výstup musí obsahovat řádek [test] N kontrol, M selhání a při M > 0 musí skončit NENULOVÝM exit kódem; bez toho je zelená jen text na obrazovce. První úkol téhle granule (nález H12) je HOTOVÝ a slouží jako vzor: úprava kontroly atributů přes hodnota(attr) na atrapu v rozporu — mutace vypuštění větve hodnota() shodí testy 2 selháními (naměřeno)."
-    },
-    {
       "id": "persist.save.state",
       "title": "Ukládání — inventář hráče a stav uzlů světa (co dnes uložit nelze)",
       "kind": "code",
       "owns": ["scripts/save.gd"],
-      "depends_on": ["persist.save", "entity.player.api", "world.nodes"],
+      "depends_on": ["persist.save", "entity.player", "world.nodes"],
+      "done": true,
+      "done_note": "SLUČENÉ (ne „hotové“ podle docs/GDD.md §12): práce je v main — commit 7ad8d04 (5. 10. 2026), PR #37 „Ukládání — inventář hráče a stav uzlů světa“; scripts/save.gd (150 řádků) má sekce inventory (items: id/trvanlivost/kvalita + equipped_id) a world (data z World.snapshot()/restore()), chybějící komponentu ohlašuje push_warning, a vrací false, když není co uložit. Ověřeno 8. 10. 2026 čtením souboru a gitem. ⚠ Chybí: komponentu World v repu NENÍ (scripts/world.gd = 0 B) a save.gd nevolá produkční kód — sekce world se tedy reálně neuplatní, dokud není world.nodes hotová; proto zůstává i v M5 (docs/TDD.md §3.16).",
       "size_lines": "<= 140",
       "model": "strong",
       "acceptance": ["tests", "wiring"],
       "prompt": "Rozši scripts/save.gd. Dnes ukládá atributy, dovednosti, zlato a pozici hráče (viz hlavička souboru) a když není co uložit, vrací false — to ZACHOVEJ. Přidej: (1) Inventář hráče a výbavu: player.inventory je pole předmětů; z každého ukládej jen DATA, ne objekt — slovník {\"id\": ..., \"trvanlivost\": ..., \"kvalita\": ...} (ConfigFile neumí ukládat objekty, spadlo by to až při ukládání). Při load() předměty znovu postav přes scripts/item.gd (GameItem) a vlož hráči add_item(); u vybavené zbraně/zbroje obnov, co hráč drží. (2) Stav uzlů světa: component(\"World\").snapshot() do sekce world a při load() restore(data). (3) Když komponenta chybí, ulož jen to, co jde, a OHLAS to přes push_warning (tichý úspěch je v tomhle souboru zakázaný — byl to nález z 2. 10. 2026). Zachovej save() -> bool a load() -> bool a chování bez registru (vrací false). Služby ber z registru rodiče: get_parent().component(id) (vzor v scripts/mining.gd), nikdy ne z /root/. Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "engine.registry",
+      "title": "Registr komponent, pevný tik a fronty (M0 — rozsekává sémantický cyklus)",
+      "kind": "code",
+      "owns": ["scripts/registry.gd"],
+      "depends_on": [],
+      "size_lines": "<= 120",
+      "model": "strong",
+      "acceptance": ["tests", "wiring"],
+      "prompt": "Vytvoř scripts/registry.gd — MALÝ uzel, který je registrem komponent a drží čas simulace (rozhodnutí R-1, docs/TDD.md §1.1-1.3). Soubor začni `extends Node`, NEDÁVEJ mu class_name (kolize s globálními jmény shodí parsování) a _init() nesmí mít povinný argument. Musí poskytovat: (1) `func component(id: String) -> Node` — vrací registrovaný uzel nebo null pro neznámé id; (2) `func register(id: String, node: Node) -> void`; (3) `func components() -> Dictionary`; (4) `const TICK_MS := 50` a pevný tik: v `_process(delta)` akumuluj čas a když dosáhne 50 ms, zavolej `func sim_tick(dt: float) -> void` na všech registrovaných komponentách, které tuhle metodu mají (komponenta bez sim_tick se přeskočí — to je normální, ale zaregistrovaná komponenta, která zmizela, se musí OHLÁSIT přes push_warning, ne tiše přeskočit); (5) `signal ticked(dt: float)` vyemitovaný po každém tiku; (6) fronty: `func push_command(cmd: Dictionary) -> void`, `func commands() -> Array` (vrátí a VYPRÁZDNÍ frontu), `func push_event(ev: Dictionary) -> void`, `func events() -> Array` (taky vyprázdní). DŮLEŽITÉ: komponenty budou DĚTI tohoto uzlu, protože hud.gd, save.gd, combat.gd, mining.gd i offline.gd hledají registr přes `get_parent().component(id)` (naměřeno) — kdyby registr nebyl jejich rodič, dostanou null a hra poběží s nulami. Žádná komponenta nesmí mít vlastní časovač; čas vlastní jen tenhle uzel. Nepoužívej jména `get`, `set`, `name`, `size`, `position` jako názvy svých funkcí ani vlastností (kolidují s enginem). Když něco nejde, push_error a pokračuj — hra musí zůstat hratelná; tichý `return` je zakázaný. Godot 4 API (FileAccess/JSON, ne File/json). Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "engine.input",
+      "title": "Vstup — záměr pohybu z myši a kláves (M1)",
+      "kind": "code",
+      "owns": ["scripts/input.gd"],
+      "depends_on": ["engine.registry"],
+      "size_lines": "<= 80",
+      "model": "strong",
+      "acceptance": ["tests", "wiring"],
+      "prompt": "Vytvoř scripts/input.gd — komponentu, která POUZE VZORKUJE vstup a vrací ZÁMĚR pohybu (nerozhoduje o pozici a NEPLNÍ frontu příkazů, aby fronta neměla dva pisatele; docs/TDD.md §1.2 krok 1). Soubor začni `extends Node`, bez class_name, `_init()` bez povinného argumentu. Poskytuj `func sample() -> Dictionary` s klíči: `dir` (Vector2 ve HŘE: vpravo (1,0), dolů (0,1) — NE v pixelech), `speed` (float 0.0-1.0 podle vzdálenosti kurzoru od postavy), `run` (bool). Chování podle docs/GDD.md §6: držení PRAVÉHO tlačítka myši znamená „jdu“; vzdálenost kurzoru od postavy určuje rychlost (těsně u postavy = stojím — MRTVÁ ZÓNA, aby postava nekmitala, když kurzor stojí na ní; dál = pomalá chůze / chůze / běh); WASD a šipky zůstávají jako ZÁLOŽNÍ cesta (pro testování) — čtou se přímo přes Input.is_key_pressed(KEY_*), protože project.godot nemá ani jednu vstupní akci (naměřeno) a měnit ho agent nesmí. Pozice postavy se bere z komponenty Player přes registr (`get_parent().component(\"Player\")`), nikdy se neopisuje. Konkrétní poloměr mrtvé zóny a hranice rychlostí jsou LADICÍ hodnoty — dej je na jedno místo jako konstanty s komentářem, ať se dají měnit. V headless režimu NEPOUŽÍVEJ Input.get_string() (neexistuje). Explicitní typy u neotypovaných výrazů; žádné `position`/`name`/`size` jako vlastní členy; tichý `return` zakázán (chybějící komponenta = push_warning a návrat rozumného defaultu). Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "entity.move.smooth",
+      "title": "Plynulý pohyb hráče — myš, mrtvá zóna, vyhlazení, stamina (M1)",
+      "kind": "code",
+      "owns": ["scripts/player.gd"],
+      "depends_on": ["engine.registry", "engine.input", "world.level", "entity.player"],
+      "size_lines": "<= 140",
+      "model": "strong",
+      "acceptance": ["tests", "wiring"],
+      "prompt": "Uprav scripts/player.gd tak, aby se postava pohybovala PLYNULE (rozhodnutí K5, docs/GDD.md §6; smlouva `move` je v docs/TDD.md §3.7 a NESMÍ se rozbít). Zachovej: `extends Area2D`, `func move(dir: Vector2, delta: float = -1.0) -> void` jako JEDINOU cestu, kterou se mění pozice (delta < 0 znamená „jeden krok SPEED/60“ — používají to testy), izometrické osy `(d.x-d.y)*0.5`, `(d.x+d.y)*0.25` (TÝŽ poměr jako level.cell_center — neopisuj projekci, jen ten poměr), kolizní klouzání `_step()` přes `level.is_walkable_at()` a držení hráče v obrazovce. Přidej: (1) pozice je spojitá (float), ale mřížka zůstává kolizní a vykreslovací vrstva; (2) VYHLAZENÍ — rychlost nesmí skákat: rozběh a zastavení mají být plynulé (akcelerace/decelerace), doba do plné rychlosti a do zastavení musí být MĚŘITELNÁ v ms a být na jednom místě jako konstanty; (3) STAMINA — běh ubírá staminu, vyčerpaný hráč zpomalí; stamina je stav HRÁČE (vlastní ho tenhle soubor); (4) vstup se bere z komponenty `Input` přes registr (`get_parent().component(\"Input\")`) voláním `sample()` — soubor sám NEČTE klávesy dvakrát ani nedrží druhou logiku vstupu. Když komponenta Input není, použij WASD/šipky jako záložní cestu (hra musí být hratelná i bez registru). Pozor na CONVENTIONS.md: `position` je vlastnost Area2D — NIKDY ji nedeklaruj znovu; žádné `get`/`set`/`name`/`size`; explicitní typy u neotypovaných výrazů; Godot 4 API. Tichý `return` zakázán. Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "world.bodies",
+      "title": "Kolize těles a spojité řazení hloubky (M1)",
+      "kind": "code",
+      "owns": ["scripts/bodies.gd"],
+      "depends_on": ["engine.registry", "world.level"],
+      "size_lines": "<= 100",
+      "model": "strong",
+      "acceptance": ["tests", "wiring"],
+      "prompt": "Vytvoř scripts/bodies.gd — systém, který drží tělesa ve světě a řeší DVĚ věci z docs/GDD.md §6: (1) OBJEKTY SE NESMÍ PŘEKRÝVAT (dvě tělesa nesmí stát na stejné pozici — při vložení se nové těleso posune na nejbližší volné místo nebo se vložení odmítne, ale vždy se to OHLÁSÍ, nikdy tiše); (2) SPOJITÉ ŘAZENÍ HLOUBKY — `z_index` se počítá z pozice ve světě (větší y = blíž k divákovi = kreslí se později), ne z celých čísel; dlaždice v level.gd mají základ -2000, takže entity musí zůstat NAD mapou. Soubor začni `extends Node`, bez class_name, `_init()` bez povinného argumentu. Poskytuj: `func add(id: String, node: Node2D) -> bool`, `func remove(id: String) -> void`, `func is_free(pos: Vector2) -> bool`, `func sort_all() -> void` (nastaví z_index podle y). Projekci NEOPISUJ: kdo je kde, zjisti přes `get_parent().component(\"Level\")` a jeho `cell_at()`/`cell_center()` — druhé číslo mřížky je naměřená vada (`_retired/world.gd`), která se nesmí vrátit. Souřadnice tělesa se bere z jeho `position`; do systému se uzel přidává zvenčí. Explicitní typy u neotypovaných výrazů (uzly z get_nodes_in_group nemají typ); žádné `get`/`set`/`name`/`size`/`position` jako vlastní členy; Godot 4 API; tichý `return` zakázán. Neměň tests/, .forge/ ani project.godot."
     }
   ]
 }

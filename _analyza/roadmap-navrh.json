@@ -1,0 +1,80 @@
+{
+  "_popis": [
+    "NÁVRH nové roadmapy pro uo-shadows — milníky M0-M6 z docs/GDD.md §12.",
+    "TOTO JE NÁVRH K ODSOUHLASENÍ, NE ŽIVÁ ROADMAPA: obsahuje jen to, co je",
+    "po odsouhlasení hned k vydání (M0 a M1, 5 granulí) a má hotové prompty.",
+    "Zdůvodnění, celý DAG M0-M6 a co se vyřazuje: _analyza/NAVRH-ROADMAPY-M0-M6.md.",
+    "Prompty dalších milníků se generují ze smluv v docs/TDD.md §3 ve chvíli,",
+    "kdy se milník otevírá — ručně psaných 22 próz je to, co u entity.npc",
+    "a entity.enemy selhalo napořád (58 běhů, 0 úspěchů).",
+    "Pravidla pro agenta beze změny: jen do owns, používat jen deklarované",
+    "provides, neměnit tests/ ani .forge/ ani project.godot.",
+    "Velikost granule se řídí modelem: bez deklarace platí size_lines <= 60",
+    "a model any; granule se size_lines > 60 mají model strong.",
+    "acceptance = čím se ověřuje hotovo (tests = tests/run_tests.gd, wiring =",
+    "check-wiring, render = verify-level-render). done = sloučené.",
+    "NOVÉ PRAVIDLO (z měření 8. 10. 2026): dva grains smí vlastnit tentýž",
+    "soubor, jen když je druhý depends_on první — jinak je to past",
+    "world.map/world.nodes, kde byly obě granule připravené nad jedním souborem.",
+    "POZOR: registr komponent (engine.registry) je schválně BEZ ZÁVISLOSTÍ —",
+    "rozsekává sémantický cyklus, ve kterém engine.shell vytváří registr a",
+    "sim.combat/entity.enemy ho zároveň potřebují."
+  ],
+  "grains": [
+    {
+      "id": "engine.registry",
+      "title": "M0: Kostra — registr komponent, pevný tik a fronty",
+      "kind": "code",
+      "owns": ["scripts/registry.gd"],
+      "depends_on": [],
+      "acceptance": ["tests", "wiring"],
+      "size_lines": "<= 120",
+      "model": "strong",
+      "prompt": "Vytvoř scripts/registry.gd — MALÝ uzel, který je registrem komponent a drží čas simulace (rozhodnutí R-1, docs/TDD.md §1.1-1.3). Soubor začni `extends Node`, NEDÁVEJ mu class_name (kolize s globálními jmény shodí parsování) a _init() nesmí mít povinný argument. Musí poskytovat: (1) `func component(id: String) -> Node` — vrací registrovaný uzel nebo null pro neznámé id; (2) `func register(id: String, node: Node) -> void`; (3) `func components() -> Dictionary`; (4) `const TICK_MS := 50` a pevný tik: v `_process(delta)` akumuluj čas a když dosáhne 50 ms, zavolej `func sim_tick(dt: float) -> void` na všech registrovaných komponentách, které tuhle metodu mají (komponenta bez sim_tick se přeskočí — to je normální, ale zaregistrovaná komponenta, která zmizela, se musí OHLÁSIT přes push_warning, ne tiše přeskočit); (5) `signal ticked(dt: float)` vyemitovaný po každém tiku; (6) fronty: `func push_command(cmd: Dictionary) -> void`, `func commands() -> Array` (vrátí a VYPRÁZDNÍ frontu), `func push_event(ev: Dictionary) -> void`, `func events() -> Array` (taky vyprázdní). DŮLEŽITÉ: komponenty budou DĚTI tohoto uzlu, protože hud.gd, save.gd, combat.gd, mining.gd i offline.gd hledají registr přes `get_parent().component(id)` (naměřeno) — kdyby registr nebyl jejich rodič, dostanou null a hra poběží s nulami. Žádná komponenta nesmí mít vlastní časovač; čas vlastní jen tenhle uzel. Nepoužívej jména `get`, `set`, `name`, `size`, `position` jako názvy svých funkcí ani vlastností (kolidují s enginem). Když něco nejde, push_error a pokračuj — hra musí zůstat hratelná; tichý `return` je zakázaný. Godot 4 API (FileAccess/JSON, ne File/json). Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "engine.shell",
+      "title": "M0: Kostra — scéna z komponent přes registr (přepis monolitu)",
+      "kind": "code",
+      "owns": ["scripts/game.gd"],
+      "depends_on": ["engine.registry"],
+      "acceptance": ["tests", "wiring"],
+      "size_lines": "<= 140",
+      "model": "strong",
+      "prompt": "Přepiš scripts/game.gd (dnes monolit, 377 řádků) na KOSTRU, která staví scénu z komponent přes registr (docs/TDD.md §1.1). Postup: (1) vytvoř uzel registru (scripts/registry.gd) jako SVÉHO POTOMKA a všechny komponenty přidávej POD registr — komponenty hledají registr přes `get_parent().component(id)` (naměřeno v hud.gd, save.gd, combat.gd, mining.gd, offline.gd); (2) registruj komponenty z PEVNÉHO seznamu jmen: Level, Player, Attributes, Skills, Economy, Save, Hud, Item, Mining, Crafting, Combat, Offline, World; (3) soubor, který v repu NENÍ, se PŘESKOČÍ a ohlásí se to `push_warning` (aditivní migrace — hra musí zůstat hratelná po celou dobu, viz docs/ARCHITEKTURA.md §3); (4) scénu sestav z veřejných API komponent, ne z jejich vnitřků; (5) z monolitu SMAŽ jen to, co komponenty převzaly (vlastní dovednosti, suroviny, ukládání) — a jen postupně: uzel `Hud` (Label se skóre) a `_physics_process` hráče zůstávají, dokud je komponenty nenahradí, protože na nich stojí testy i hratelnost. Zachovej uzly, které testy hledají podle jména: `Hud`, `HudPanel`, `Music`, `Fps`. Godot 4 API (offset_* místo margin_*, FileAccess/JSON, HORIZONTAL_ALIGNMENT_*), `extends Node2D` zůstává, explicitní typy u neotypovaných výrazů (`var x: Vector2 = ...`), žádné `position`/`name`/`size` jako vlastní členy. Chybějící komponenta = push_error + hra pokračuje; tichý `return` je zakázaný. Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "engine.input",
+      "title": "M1: Vstup — záměr pohybu z myši a kláves",
+      "kind": "code",
+      "owns": ["scripts/input.gd"],
+      "depends_on": ["engine.registry"],
+      "acceptance": ["tests", "wiring"],
+      "size_lines": "<= 80",
+      "model": "strong",
+      "prompt": "Vytvoř scripts/input.gd — komponentu, která POUZE VZORKUJE vstup a vrací ZÁMĚR pohybu (nerozhoduje o pozici a NEPLNÍ frontu příkazů, aby fronta neměla dva pisatele; docs/TDD.md §1.2 krok 1). Soubor začni `extends Node`, bez class_name, `_init()` bez povinného argumentu. Poskytuj `func sample() -> Dictionary` s klíči: `dir` (Vector2 ve HŘE: vpravo (1,0), dolů (0,1) — NE v pixelech), `speed` (float 0.0-1.0 podle vzdálenosti kurzoru od postavy), `run` (bool). Chování podle GDD §6: držení PRAVÉHO tlačítka myši znamená „jdu“; vzdálenost kurzoru od postavy určuje rychlost (těsně u postavy = stojím — MRTVÁ ZÓNA, aby postava nekmitala, když kurzor stojí na ní; dál = pomalá chůze / chůze / běh); WASD a šipky zůstávají jako ZÁLOŽNÍ cesta (pro testování) — čtou se přímo přes Input.is_key_pressed(KEY_*), protože project.godot nemá ani jednu vstupní akci (naměřeno) a měnit ho agent nesmí. Pozice postavy se bere jako parametr nebo z komponenty Player přes registr (`get_parent().component(\"Player\")`), nikdy se neopisuje. Pro hlavičku: konkrétní poloměr mrtvé zóny a hranice rychlostí jsou LADICÍ hodnoty — dej je na jedno místo jako konstanty s komentářem, ať se dají měnit. V headless režimu NEPOUŽÍVEJ Input.get_string() (neexistuje). Explicitní typy u neotypovaných výrazů; žádné `position`/`name`/`size` jako vlastní členy; tichý `return` zakázán (chybějící komponenta = push_warning a návrat rozumného defaultu). Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "entity.move.smooth",
+      "title": "M1: Plynulý pohyb hráče (myš, stamina, vyhlazení)",
+      "kind": "code",
+      "owns": ["scripts/player.gd"],
+      "depends_on": ["engine.registry", "world.level", "engine.input"],
+      "acceptance": ["tests", "wiring"],
+      "size_lines": "<= 140",
+      "model": "strong",
+      "prompt": "Uprav scripts/player.gd tak, aby se postava pohybovala PLYNULE (rozhodnutí K5, docs/GDD.md §6; smlouva `move` je v docs/TDD.md §3.7 a NESMÍ se rozbít). Zachovej: `extends Area2D`, `func move(dir: Vector2, delta: float = -1.0) -> void` jako JEDINOU cestu, kterou se mění pozice (delta < 0 znamená „jeden krok SPEED/60“ — používají to testy), izometrické osy `(d.x-d.y)*0.5`, `(d.x+d.y)*0.25` (TÝŽ poměr jako level.cell_center — neopisuj projekci, jen ten poměr), kolizní klouzání `_step()` přes `level.is_walkable_at()` a držení hráče v obrazovce. Přidej: (1) pozice je spojitá (float), ale mřížka zůstává kolizní a vykreslovací vrstva; (2) VYHLAZENÍ — rychlost nesmí skákat: rozběh a zastavení mají být plynulé (akcelerace/decelerace), doba do plné rychlosti a do zastavení musí být MĚŘITELNÁ v ms a být na jednom místě jako konstanty; (3) STAMINA — běh ubírá staminu, vyčerpaný hráč zpomalí; stamina je stav HRÁČE (vlastní ho tenhle soubor); (4) vstup se bere z komponenty `Input` přes registr (`get_parent().component(\"Input\")`) voláním `sample()` — soubor sám NEČTE klávesy dvakrát ani nedrží druhou logiku vstupu. Když komponenta Input není, použij WASD/šipky jako záložní cestu (hra musí být hratelná i bez registru). Pozor na CONVENTIONS.md: `position` je vlastnost Area2D — NIKDY ji nedeklaruj znovu; žádné `get`/`set`/`name`/`size`; explicitní typy u neotypovaných výrazů; Godot 4 API. Tichý `return` zakázán. Neměň tests/, .forge/ ani project.godot."
+    },
+    {
+      "id": "world.bodies",
+      "title": "M1: Kolize těles a spojité řazení hloubky",
+      "kind": "code",
+      "owns": ["scripts/bodies.gd"],
+      "depends_on": ["engine.registry", "world.level"],
+      "acceptance": ["tests", "wiring"],
+      "size_lines": "<= 100",
+      "model": "strong",
+      "prompt": "Vytvoř scripts/bodies.gd — systém, který drží tělesa ve světě a řeší DVĚ věci z docs/GDD.md §6: (1) OBJEKTY SE NESMÍ PŘEKRÝVAT (dvě tělesa nesmí stát na stejné pozici — při vložení se nové těleso posune na nejbližší volné místo nebo se vložení odmítne, ale vždy se to OHLÁSÍ, nikdy tiše); (2) SPOJITÉ ŘAZENÍ HLOUBKY — `z_index` se počítá z pozice ve světě (větší y = blíž k divákovi = kreslí se později), ne z celých čísel; dlaždice v level.gd mají základ -2000, takže entity musí zůstat NAD mapou. Soubor začni `extends Node`, bez class_name, `_init()` bez povinného argumentu. Poskytuj: `func add(id: String, node: Node2D) -> bool`, `func remove(id: String) -> void`, `func is_free(pos: Vector2) -> bool`, `func sort_all() -> void` (nastaví z_index podle y) a `func scale_for_depth() -> void` nepřidávej — nic dalšího. Projekci NEOPISUJ: kdo je kde, zjisti přes `get_parent().component(\"Level\")` a jeho `cell_at()`/`cell_center()` — druhé číslo mřížky je naměřená vada (`_retired/world.gd`), která se nesmí vrátit. Souřadnice tělesa se bere z jeho `position`; do systému se uzel přidává zvenčí. Explicitní typy u neotypovaných výrazů (uzly z get_nodes_in_group nemají typ); žádné `get`/`set`/`name`/`size`/`position` jako vlastní členy; Godot 4 API; tichý `return` zakázán. Neměň tests/, .forge/ ani project.godot."
+    }
+  ]
+}
