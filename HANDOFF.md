@@ -1,5 +1,14 @@
 # Session Handoff — revize vize `uo-shadows` (5 kol dialogu s uživatelem) uzavřena
 
+> **⚠ SPOTŘEBOVÁNO 8. 10. 2026 druhou session.** Zadání, které tenhle handoff
+> předával (`napiš GDD, ADD a TDD`), je **splněné**: vznikly `docs/GDD.md`,
+> `docs/ADD.md`, `docs/TDD.md`, `AGENTS.md` má přepsané odkazy a je hotový
+> **návrh** roadmapy (`_analyza/NAVRH-ROADMAPY-M0-M6.md` +
+> `_analyza/roadmap-navrh.json`) — **k odsouhlasení, ne aplikovaný**.
+> **Dnešní stav není tenhle soubor** — je v `docs/GDD.md` (design),
+> `docs/TDD.md` (technika), `docs/ADD.md` (vzhled) a v „Co zbývá“ níž.
+> Tenhle soubor zůstává jako **záznam předání** (needituje se zpětně).
+>
 > **Co tenhle soubor JE:** **předávací artefakt** pro session, která začne
 > v čistém kontextu. Není to stav projektu (ten je
 > v `_analyza/DESIGN-REVIZE-2.md`) — je to „kde jsem přestal a co dělat dál".
@@ -90,9 +99,13 @@ tři krajní případy, což je jiná a tady **silnější** metoda validace.
 
 - Dev servery / porty: none (spuštěné žádné)
 - Worktrees / větve: none — jedna pracovní kopie, větev `main`
-- **Git: pushnuto.** `origin/main` = `5fe6d8e` = `HEAD`, 0 nepushnutých commitů.
-  Necommitnutá zůstala jen složka `_acl-recovery/` (není moje; rozhodnutí o ní
-  je otevřené téma `O-3` v zadání).
+- **Git (ověřeno živě 8. 10. 2026, druhá session):** `HEAD` = `945cba8`,
+  `origin/main` = `945cba8`, **0 nepushnutých commitů**. **Nové dokumenty jsou
+  zatím NECOMMITNUTÉ** (`docs/GDD.md`, `docs/ADD.md`, `docs/TDD.md`,
+  `_analyza/NAVRH-ROADMAPY-M0-M6.md`, `_analyza/roadmap-navrh.json`,
+  `_analyza/over-dokumenty.py`) + upravené `AGENTS.md`, `docs/DESIGN.md`,
+  `docs/ARCHITEKTURA.md`, `HANDOFF.md`. Beze změny zůstala `_acl-recovery/`
+  (není moje; otevřené téma `O-3`).
 
 ## Verification — how to confirm things still work
 
@@ -133,7 +146,52 @@ node -e "(async()=>{const r=await fetch('https://forge-conductor.ssevcikm.worker
 
 ## Pick up here
 
+> **✅ SPLNĚNO 8. 10. 2026 (druhá session).** Text níž je **záznam, co se
+> zadalO** — ne dnešní stav. Dnešní stav je v tabulkách pod ním.
+
 Přečti `E:\Workspaces\uo-shadows\ZADANI-GDD-ADD-TDD.md` a **napiš
 `docs/GDD.md`** podle mapy v jeho §2 — bere se to z `DESIGN-REVIZE-2.md` §2–§5,
 §12 a §13, nic se nedohaduje. ADD a TDD až po něm; `.forge/roadmap.json` teprve
 po všech třech.
+
+### Co je hotové (druhá session, 8. 10. 2026)
+
+| # | Výstup | Kde | Jak je ověřený |
+|---|---|---|---|
+| 1 | **GDD** (495 řádků) — záměr, pilíře, smyčka, `V1`–`V8`, prvních 5 minut, ovládání, UI, svět, mechaniky se vzorci, obsah, non-goals, milníky | `docs/GDD.md` | `_analyza/over-dokumenty.py`: 92 tvrzení proti zdrojům, 0 FAIL |
+| 2 | **ADD** (392 řádků) — lidská vrstva k `spec.json`, katalog assetů, pipeline Blender/SDXL, `A-1` odloženo, zvuk, licence | `docs/ADD.md` | tamtéž + naměřeno, že `assets/sprites/player.png` je **pixel-identický** složenině 4 vrstev `d0_f1` |
+| 3 | **TDD** (796 řádků) — architektura běhu, vrstvy, **18 smluv s tvarem dat**, formáty, vlastnictví stavu, výkon, ukládání, chyby, jazyk, známé vady | `docs/TDD.md` | tamtéž; navíc `check-schema.py` a `check-wiring.py` zelené |
+| 4 | **`AGENTS.md`** — přepsané odkazy („co hra je“ → GDD, „architektura a smlouvy“ → TDD, nově ADD); stará nepravdivá věta označena | `AGENTS.md` | `git diff` |
+| 5 | **Hlavičky historie** — `DESIGN.md` a `ARCHITEKTURA.md` říkají, čím byly nahrazeny | `docs/DESIGN.md`, `docs/ARCHITEKTURA.md` | `git diff` |
+| 6 | **Návrh roadmapy** `M0`–`M6` — **aplikovaný** (21 granulí; 3 vyřazené, 2 parkované, `done` u 3 srovnáno s gitem) | `.forge/roadmap.json`, `_analyza/NAVRH-ROADMAPY-M0-M6.md` | JSON validní, žádné visící závislosti, pravidlo „dva grains, jeden soubor“ drží; `_analyza/roadmap-navrh.json` je historický artefakt |
+| 7 | **Ověřovací nástroj** dokumentů (kandidát na `check-docs-refs`) včetně sabotéra | `_analyza/over-dokumenty.py` | `--selftest`: **8/8 mutací chyceno** |
+
+**Zásadní nález druhé session (zpřesňuje tvrzení revize):** „hra 258 spritů
+nepoužívá“ **není přesné** — `assets/sprites/player.png` a `npc.png` jsou
+**pixel-identické** se složením vrstev `d0_f1` z Blenderu, takže hra zobrazuje
+**1 frame ze 128, zploštěný**, ne cizí grafiku. Zapsáno v `docs/ADD.md` §3.
+
+### Co zbývá (a co z toho neudělá agent sám)
+
+| # | Co | Stav / kdo |
+|---|---|---|
+| **A** | **Návrh roadmapy** — **ODSOUHLASENO A APLIKOVÁNO 8. 10. 2026**: `.forge/roadmap.json` má 21 granulí (15 `done`, `world.nodes` false), **vydatelná hned je `engine.registry`**; 3 zombie granule vyřazeny, `entity.npc`/`entity.enemy` parkovány do `M4`/`M5` | ✅ hotovo (`_analyza/NAVRH-ROADMAPY-M0-M6.md` je záznam) |
+| **B** | **`Forge agent` je červený** (20 selhání v řadě) a roadmapa conductora je prázdná — bez toho orchestra nic nevydá | **vlastní session**, příčina neměřená |
+| **C** | **`O-1` — čím platí řemeslník** (palivo / opotřebení / zmetkovost?) | **rozhoduje uživatel**; otevřený bod v `docs/GDD.md` §14 |
+| **D** | **`O-5` — české klíče** `tezba`/`kovani_mece` vs. pravidlo `R-3` | samostatný úkol (mění kód i data) |
+| **E** | **`O-2` — název hry** `uo-sandbox` → `uo-shadows` | samostatný úkol (mění `project.godot`) |
+| **F** | **`O-3` — `_acl-recovery/`** v rootu repa | rozhoduje uživatel |
+| **G** | **`O-4` — brány nad dokumentací** (`check-docs-refs`, třetí stav `exit 2`) | základ existuje: `_analyza/over-dokumenty.py`; do `.forge/` patří až po rozhodnutí |
+| **H** | **Úklid před výměnou roadmapy** — srovnat `done` se skutečností v gitu, vyřadit 3 zombie granule, doplnit `provides`/`consumes` | návrh §5 tamtéž |
+| **I** | **Ledger stanice** `C:\Users\Ssevc\Local-Deepseek\OTEVRENA-TEMATA.md` — téma „REVIZE VIZE“ má stav po kolech, ne po dokumentech | mimo workspace (zápis potřebuje oprávnění) |
+
+### Jak si stav ověřit (5 minut)
+
+```powershell
+cd E:\Workspaces\uo-shadows
+python _analyza\over-dokumenty.py             # 92 kontrol, 0 FAIL, exit 0
+python _analyza\over-dokumenty.py --selftest  # sabotér: 8/8 chyceno
+python .forge\check-schema.py .               # tvrdá brána: exit 0
+python .forge\check-wiring.py .               # 85 funkcí v 15 souborech, exit 0
+git status --short ; git diff --stat
+```
