@@ -181,7 +181,7 @@ nepoužívá“ **není přesné** — `assets/sprites/player.png` a `npc.png` j
 | **C** | **`O-1` — čím platí řemeslník** (palivo / opotřebení / zmetkovost?) | ✅ **ROZHODNUTO 8. 10. 2026** („zatím palivo, opotřebení, zmetkovost a můžeme rozvíjet časem“) — zapsáno v `docs/GDD.md` §9.2, `docs/TDD.md` §3.11 a `DESIGN-REVIZE-2.md` §17 |
 | **D** | **`O-5` — české klíče** `tezba`/`kovani_mece` vs. pravidlo `R-3` | samostatný úkol (mění kód i data) |
 | **E** | **`O-2` — název hry** `uo-sandbox` → `uo-shadows` | ✅ **PROVEDENO 8. 10. 2026**: `project.godot`, `assets/spec.json`, `export_presets.cfg` = `uo-shadows`. ⚠ `user://` se přesunul na `…\app_userdata\uo-shadows\` — ve starém adresáři **žádný `save.cfg` nebyl** (naměřeno), takže nic nezmizelo |
-| **F** | **`O-3` — `_acl-recovery/`** v rootu repa | rozhoduje uživatel |
+| **F** | **`O-3` — `_acl-recovery/`** v rootu repa | ✅ **SMAZÁNO 8. 10. 2026** (rozhodnutí uživatele). Byla to necommitnutá záložka práv + rollback + report z opravy oprávnění (3 soubory, 56,9 kB); v gitu nebyl ani jeden její soubor, takže historie repa nepřišla o nic. Pracovní strom je čistý |
 | **G** | **`O-4` — brány nad dokumentací** (`check-docs-refs`, třetí stav `exit 2`) | základ existuje: `_analyza/over-dokumenty.py`; do `.forge/` patří až po rozhodnutí |
 | **H** | **Úklid před výměnou roadmapy** — srovnat `done` se skutečností v gitu, vyřadit 3 zombie granule, doplnit `provides`/`consumes` | návrh §5 tamtéž |
 | **I** | **Ledger stanice** `C:\Users\Ssevc\Local-Deepseek\OTEVRENA-TEMATA.md` — téma „REVIZE VIZE“ má stav po kolech, ne po dokumentech | mimo workspace (zápis potřebuje oprávnění) |
