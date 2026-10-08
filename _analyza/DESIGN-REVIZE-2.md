@@ -1070,3 +1070,53 @@ kód** (ne jen test). Hotovo NENÍ „PR je sloučené", „testy jsou zelené",
 5. **Zařazené drobnosti:** sjednotit název hry na `uo-shadows` (`P3`), dořešit
    koncept „čím platí řemeslník" (§13.8) a rozhodnout, co s necommitnutou
    složkou `_acl-recovery/` v rootu repa.
+
+---
+
+## 17. DODATEK (8. 10. 2026, session 3) — dvě zbývající rozhodnutí padla
+
+> **Co je tenhle oddíl:** **doplněk záznamu**, ne nové rozhodování dokumentu.
+> Tenhle dokument zůstává **záznam dialogu** (needituje se zpětně); dnešní stav
+> designu je v `docs/GDD.md`, techniky v `docs/TDD.md`, vzhledu v `docs/ADD.md`.
+> Doplňuje se sem proto, že **obě rozhodnutí patřila do §15.5 mezi „co zůstává
+> otevřené"** — a kdyby se to nechalo jen v GDD, čtenář tohohle záznamu by
+> hledal odpověď, která už existuje.
+
+**1) `O-1` — čím platí řemeslník, když ne grindem (§13.8) — VYŘEŠENO.**
+
+Uživatel 8. 10. 2026 (doslovně): *„Zatím palivo, opotřebení, zmetkovost
+a můžeme rozvíjet časem."*
+
+Vzaty tedy **první tři náklady z menu v §13.8** (přesně ta trojice, kterou
+dokument doporučoval); **poplatek za stanici a riziko cesty zůstávají pro `L`**.
+**Cena:** do výroby přibývají **tři čísla k ladění** (spotřeba uhlí, trvanlivost
+nástroje, zmetkovost) a musí se hlídat, aby se z nich nestal grind — což byla
+uživatelova vlastní obava v §13.8. Zapsáno v `docs/GDD.md` §9.2 a v `docs/TDD.md`
+§3.11 (smlouva `Crafting`).
+
+**2) Název hry `uo-sandbox` → `uo-shadows` (`P3`, §15.5) — VYŘEŠENO.**
+
+Uživatel 8. 10. 2026 (doslovně): *„…a přejmenuj hru na uo-shadows."*
+Provedeno **8. 10. 2026** ve třech souborech najednou (jinak by vznikl čtvrtý
+stav):
+
+| Soubor | Bylo | Je |
+|---|---|---|
+| `project.godot` | `config/name="uo-sandbox"` | `config/name="uo-shadows"` |
+| `assets/spec.json` | „projekt uo-sandbox" (`_popis`) | „projekt uo-shadows" |
+| `export_presets.cfg` | `product_name="GameForge"` | `product_name="uo-shadows"` |
+
+**Dvě věci, které je fér k tomu říct (obojí naměřeno, ne odhad):**
+
+- **`user://` se tím přesunul** — Godot skládá cestu z `config/name`, takže
+  z `%APPDATA%\Godot\app_userdata\uo-sandbox\` na `…\uo-shadows\`. Ve starém
+  adresáři ale **žádný `save.cfg` nebyl** (jen cache a logy), takže se
+  **nic neztratilo**. Kdyby tam uložená hra byla, byl by to důvod rename
+  neprovádět, nebo ji přenést.
+- **`company_name` v `export_presets.cfg` zůstává `GameForge`** — je to
+  **vydavatel**, ne název hry; měnit ho znamená jiné rozhodnutí (a `copyright`
+  je pořád prázdný). Zapsáno v `docs/ADD.md` §11 řádek 7.
+
+**Co tím zůstává otevřené:** už jen **luk a zvěř (`O-2`)**, **ladicí hodnoty
+mrtvé zóny a vyhlazení (`O-4`)** a **české klíče v datech (`O-5`)** — vše
+v `docs/GDD.md` §14.1, nic se nemazalo.

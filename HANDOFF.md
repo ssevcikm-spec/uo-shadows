@@ -177,9 +177,9 @@ nepoužívá“ **není přesné** — `assets/sprites/player.png` a `npc.png` j
 |---|---|---|
 | **A** | **Návrh roadmapy** — **ODSOUHLASENO A APLIKOVÁNO 8. 10. 2026**: `.forge/roadmap.json` má 21 granulí (15 `done`, `world.nodes` false), **vydatelná hned je `engine.registry`**; 3 zombie granule vyřazeny, `entity.npc`/`entity.enemy` parkovány do `M4`/`M5` | ✅ hotovo (`_analyza/NAVRH-ROADMAPY-M0-M6.md` je záznam) |
 | **B** | **`Forge agent` je červený** (20 selhání v řadě) a roadmapa conductora je prázdná — bez toho orchestra nic nevydá | **vlastní session**, příčina neměřená |
-| **C** | **`O-1` — čím platí řemeslník** (palivo / opotřebení / zmetkovost?) | **rozhoduje uživatel**; otevřený bod v `docs/GDD.md` §14 |
+| **C** | **`O-1` — čím platí řemeslník** (palivo / opotřebení / zmetkovost?) | ✅ **ROZHODNUTO 8. 10. 2026** („zatím palivo, opotřebení, zmetkovost a můžeme rozvíjet časem“) — zapsáno v `docs/GDD.md` §9.2, `docs/TDD.md` §3.11 a `DESIGN-REVIZE-2.md` §17 |
 | **D** | **`O-5` — české klíče** `tezba`/`kovani_mece` vs. pravidlo `R-3` | samostatný úkol (mění kód i data) |
-| **E** | **`O-2` — název hry** `uo-sandbox` → `uo-shadows` | samostatný úkol (mění `project.godot`) |
+| **E** | **`O-2` — název hry** `uo-sandbox` → `uo-shadows` | ✅ **PROVEDENO 8. 10. 2026**: `project.godot`, `assets/spec.json`, `export_presets.cfg` = `uo-shadows`. ⚠ `user://` se přesunul na `…\app_userdata\uo-shadows\` — ve starém adresáři **žádný `save.cfg` nebyl** (naměřeno), takže nic nezmizelo |
 | **F** | **`O-3` — `_acl-recovery/`** v rootu repa | rozhoduje uživatel |
 | **G** | **`O-4` — brány nad dokumentací** (`check-docs-refs`, třetí stav `exit 2`) | základ existuje: `_analyza/over-dokumenty.py`; do `.forge/` patří až po rozhodnutí |
 | **H** | **Úklid před výměnou roadmapy** — srovnat `done` se skutečností v gitu, vyřadit 3 zombie granule, doplnit `provides`/`consumes` | návrh §5 tamtéž |
@@ -189,8 +189,8 @@ nepoužívá“ **není přesné** — `assets/sprites/player.png` a `npc.png` j
 
 ```powershell
 cd E:\Workspaces\uo-shadows
-python _analyza\over-dokumenty.py             # 92 kontrol, 0 FAIL, exit 0
-python _analyza\over-dokumenty.py --selftest  # sabotér: 8/8 chyceno
+python _analyza\over-dokumenty.py             # 94 kontrol, 0 FAIL, exit 0
+python _analyza\over-dokumenty.py --selftest  # sabotér: 9/9 chyceno
 python .forge\check-schema.py .               # tvrdá brána: exit 0
 python .forge\check-wiring.py .               # 85 funkcí v 15 souborech, exit 0
 git status --short ; git diff --stat

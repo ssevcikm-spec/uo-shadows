@@ -346,7 +346,7 @@ co dokument odhalí, **zapíše**. Všechno níž je naměřeno 8. 10. 2026.
 | 4 | **`spec.json` odkazuje na soubory, které neexistují** | `_stav` uvádí `tools/gamewindow_preview.py` → `_gamewindow_preview.png` (960×540) — **soubor není**; `:11` uvádí zdroj meče `assets/sprites/items/sword.png` — **soubor není** (je tam `sword_final.png`) | historie v `_stav` se čte jako stav |
 | 5 | **Docstringy pipeline lžou o počtu framů** | `build_character.py` docstring říká „4 framy“, kód má `FRAMES = 8`; `postprocess.py` popisky říkají „4 framy“, kód skládá **8** | kdo čte popis, vyrobí 4 framy a rozbije vazbu na `spec.json` (`framy: 8`) |
 | 6 | **Zmíněná brána `check-licence.py` neexistuje** | `docs/BRANY-HRY.md` ji zmiňuje; v `.forge/` **není** (14 souborů, měřeno) | kdo se na ni spolehne, nemá kontrolu licence — a licence chybí úplně (ADD §12) |
-| 7 | **Název projektu ve exportu** | `export_presets.cfg` má `company_name`/`product_name` = `GameForge` a `copyright` prázdné; `project.godot` = `uo-sandbox`; repo = `uo-shadows` | tři jména pro jednu hru (řeší `docs/GDD.md` `O-3`) |
+| 7 | **Název projektu ve exportu — OPRAVENO 8. 10. 2026** | `export_presets.cfg` má `product_name` = `uo-shadows` a `copyright` prázdné; **`company_name` zůstává `GameForge`** (je to vydavatel, ne název hry — k rozhodnutí zvlášť) | jméno hry je sjednocené s repem; zbývá jen vydavatel a copyright |
 
 ---
 

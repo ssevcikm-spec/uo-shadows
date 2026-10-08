@@ -406,8 +406,9 @@ název(argument: Typ) -> NávratovýTyp
   amount}]}` (přesně to, co je dnes v `recipes.json`); výsledek výroby =
   `{ok: bool, id: String, kvalita: int, zmetek: bool}`
 - **odkud čísla:** **kvalita = `dovednost/20` → 0–5 stupňů** (GDD §9.2);
-  palivo/opotřebení/zmetkovost jsou **otevřený bod `O-1` GDD** — dokud není
-  rozhodnutý, smí být ve vzorci **jen to, co je rozhodnuté**
+  **palivo, opotřebení nástroje a zmetkovost jsou ROZHODNUTÉ** (uživatel
+  8. 10. 2026: „zatím palivo, opotřebení, zmetkovost a můžeme rozvíjet časem“,
+  GDD §9.2) — patří do vzorce a musí mít svá čísla na jednom místě
 - **acceptance:** test ZAVOLÁ `smelt()` s dostatkem vstupů a ověří **odečtené
   vstupy a připsaný výstup**; se dvěma hodnotami dovednosti ověří **jinou
   kvalitu** (`V2`); ZAVOLÁ `repair(item)` a ověří, že trvanlivost **stoupla
@@ -769,7 +770,7 @@ co dokument odhalí, **zapíše**, neopraví mimochodem. Všechny vady níž jso
 | 4 | **`scripts/world.gd` = 0 B** | naměřeno: 0 bajtů, 0 řádků; vlastní ho **dvě** granule (`world.map`, `world.nodes`), obě nehotové | blokuje `engine.shell`; `save.gd` na něm už volá `snapshot()` |
 | 5 | **`save.gd:14` má zastaralý komentář** | tvrdí, že `player.gd` inventář „nemá“; naměřeno `player.gd:52` (`inventory`), `:130` (`add_item`), `:136` (`remove_item`) | komentář popírá kód — kdo mu věří, „opraví“ fungující věc |
 | 6 | **`assets/spec.json` nemá klíč `projekce`** | `level.gd:74` → `{}`, `:83` odvodí izometrii z `96 ≠ 48` | izometrie je **odvozená**, ne deklarovaná → druhé místo pravdy o projekci |
-| 7 | **Název hry se rozejšel ve třech zdrojích** | `project.godot:9` = `uo-sandbox`; `forge.json` a `.forge/vision-profile.json` = `uo-shadows`; repo = `uo-shadows` | hledání pod jedním jménem selže (řeší GDD `O-3`) |
+| 7 | **Název hry se rozejšel ve třech zdrojích — OPRAVENO 8. 10. 2026** | `project.godot` = `uo-shadows`, `forge.json` a `.forge/vision-profile.json` = `uo-shadows`, repo = `uo-shadows`; **před opravou** říkaly `project.godot` a `assets/spec.json` `uo-sandbox` a `export_presets.cfg` `GameForge` | hledání pod jedním jménem teď funguje; **cena opravy:** `user://` se přesunul na `…\app_userdata\uo-shadows\` (ve starém adresáři žádný `save.cfg` nebyl — naměřeno) |
 | 8 | **`npc.gd` a `enemy.gd` v repu NEJSOU** | `scripts/` má 15 souborů; žádný z nich se tak nejmenuje | dvě smlouvy (`Npc`, `Enemy`) nemají implementaci, přestože na ně plán navazuje |
 | 9 | **`done` není měření: v `.forge/roadmap.json` je 21 granul a `done: true` = 15, ale hra používá 2** | `roadmap.json`: 21 granul, `done: true` = 15 (stav po přepsání roadmapy 8. 10. 2026; **před ním 22 / 13** — ve svém čase správná čísla); produkční cesta instancuje `level.gd` a `player.gd` | „hotovo“ dnes není měření (definice hotovo to mění) |
 | 10 | **`assets/data/*.json` nemá klíč `material`** | `items.json`: `id`, `name`, `durability`, `damage`, `armor_rating`; `item.gd:25` ho čte jako nepovinný | viz vada 1 |

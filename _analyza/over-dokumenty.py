@@ -140,7 +140,12 @@ def claims(blocks, anchor, value, window=WINDOW, group="v",
                 except ValueError:
                     pass          # hodnota je text (např. název projektu)
             ln = base + text.count("\n", 0, ma.start())
-            snippet = re.sub(r"\s+", " ", text[ma.start(): ma.end() + mv.end()]).strip()
+            # kontext i PŘED nálezem: rozhoduje o tom, je-li to citace, nebo
+            # tvrzení o dnešku (naměřeno: „před opravou“ stálo před kotvou)
+            start = max(0, ma.start() - 70)
+            snippet = re.sub(r"\s+", " ", text[start: ma.end() + mv.end()]).strip()
+            if start > 0:
+                snippet = "…" + snippet
             key = (rel, ln, str(raw))
             if key in seen:
                 continue
@@ -221,6 +226,19 @@ def heading_numbers(text):
 # --------------------------------------------------------------------------
 # Kontroly
 # --------------------------------------------------------------------------
+def is_citation(snippet):
+    """Je nález CITACE dřívějšího stavu, nebo TVRZENÍ o dnešku?
+
+    Naměřeno 8. 10. 2026: týž vzor zabral na „před opravou říkaly
+    `project.godot` a `assets/spec.json` `uo-sandbox`“ — to je **citace**
+    historické hodnoty, ne tvrzení o dnešku. Brána, která to nerozliší, hlásí
+    `exit 1` ze špatného důvodu. Rozhoduje KONTEXT nálezu, a proto se vypisuje.
+    """
+    markers = ("před opravou", "před přepsáním", "dřív", "dříve", "původně",
+               "ve svém čase", "historicky", "naměřeno dřív", "bývalo", "zastaralé")
+    return any(m in snippet for m in markers)
+
+
 def check_cross_refs(root, docs, rep):
     revize_path = os.path.join(root, REVIZE)
     if not os.path.exists(revize_path):
@@ -427,6 +445,10 @@ def check_numbers(root, docs, blocks, rep):
     if not found:
         rep.add(UNMEASURED, "čísla", "název v project.godot", "tvrzení se nenašlo")
     for rel, ln, snippet, v in found:
+        if is_citation(snippet):
+            rep.add(OK, "čísla", "%s:%d název v project.godot (citace)" % (rel, ln),
+                    "citace dřívější hodnoty, ne tvrzení o dnešku | %s" % snippet[:110])
+            continue
         rep.add(OK if v == name else FAIL, "čísla",
                 "%s:%d název v project.godot" % (rel, ln),
                 "dokument %s, zdroj %s | %s" % (v, name, snippet[:110]))
@@ -509,6 +531,8 @@ MUTATIONS = [
      "špatný počet granulí"),
     ("docs/ADD.md", " — a **žádný z těch tří adresářů v repu není** (naměřeno)", "",
      "cesta, která neexistuje, a dokument to neříká"),
+    ("docs/TDD.md", "`project.godot` = `uo-shadows`", "`project.godot` = `uo-sandbox`",
+     "tvrzení o DNEŠKU se špatným názvem (nesmí projít jako citace)"),
     ("docs/TDD.md", "## 11. Co v tomhle dokumentu ZÁMĚRNĚ NENÍ",
      "## 11. Co v tomhle dokumentu ZÁMĚRNĚ NENÍ\n\nTODO: dopsat", "placeholder TODO"),
 ]

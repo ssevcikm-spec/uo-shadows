@@ -336,15 +336,19 @@ v roadmapě, se **nepřepisuje**, jen se přebírá. (§13.3)
 | **Směs u všech zdrojů** | Každý zdroj má **běžnou i vzácnou složku**; **delší těžba vydá víc vzácného**. | §12.1 |
 | **Vzácná složka — šance** | start **2 %**, **+1 % za každých 10 s** nepřetržité těžby, **strop 30 %** | §13.3 |
 | **Kvalita výrobku** | `dovednost/20` → **0–5 stupňů** (cena + trvanlivost) | už v roadmapě (`sim.crafting`), §13.3 |
-| **Zmetkovost** | část výroby se nepovede (uživatelovo „menší ztrátovost“) | §13.8 (doporučení) |
-| **Palivo** | tavení spotřebuje **uhlí** — uhlí se musí těžit | §13.8 (doporučení) |
-| **Opotřebení nástroje** | krumpáč a kladivo se **ničí** (trvanlivost už v kódu je) → nutí opravovat = další odběratel materiálu | §13.8 (doporučení) |
+| **Zmetkovost** | část výroby se nepovede (uživatelovo „menší ztrátovost“) | **rozhodnuto 8. 10. 2026** (§13.8) |
+| **Palivo** | tavení spotřebuje **uhlí** — uhlí se musí těžit | **rozhodnuto 8. 10. 2026** (§13.8) |
+| **Opotřebení nástroje** | krumpáč a kladivo se **ničí** (trvanlivost už v kódu je) → nutí opravovat = další odběratel materiálu | **rozhodnuto 8. 10. 2026** (§13.8) |
 
-> **⚠ „Doporučení“ u posledních tří není totéž co „rozhodnuto“.** Uživatel
-> rozhodl jen to, co je v §13.1 a §13.7; menu nákladů (§13.8) zůstalo
-> **otevřené** — viz §14 `O-1`. Dokud `O-1` není rozhodnuté, je **závazné pouze
-> to, co je v tabulce označené jako rozhodnutí**: směs zdrojů, kvalita a poznámka,
-> že výroba **musí stát něco** (jinak je zboží čistý zisk a cena ztratí smysl).
+> **✅ ROZHODNUTO 8. 10. 2026 (uživatel):** berou se **první tři náklady —
+> palivo, opotřebení nástroje a zmetkovost**; doslova „*zatím palivo,
+> opotřebení, zmetkovost a můžeme rozvíjet časem*“. Zbývající dvě položky menu
+> (poplatek za stanici, riziko cesty) zůstávají **pro rozsah `L`**.
+> **Cena rozhodnutí:** výroba přestává být rutina — přibývají **tři čísla
+> k ladění** (spotřeba uhlí, trvanlivost nástroje, zmetkovost) a musí se hlídat,
+> aby se z nich nestal grind. Rozdíl proti grinduje ale pořád v tom, **čím se
+> platí**: ne časem, ale **rozhodnutím** (co, kdy a z čeho vyrobit) — přesně to
+> byla uživatelova obava v §13.8.
 
 ### 9.3 Svět: ceny, infestace, zásobenost
 
@@ -482,14 +486,20 @@ existuje. Detail technického stavu je v `docs/TDD.md` a v `.forge/roadmap.json`
 - **Konkrétní čísla obsahu** (kolik má který předmět damage, kolik HP má vlk) —
   patří do `assets/data/*.json`; GDD určuje **rozsah a vzorce**, ne hodnoty
   jednotlivých záznamů.
-- **Ceny a ladicí hodnoty nákladů řemesla** → **otevřený bod `O-1`** níž.
+- **Ceny a ladicí hodnoty nákladů řemesla** → **rozhodnuto** (GDD §9.2:
+  palivo, opotřebení nástroje, zmetkovost); konkrétní čísla patří k ladění.
 
 ### 14.1 Otevřené body (pojmenované, ne zapomenuté)
 
 | # | Co je otevřené | Kde se to rozhodne |
 |---|---|---|
-| **O-1** | **Čím platí řemeslník, když ne grindem** (§13.8). Uživatel sám řekl „*ještě nevím, nebo jestli vůbec*“. Menu nákladů: palivo, opotřebení nástroje, zmetkovost (doporučeny ty tři), poplatek za stanici, riziko cesty (patří do `L`). | **Není rozhodnuto.** Do té doby platí jen to, že **výroba musí něco stát** — jinak je zboží čistý zisk a cena ztratí smysl (§13.8). Patří do plánovací session, **ne jako tichá volba agenta**. |
 | **O-2** | **Luk a zvěř (hraničář).** Vize zmiňuje hraničáře („spolehlivěji střílí, jezdí, ochočí zvěř“); luk je ale **nový druh souboje** (projektily, dostřel). V rozsahu `M` je hraničář zastoupen **lovem zvěře na blízko a kůží**; luk a zvěř jako systém **později** (`L`). | §13.5 — vědomě odloženo do `L`. |
-| **O-3** | **Sjednocení názvu hry** `uo-sandbox` → `uo-shadows` (`project.godot`, `assets/spec.json`). Uživatel rozhodl „sjednotit“, ale **mění to kód** → samostatný úkol, ne mimochodem. | §15.5 `P3`, `ZADANI-GDD-ADD-TDD.md` `O-2`. |
 | **O-4** | **Hodnoty mrtvé zóny a vyhlazení** pohybu (GDD §6). Rozhodnutý je jen požadavek, že jsou měřitelné číslem. | Ladění při milníku `M1`. |
 | **O-5** | **Klíče dovedností a části receptů jsou v datech česky** (`tezba`, `drevorubectvi`, `kovarstvi`, `boj_na_blizko`; recepty `kovani_mece`, `kovani_zbroje`), zatímco pravidlo jazyka (`R-3`) žádá **klíče anglicky** (a `items.json`/`materials.json` už anglicky jsou: `iron_sword`, `iron_ore`; recept `smelting` taky). | **Naměřeno 8. 10. 2026** čtením `assets/data/*.json`. Sjednocení **mění kód i data** → samostatný úkol; do té doby platí pravidlo `R-3` pro **nové** klíče a stávající české klíče se **nepřejmenovávají mimochodem** (rozbité by byly testy, roadmapa i uložené pozice). |
+
+### 14.2 Už není otevřené (rozhodnuto 8. 10. 2026 — záznam se nemaže)
+
+| # | Co bylo otevřené | Jak je rozhodnuto |
+|---|---|---|
+| **O-1** | **Čím platí řemeslník, když ne grindem** (§13.8) — menu nákladů: palivo, opotřebení nástroje, zmetkovost, poplatek za stanici, riziko cesty. | **VZATO: palivo, opotřebení nástroje a zmetkovost** (uživatel: „*zatím palivo, opotřebení, zmetkovost a můžeme rozvíjet časem*“). Poplatek za stanici a riziko cesty zůstávají pro `L`. Zapsáno v GDD §9.2. |
+| **O-3** | **Sjednocení názvu hry** `uo-sandbox` → `uo-shadows`. | **PROVEDENO 8. 10. 2026** (uživatel: „*přejmenuj hru na uo-shadows*“): `project.godot` `config/name` = `uo-shadows`, `assets/spec.json` `_popis` = „projekt uo-shadows“, `export_presets.cfg` `product_name` = `uo-shadows`. **Důsledek, který se musí vědět:** `user://` se přesunul z `%APPDATA%\Godot\app_userdata\uo-sandbox\` na `…\uo-shadows\` — ve starém adresáři ale **žádný `save.cfg` nebyl** (naměřeno: jen cache a logy), takže se nic neztratilo. `company_name` v `export_presets.cfg` zůstává `GameForge` (je to vydavatel, ne název hry). |
