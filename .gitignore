@@ -42,3 +42,6 @@ smoke.log
 UsersSsevc*
 .secrets/
 git-credentials
+
+# Scratch z rešerše Idle-Realm (session logy cizího projektu, ~190 MB)
+_analyza/idle-realm/
