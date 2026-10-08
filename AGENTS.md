@@ -88,11 +88,25 @@ Brány žijí v `.forge/` a pouští je `ci.yml`. **Tvrdá brána** je jen
 
 ## Design a smlouvy
 
-- **`docs/DESIGN.md`** — co hra je a jak se má chovat.
-- **`docs/ARCHITEKTURA.md`** — architektura a **smlouvy** (kdo vlastní jaký
-  stav). **Kdo mění vlastnictví stavu, mění smlouvu** — ne kód potichu.
-  Naměřeno 3. 10. 2026: `save.gd` ukládá pozici hráče podmíněně a `load()` jí
-  přepíše spawn; kdo vlastní pozici, **není ve smlouvě** a nikdo to nenaplánoval.
+> **⚠ PŘEPSÁNO 8. 10. 2026:** do té doby tu stálo, že `docs/DESIGN.md` je
+> „co hra je a jak se má chovat“ a `docs/ARCHITEKTURA.md` je architektura
+> a smlouvy. **Obě tvrzení byla nepravdivá**: `DESIGN.md:3` se sám hlásí jako
+> **zrušený zdroj pravdy** a `ARCHITEKTURA.md` má tvar dat jen u **3 z 18**
+> smluv. Nahradily je `docs/GDD.md` a `docs/TDD.md`; oba staré soubory
+> **zůstávají jako historie** (nesmazány, v hlavičce mají, čím byly nahrazeny).
+
+- **`docs/GDD.md`** — **co hra je a jak se hraje** (záměr, pilíře, smyčka,
+  `V1`–`V8`, non-goals, obsah, milníky `M0`–`M6`). **Zdroj pravdy o designu.**
+- **`docs/TDD.md`** — architektura běhu, vrstvy, **18 smluv s tvarem dat**,
+  datové formáty, vlastnictví stavu, výkon, ukládání, chybové chování, jazyk.
+  **Zdroj pravdy o technice.** **Kdo mění vlastnictví stavu, mění smlouvu** —
+  ne kód potichu. Naměřeno 3. 10. 2026: `save.gd` ukládá pozici hráče
+  podmíněně a `load()` jí přepíše spawn; kdo vlastní pozici, **není ve smlouvě**
+  a nikdo to nenaplánoval.
+- **`docs/ADD.md`** — jak hra vypadá a **proč**, katalog assetů („co má být
+  vyrobeno“ vs. „co existuje“), pipeline (Blender / SDXL), placeholdery.
+  **Strojová část vzhledu zůstává `assets/spec.json`** — ADD je k ní lidská
+  vrstva, ne druhý zdroj čísel.
 - **`CONVENTIONS.md`** — poučky, které agent dostává přes `--read`.
   **§1g je klíčový:** soubor granule musí začít `extends Node`, `class_name`
   nesmí být i jménem vnořené class, `_init()` bez povinného argumentu.
@@ -138,9 +152,12 @@ program anglicky.** **Potvrzeno uživatelem 8. 10. 2026** (rozhodnutí `R-3`,
 
 | Soubor | Co v něm je |
 |---|---|
-| `docs/DESIGN.md` | design hry |
+| `docs/GDD.md` | **design hry** — záměr, pilíře, smyčka, `V1`–`V8`, ovládání, UI, svět, mechaniky se vzorci, obsah, non-goals, milníky `M0`–`M6` — **zdroj pravdy o designu** |
+| `docs/TDD.md` | **technika hry** — architektura běhu, vrstvy, **18 smluv s tvarem dat**, datové formáty, vlastnictví stavu, výkon, ukládání, chyby, jazyk — **zdroj pravdy o technice** |
+| `docs/ADD.md` | **vzhled** — lidská vrstva k `assets/spec.json`, katalog assetů, pipeline (Blender / SDXL), placeholdery, `A-1` odloženo |
+| `docs/DESIGN.md` | **historie** — design od plánovače; **nahrazeno `docs/GDD.md`** 8. 10. 2026 (sám se hlásí jako zrušený) |
 | `docs/BRANY-HRY.md` | **brány hry do detailu** — co která měří, naměřená slepá místa, past „TIŠE PŘESTALA MĚŘIT", šablona vs. hra |
-| `docs/ARCHITEKTURA.md` | architektura a **smlouvy** (vlastnictví stavu) |
+| `docs/ARCHITEKTURA.md` | **historie** — původní architektura a smlouvy (`§2.1`–`2.3` a naměřené případy); **nahrazeno `docs/TDD.md`** 8. 10. 2026 |
 | `CONVENTIONS.md` | konvence pro psaní granulí (agent je dostává přes `--read`) |
 | `.forge/roadmap.json` | plán granulí (DAG) — **zdroj pravdy o tom, co se má dělat** |
 | `.forge/vision-profile.json` | chování vizuální kontroly pro **tuhle** hru (záměrně v něm **není** schéma dlaždic — to je ve `spec.json`) |

@@ -1,5 +1,13 @@
 # UO Shadows — DESIGN (historický dokument)
 
+> **⚠ NAHRAZENO `docs/GDD.md` dne 8. 10. 2026.** Tenhle soubor **není zdroj
+> pravdy o designu** a needituje se — zůstává jako **historie vzniku vize**
+> (vygeneroval ho plánovač `forge plan`). Dnešní stav designu je
+> v [`docs/GDD.md`](GDD.md), technika v [`docs/TDD.md`](TDD.md), vzhled
+> v [`docs/ADD.md`](ADD.md). Odkazy níž na `docs/ARCHITEKTURA.md` a
+> `.forge/roadmap.json` platily **ve svém čase** — `ARCHITEKTURA.md` je taky
+> nahrazený (`docs/TDD.md`).
+
 > **Zrušeno jako zdroj pravdy.** Závazná architektura a rozpad na granule je
 > v [`docs/ARCHITEKTURA.md`](ARCHITEKTURA.md) a strojově v `.forge/roadmap.json`
 > (DAG granulí). Tenhle dokument vygeneroval plánovač (`forge plan`) pro první

@@ -1,5 +1,13 @@
 # Architektura — UO Shadows (uo-shadows)
 
+> **⚠ NAHRAZENO `docs/TDD.md` dne 8. 10. 2026.** Tenhle soubor **není zdroj
+> pravdy o technice** a needituje se — zůstává jako **historie** (nese
+> původní smlouvy `§2.1`–`2.3` a naměřené případy, které se needitují).
+> Dnešní stav techniky je v [`docs/TDD.md`](TDD.md) — ten má **18 smluv
+> s tvarem dat** (tenhle dokument měl tvar dat jen u **3 z 18**).
+> **Co v tomhle souboru zůstává platné a proč:** naměřené případy (kdo je kdo,
+> odkud jsou čísla, `acceptance`) — ty jsou **doklad**, ne stav.
+
 > Autoritativní zdroj pravdy pro rozpad na granule. Vzniklo z vize uživatele
 > metodou skillu `game-developer` (rozpad shora dolů). Nahrazuje plán v
 > `DESIGN.md` (plánovač) — tenhle soubor je jediný závazný.
