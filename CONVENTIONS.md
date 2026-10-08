@@ -249,7 +249,12 @@ Mapu spravuje uzel `Level` ve skupině `level` (`scripts/level.gd`):
 | `spawn_cell -> Vector2i`, `width`, `height`, `cell` | rozměry mřížky |
 
 Nový předmět **nikdy neumisťuj na náhodnou pozici** – s mapou by mohl skončit ve
-zdi. Použij `_safe_spot(vp)` (už v `game.gd` je) nebo `marker_positions()`.
+zdi. Použij `marker_positions("coin"|"spawn"|"exit")` (viz `scripts/level.gd`)
+nebo pozici ověř přes `is_walkable_at()`.
+
+> **⚠ OPRAVENO 8. 10. 2026:** text tu dřív posílal na `_safe_spot(vp)`
+> s tvrzením „(už v `game.gd` je)". **Naměřeno 8. 10. 2026: v `scripts/` je
+> `_safe_spot` 0×** — byl to návod na funkci, která neexistuje.
 
 ## 5. Co agent nesmí měnit
 
@@ -270,7 +275,10 @@ na ruční sloučení (záměr, ne chyba).
 
 ## 7. Ověření
 
-Testy běží v CI na každý PR (`Godot --headless`): 26 kontrol, počet roste
+Testy běží v CI na každý PR (`Godot --headless`). **Počet kontrol se ČTE
+z výstupu běhu** (`[test] N kontrol, M selhání`) — do dokumentu se neopisuje,
+protože zestará: naměřeno 3. 10. 2026 jich bylo **91**, zatímco tu dřív stálo
+„26" *(ve svém čase správné, dnes zastaralé — a nepřeměřené)*. Počet roste
 s každou granulí (kontroly na komponenty se zapínají samy, až soubor granule
 v projektu je). Když něco nevyjde, je to vidět v logu jako `[test] FAIL …` –
 čti ten řádek, ne celý log.

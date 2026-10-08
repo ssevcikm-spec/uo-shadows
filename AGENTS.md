@@ -105,10 +105,18 @@ Brány žijí v `.forge/` a pouští je `ci.yml`. **Tvrdá brána** je jen
 
 Pravidlo je v `DSH_HOME\AGENTS.md`: **identifikátory, klíče a literály rozhraní
 ASCII; dokumentace a komentáře česky; výstup pro člověka česky, hodnota pro
-program anglicky.** Naměřený případ tady: `scripts/assist.gd:11–15` — veřejné
-rozhraní `add_rule(trigger, action)` **míchá jazyky** (`"hp < X"` a
-`"mana < X"` anglicky, ale `"cíl mrtev"` česky s diakritikou). Volající musí
-uhodnout jazyk — to je vada rozhraní, ne kosmetika.
+program anglicky.** **Potvrzeno uživatelem 8. 10. 2026** (rozhodnutí `R-3`,
+`_analyza/DESIGN-REVIZE-2.md` §14.1) — platí i pro `assets/data/*.json`:
+`id` anglicky (`iron_sword`), `name` česky („Železný meč").
+
+> **⚠ OPRAVENO 8. 10. 2026 — text, který tu do té doby stál, byl nepravdivý.**
+> Tvrdil, že veřejné rozhraní `add_rule(trigger, action)` v
+> `scripts/assist.gd:11–15` **míchá jazyky** (`"hp < X"` a `"mana < X"`
+> anglicky, ale `"cíl mrtev"` česky s diakritikou). **Naměřeno 8. 10. 2026:
+> `scripts/assist.gd:15` má `"target dead"`** — rozhraní je **jazykově
+> konzistentní** (anglicky) a je to správně. Kdo se řídil původním zněním,
+> „opravoval" kód, který byl v pořádku. *(Naměřený případ:
+> `_analyza/AUDIT-PLANU-A-DESIGNU.md` §4.5.)*
 
 ## Co nikdy
 

@@ -12,6 +12,14 @@
 > nemusely hádat."*
 > **Vzniklo:** 8. 10. 2026. **Odkud brát stav:** tenhle dokument je stav svého
 > tématu; technický stav projektu je v `_analyza/REKONSTRUKCE-ADD-TDD-GDD.md`.
+>
+> **⚠ DATUM SPOTŘEBY: 8. 10. 2026 (session 2).** Z dokumentu se **provedlo**:
+> §1 (vstupy uživatele) je základ návrhu záměru, pilířů a smyčky v
+> `_analyza/DESIGN-REVIZE-2.md` §2–§5; §4 (otázky `N-1`–`N-10`) je **zařazen
+> do kol 1–5** tamtéž v §7; cenové údaje z §2.2 a §2.6 (8 směrů = dvojnásobek
+> grafiky, „meč v ruce vs. u pasu") jsou převzaté do otázek `K4`/`K5`.
+> **Co tím přestalo platit:** nic — žádné tvrzení tohohle dokumentu se měřením
+> nevyvrátilo. **Co je dnešní stav:** `_analyza/DESIGN-REVIZE-2.md`.
 
 ---
 
