@@ -466,7 +466,7 @@ existuje. Detail technického stavu je v `docs/TDD.md` a v `.forge/roadmap.json`
 |---|---|
 | Hra dnes | **sběračka dvou mincí** — mapa 30×16, 2 coin markery, `Label` se skóre; nápověda inzeruje **6** kláves, které kód neobsluhuje |
 | Obsah | 4 materiály, 4 dovednosti, 3 recepty, 1 nestvůra, 2 předměty |
-| Plán vs. realita | **`done` se nerovná „hra to používá“: v roadmapě je `done: true` u 15 granul** (stav po jejím přepsání 8. 10. 2026; předtím 13), **ale hra používá 2** (`level.gd`, `player.gd`); HUD, boj, výroba, ekonomika ani ukládání nejsou v produkční cestě |
+| Plán vs. realita | **`done` se nerovná „hra to používá“: v roadmapě je `done: true` u 16 granul** (stav 8. 10. 2026 po postavení `engine.registry`; předtím 15 a ještě předtím 13), **ale hra používá 2** (`level.gd`, `player.gd`); HUD, boj, výroba, ekonomika ani ukládání nejsou v produkční cestě |
 | Mrtvá granule | `scripts/world.gd` = **0 B** — blokuje `world.map` i `engine.shell` |
 | Vstupní akce | `project.godot` nemá **ani jednu** (`[input]` obsahuje jen `input_devices`) |
 | Dva výtvarné systémy | 258 PNG v `tools/blender/sprites/**` (kód na ně **neodkazuje ani jednou**) vs. 16 plochých v `assets/sprites/**`. **Naměřeno 8. 10. 2026:** `assets/sprites/player.png` je **pixel-identický** se složením 4 vrstev `d0_f1` z Blenderu — hra tedy zobrazuje **1 frame ze 128**, zploštěný. Není to cizí systém, je to **tatáž grafika zploštěná** (detail: `docs/ADD.md` §3) |

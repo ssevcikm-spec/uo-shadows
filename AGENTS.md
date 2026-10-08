@@ -77,10 +77,13 @@ Brány žijí v `.forge/` a pouští je `ci.yml`. **Tvrdá brána** je jen
 > a pozor: **`vision.test.mjs` se mezi kopiemi ROZEŠEL** (šablona 36/36,
 > hra 28/28) a drift test ten soubor **nehlídá**.
 
-> **⚠ Podmíněný test je tiše zelený.** `tests/run_tests.gd` má **26 řádků
-> s `has_method`** (**39 výskytů** — naměřeno 7. 10. 2026; dřívější číslo „27
-> podmíněných kontrol" bylo nepravdivé) — funkce, která **není**, se **přeskočí**
+> **⚠ Podmíněný test je tiše zelený.** `tests/run_tests.gd` má **28 řádků
+> s `has_method`** (**41 výskytů** — **přeměřeno 8. 10. 2026**; „26 / 39"
+> naměřené 7. 10. 2026 bylo ve svém čase správné, „27 podmíněných kontrol"
+> před tím bylo nepravdivé) — funkce, která **není**, se **přeskočí**
 > a test projde. Test musí kód **ZAVOLAT** a ověřit výsledek.
+> **Počet kontrol se čte z BĚHU** (`[test] N kontrol`), ne ze vzorů v souboru:
+> staticky je tam 154 volání `_check(`, běh hlásí 113 kontrol.
 
 > **➡ Detail bran (co měří, kde mají slepá místa, past „TIŠE PŘESTALA MĚŘIT"):**
 > **`docs/BRANY-HRY.md`**. Sem se přesunul 7. 10. 2026 ze skillu `orchestra`

@@ -87,9 +87,11 @@ hlásí „Vše v pořádku: assety odpovídají specu" (player 38×95 px, 1103 
   (Pro Godot je v pořádku: naměřeno 57 funkcí v 7 souborech.)
 - **Kontrola zapojení čte i testy.** `check-wiring.py:83-89` hledá použití
   funkce v **celém repu** včetně `tests/`, a `tests/run_tests.gd`
-  má **26 řádků s `has_method`** (**39 výskytů** — naměřeno 7. 10. 2026
-  hledáním v souboru; dřív tu stálo „27 podmíněných kontrol", což bylo
-  **nepravdivé číslo na dvou místech** — tady a v `AGENTS.md` hry).
+  má **28 řádků s `has_method`** (**41 výskytů** — **přeměřeno 8. 10. 2026**;
+  ve svém čase správné bylo „26 / 39" naměřené 7. 10. 2026, dřív tu stálo
+  „27 podmíněných kontrol", což bylo **nepravdivé číslo na dvou místech** —
+  tady a v `AGENTS.md` hry). Číslo roste s každou novou kontrolou: **počet
+  kontrol se čte z BĚHU** (`[test] N kontrol`), ne staticky ze souboru.
   Funkce zmíněná jen v testu se tedy počítá jako „použitá", i když ji hra
   nikdy nezavolá. **To je přesně past z `game-developer` skillu** („podmíněný
   test je tiše zelený").

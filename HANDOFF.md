@@ -164,7 +164,8 @@ po všech třech.
 | 4 | **`AGENTS.md`** — přepsané odkazy („co hra je“ → GDD, „architektura a smlouvy“ → TDD, nově ADD); stará nepravdivá věta označena | `AGENTS.md` | `git diff` |
 | 5 | **Hlavičky historie** — `DESIGN.md` a `ARCHITEKTURA.md` říkají, čím byly nahrazeny | `docs/DESIGN.md`, `docs/ARCHITEKTURA.md` | `git diff` |
 | 6 | **Návrh roadmapy** `M0`–`M6` — **aplikovaný** (21 granulí; 3 vyřazené, 2 parkované, `done` u 3 srovnáno s gitem) | `.forge/roadmap.json`, `_analyza/NAVRH-ROADMAPY-M0-M6.md` | JSON validní, žádné visící závislosti, pravidlo „dva grains, jeden soubor“ drží; `_analyza/roadmap-navrh.json` je historický artefakt |
-| 7 | **Ověřovací nástroj** dokumentů (kandidát na `check-docs-refs`) včetně sabotéra | `_analyza/over-dokumenty.py` | `--selftest`: **8/8 mutací chyceno** |
+| 7 | **Ověřovací nástroj** dokumentů (kandidát na `check-docs-refs`) včetně sabotéra | `_analyza/over-dokumenty.py` | `--selftest`: **9/9 mutací chyceno** |
+| 8 | **`M0` první krok postaven ručně** — `engine.registry`: registr komponent, pevný tik 50 ms (v milisekundách), fronty příkazů a událostí | `scripts/registry.gd` (150 řádků) + testy v `tests/run_tests.gd` | **`[test] 113 kontrol, 0 selhání`**; sabotér: **5/5** vložených vad chyceno. ⚠ **Se svolením uživatele včetně výjimky pro `tests/`** (pravidlo `CONVENTIONS.md` §5) — orchestra nevydávala (`forge.ok = false`) |
 
 **Zásadní nález druhé session (zpřesňuje tvrzení revize):** „hra 258 spritů
 nepoužívá“ **není přesné** — `assets/sprites/player.png` a `npc.png` jsou
@@ -175,7 +176,7 @@ nepoužívá“ **není přesné** — `assets/sprites/player.png` a `npc.png` j
 
 | # | Co | Stav / kdo |
 |---|---|---|
-| **A** | **Návrh roadmapy** — **ODSOUHLASENO A APLIKOVÁNO 8. 10. 2026**: `.forge/roadmap.json` má 21 granulí (15 `done`, `world.nodes` false), **vydatelná hned je `engine.registry`**; 3 zombie granule vyřazeny, `entity.npc`/`entity.enemy` parkovány do `M4`/`M5` | ✅ hotovo (`_analyza/NAVRH-ROADMAPY-M0-M6.md` je záznam) |
+| **A** | **Návrh roadmapy** — **ODSOUHLASENO A APLIKOVÁNO 8. 10. 2026**: `.forge/roadmap.json` má 21 granulí (16 `done`, `world.nodes` false), **vydatelné hned jsou `engine.shell`, `engine.input` a `world.bodies`**; 3 zombie granule vyřazeny, `entity.npc`/`entity.enemy` parkovány do `M4`/`M5` | ✅ hotovo (`_analyza/NAVRH-ROADMAPY-M0-M6.md` je záznam) |
 | **B** | **`Forge agent` je červený** (20 selhání v řadě) a roadmapa conductora je prázdná — bez toho orchestra nic nevydá | **vlastní session**, příčina neměřená |
 | **C** | **`O-1` — čím platí řemeslník** (palivo / opotřebení / zmetkovost?) | ✅ **ROZHODNUTO 8. 10. 2026** („zatím palivo, opotřebení, zmetkovost a můžeme rozvíjet časem“) — zapsáno v `docs/GDD.md` §9.2, `docs/TDD.md` §3.11 a `DESIGN-REVIZE-2.md` §17 |
 | **D** | **`O-5` — české klíče** `tezba`/`kovani_mece` vs. pravidlo `R-3` | samostatný úkol (mění kód i data) |
@@ -189,9 +190,11 @@ nepoužívá“ **není přesné** — `assets/sprites/player.png` a `npc.png` j
 
 ```powershell
 cd E:\Workspaces\uo-shadows
-python _analyza\over-dokumenty.py             # 94 kontrol, 0 FAIL, exit 0
-python _analyza\over-dokumenty.py --selftest  # sabotér: 9/9 chyceno
+python _analyza\over-dokumenty.py             # 95 kontrol, 0 FAIL, exit 0
+python _analyza\over-dokumenty.py --selftest  # sabotér dokumentu: 9/9 chyceno
 python .forge\check-schema.py .               # tvrdá brána: exit 0
-python .forge\check-wiring.py .               # 85 funkcí v 15 souborech, exit 0
+python .forge\check-wiring.py .               # 97 funkcí v 16 souborech, exit 0
+& 'E:\Tools\godot\Godot_v4.7.2-stable_win64_console.exe' --headless --path . `
+  --script res://tests/run_tests.gd           # [test] 113 kontrol, 0 selhání
 git status --short ; git diff --stat
 ```

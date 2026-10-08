@@ -42,13 +42,14 @@
 
 **Cena `R-1` (a proč to není kosmetika):** znamená to **přepsat monolit**
 `scripts/game.gd` (**377 řádků**, naměřeno 8. 10. 2026). Granule `engine.shell`
-v plánu je, ale je blokovaná mrtvou granulí `world.map` (`scripts/world.gd` =
-**0 B**). Dokud přepis neproběhne, je **10 hotových komponent mrtvá knihovna**:
-`hud.gd`, `save.gd`, `combat.gd`, `mining.gd` a `offline.gd` hledají
-`get_parent().component(id)` — a **v `scripts/` není ani jedna funkce
-`component(`** (naměřeno: `grep` nad `scripts/`, 0 výskytů), takže v běžící hře
-dostanou `null`. **Zároveň je to podmínka cesty B** (§11): kdyby se oddělení
-simulace a zobrazení porušilo, byla by síť přepis jádra.
+v plánu je, ale byla blokovaná mrtvou granulí `world.map` (`scripts/world.gd` =
+**0 B** — ta je z plánu vyřazená). Dokud přepis neproběhne, je **10 hotových
+komponent mrtvá knihovna**: `hud.gd`, `save.gd`, `combat.gd`, `mining.gd`
+a `offline.gd` hledají `get_parent().component(id)`. **Registr už v kódu JE**
+(`scripts/registry.gd`, hotový ručně 8. 10. 2026 — viz §3.18), ale **monolit ho
+nevolá**, takže v běžící hře dostanou `null` dál. **Zároveň je to podmínka cesty
+B** (§11): kdyby se oddělení simulace a zobrazení porušilo, byla by síť přepis
+jádra.
 
 ---
 
@@ -518,8 +519,12 @@ název(argument: Typ) -> NávratovýTyp
 - **acceptance:** test ZAVOLÁ `component("Skills")` a ověří, že **vrací uzel,
   který umí `hodnota()`**; ZAVOLÁ `component("Neexistuje")` a ověří `null`
   **bez chyby**; a ZAVOLÁ `move` příkaz a ověří, že se hráč posunul
-- **status:** **`neexistuje`** — `scripts/game.gd` je **monolit** (377 řádků)
-  a **`func component(` v `scripts/` není ani jednou** (naměřeno)
+- **status:** **`částečně`** — **registr existuje** (`scripts/registry.gd`,
+  150 řádků, hotový ručně 8. 10. 2026: `component(id)`, `advance()`/`step()`
+  s pevným tikem 50 ms, fronty příkazů a událostí; měřeno testy), ale
+  **`scripts/game.gd` je pořád monolit** (377 řádků) a registr **nevolá** —
+  kostru scény dodá `engine.shell`. `component()` tedy v repu je, ale v běžící
+  hře ho zatím nikdo nezavolá
 
 ### 3.19 Souhrn: co má tvar dat a co ne
 
@@ -734,7 +739,7 @@ Detail: **`docs/BRANY-HRY.md`** (sem se přesunul 7. 10. 2026 ze skillu
 | `.forge/verify-level-render.py` | že snímek hry odpovídá mapě | — (nemá offline test) |
 | `.forge/vision.mjs` | **vidí** (režimy `presence`/`diff`) | **neblokuje** — `exit 1` běh nezhodí (v CI `\|\| echo`); názor modelu má chybovost |
 | `.forge/baseline.py` | co je vizuálně schválené (LGTM) a co se změnilo | **LGTM cache je lokální optimalizace — v CI neplatí nikdy** (`baseline.py:252` chce obrázek uvnitř repa, CI píše do `/tmp/frames`) |
-| `tests/run_tests.gd` | herní kontroly | **podmíněný test je tiše zelený**: v souboru o **1406 řádcích** má `has_method` **26 řádků** a **39 výskytů** (hrubě; po odstranění komentářů **20 / 33**) — funkce, která není, se **přeskočí** |
+| `tests/run_tests.gd` | herní kontroly | **podmíněný test je tiše zelený**: v souboru o **1569 řádcích** má `has_method` **28 řádků** a **41 výskytů** (hrubě; v kódu bez komentářů a docstringů **20 / 33** — naměřeno 8. 10. 2026) — funkce, která není, se **přeskočí**. ⚠ **Různé čítače téhož jména:** staticky je v souboru **154** volání `_check(`, ale běh hlásí **`[test] 113 kontrol`** (část je v cyklech a podmínkách) — **počet kontrol se čte z BĚHU**, ne ze vzorů v souboru |
 
 **Pořadí kroků v CI je dané a testuje se** (naměřeno z `.github/workflows/ci.yml`,
 181 řádků, job `test-and-build`): checkout → cache Godotu → instalace Godotu →
@@ -766,13 +771,13 @@ co dokument odhalí, **zapíše**, neopraví mimochodem. Všechny vady níž jso
 |---|---|---|---|
 | 1 | **`Economy.price()` vrací 0 pro každý skutečný předmět** | `economy.gd:14–30` čte `item.material` (očekává `"wood"/"stone"/"metal"`) a `item.quality` (očekává `"common"…`), ale `item.gd:6–10` má `material` z `items.json` (kde klíč **není** → `""`) a `kvalita: int` | obchod je **zdarma**; `price()` je zároveň druhý zdroj pravdy o kvalitě |
 | 2 | **`Item.repair()` předmět ZNIČÍ** | `item.gd:36` nastaví `trvanlivost = 20` natvrdo; `items.json` deklaruje `durability` 100 (meč) a 150 (zbroj) | „oprava“ sníží trvanlivost ze 100 na 20 |
-| 3 | **Registr komponent v kódu NENÍ** | `grep` na `func component(` v `scripts/` = **0 výskytů**; `hud.gd:90`, `save.gd:148`, `combat.gd:125`, `mining.gd:70`, `offline.gd:55` ho volají | v běžící hře dostanou `null` → HUD ukazuje nuly, `save()` neuloží nic |
+| 3 | **Registr komponent NEBYL volán z produkčního kódu** | `scripts/registry.gd` **existuje** (hotový ručně 8. 10. 2026, měřený testy), ale `hud.gd:90`, `save.gd:148`, `combat.gd:125`, `mining.gd:70` a `offline.gd:55` ho hledají přes `get_parent().component(id)` — a **`scripts/game.gd` (monolit) registr vůbec nevytváří**, takže v běžící hře dostanou `null` | HUD ukazuje nuly, `save()` neuloží nic. **Opravuje `engine.shell`** (další granule `M0`) — registr sám to nespraví |
 | 4 | **`scripts/world.gd` = 0 B** | naměřeno: 0 bajtů, 0 řádků; vlastní ho **dvě** granule (`world.map`, `world.nodes`), obě nehotové | blokuje `engine.shell`; `save.gd` na něm už volá `snapshot()` |
 | 5 | **`save.gd:14` má zastaralý komentář** | tvrdí, že `player.gd` inventář „nemá“; naměřeno `player.gd:52` (`inventory`), `:130` (`add_item`), `:136` (`remove_item`) | komentář popírá kód — kdo mu věří, „opraví“ fungující věc |
 | 6 | **`assets/spec.json` nemá klíč `projekce`** | `level.gd:74` → `{}`, `:83` odvodí izometrii z `96 ≠ 48` | izometrie je **odvozená**, ne deklarovaná → druhé místo pravdy o projekci |
 | 7 | **Název hry se rozejšel ve třech zdrojích — OPRAVENO 8. 10. 2026** | `project.godot` = `uo-shadows`, `forge.json` a `.forge/vision-profile.json` = `uo-shadows`, repo = `uo-shadows`; **před opravou** říkaly `project.godot` a `assets/spec.json` `uo-sandbox` a `export_presets.cfg` `GameForge` | hledání pod jedním jménem teď funguje; **cena opravy:** `user://` se přesunul na `…\app_userdata\uo-shadows\` (ve starém adresáři žádný `save.cfg` nebyl — naměřeno) |
 | 8 | **`npc.gd` a `enemy.gd` v repu NEJSOU** | `scripts/` má 15 souborů; žádný z nich se tak nejmenuje | dvě smlouvy (`Npc`, `Enemy`) nemají implementaci, přestože na ně plán navazuje |
-| 9 | **`done` není měření: v `.forge/roadmap.json` je 21 granul a `done: true` = 15, ale hra používá 2** | `roadmap.json`: 21 granul, `done: true` = 15 (stav po přepsání roadmapy 8. 10. 2026; **před ním 22 / 13** — ve svém čase správná čísla); produkční cesta instancuje `level.gd` a `player.gd` | „hotovo“ dnes není měření (definice hotovo to mění) |
+| 9 | **`done` není měření: v `.forge/roadmap.json` je 21 granul a `done: true` = 16, ale hra používá 2** | `roadmap.json`: 21 granul, `done: true` = 16 (stav 8. 10. 2026 po postavení `engine.registry`; **předtím 15, ještě předtím 13** — ve svém čase správná čísla); produkční cesta instancuje `level.gd` a `player.gd` | „hotovo“ dnes není měření (definice hotovo to mění) |
 | 10 | **`assets/data/*.json` nemá klíč `material`** | `items.json`: `id`, `name`, `durability`, `damage`, `armor_rating`; `item.gd:25` ho čte jako nepovinný | viz vada 1 |
 
 **Co z toho plyne pro plán:** vady 1–4 jsou na kritické cestě milníků `M0`
