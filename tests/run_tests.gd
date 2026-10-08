@@ -1133,6 +1133,120 @@ func _run() -> void:
 			player.hp = zaloha_hp2
 			kostra.free()
 
+	# ------------------------------------------------- M0: registr komponent ----
+	# Granule `engine.registry` (docs/TDD.md §1.1-1.3): registr komponent, pevný
+	# tik 50 ms a fronty příkazů/událostí. Testy kód ZAVOLAJÍ a změří výsledek —
+	# `has_method("component")` by prošlo i nad registrem, který nic nevrací.
+	var reg = _instantiate("engine.registry", "res://scripts/registry.gd")
+	_check(reg != null, "registry.gd jde vytvořit (extends Node, new() bez argumentů)")
+	if reg != null:
+		_check(reg.TICK_MS == 50,
+			"pevný tik je deklarovaný na 50 ms (TICK_MS = %d)" % reg.TICK_MS)
+
+		var skilly = TestKomponenta.new()
+		var bez_tiku = TestBezTiku.new()
+		reg.register("Skills", skilly)
+		reg.register("BezTiku", bez_tiku)
+		_check(reg.component("Skills") == skilly,
+			"registr vrátí zaregistrovanou komponentu (component(\"Skills\"))")
+		_check(reg.component("Neexistuje") == null,
+			"neznámé id vrátí null a nic nespadne (component(\"Neexistuje\"))")
+		_check(reg.components().has("Skills") and reg.components().has("BezTiku"),
+			"components() vypíše zaregistrovaná id (%s)" % str(reg.components().keys()))
+
+		var tiku_zacatek: int = reg.ticks()
+		var tik_a: int = reg.advance(0.049)
+		_check(tik_a == 0 and reg.ticks() == tiku_zacatek,
+			"pod 50 ms tik NEPROBĚHNE (advance(0.049) → %d tiků)" % tik_a)
+		var tik_b: int = reg.advance(0.002)
+		_check(tik_b == 1 and reg.ticks() == tiku_zacatek + 1,
+			"49 + 2 ms dá PRÁVĚ JEDEN tik (advance(0.002) → %d)" % tik_b)
+		var tik_c: int = reg.advance(0.15)
+		_check(tik_c == 3, "150 ms dá tři tiky (advance(0.15) → %d)" % tik_c)
+
+		_check(skilly.tiku == 4,
+			"komponenta dostala sim_tick v každém tiku (počítadlo %d)" % skilly.tiku)
+		_check(absf(skilly.posledni_dt - 0.05) < 0.0001,
+			"sim_tick dostal dt = 0,05 s (naměřeno %s)" % str(skilly.posledni_dt))
+
+		reg.push_command({"type": "move", "dir": [1, 0]})
+		reg.push_command({"type": "gather", "cell": [3, 4]})
+		var prikazy1: Array = reg.commands()
+		var prikazy2: Array = reg.commands()
+		_check(prikazy1.size() == 2 and prikazy1[0].get("type") == "move",
+			"fronta příkazů vrátí oba příkazy v pořadí (%d)" % prikazy1.size())
+		_check(prikazy2.is_empty(),
+			"druhé čtení příkazů je prázdné (fronta se vyprázdnila)")
+
+		reg.push_event({"type": "skill_grew", "skill": "tezba", "value": 12})
+		var udalosti1: Array = reg.events()
+		var udalosti2: Array = reg.events()
+		_check(udalosti1.size() == 1 and udalosti1[0].get("value") == 12,
+			"fronta událostí vrátí událost s hodnotou (%d)" % udalosti1.size())
+		_check(udalosti2.is_empty(), "druhé čtení událostí je prázdné")
+
+		_zavri(reg)
+
+	# Registr jako RODIČ komponent: přesně takhle ho hledá hud.gd, save.gd,
+	# combat.gd, mining.gd i offline.gd — `get_parent().component(id)`.
+	var reg2 = _instantiate("engine.registry", "res://scripts/registry.gd")
+	if reg2 != null:
+		var soused = TestKomponenta.new()
+		var ctenar = TestCteSourozence.new()
+		reg2.add_child(soused)
+		reg2.add_child(ctenar)
+		reg2.register("Skills", soused)
+		reg2.register("Ctenar", ctenar)
+
+		var signalu := [0]
+		reg2.ticked.connect(func(_dt: float) -> void: signalu[0] += 1)
+		reg2.step()
+
+		_check(ctenar.nalezeno == soused,
+			"komponenta najde sourozence přes get_parent().component(id)")
+		_check(signalu[0] == 1,
+			"po tiku se emitoval signál ticked (%d×)" % signalu[0])
+
+		var docasna = TestKomponenta.new()
+		reg2.register("Docasna", docasna)
+		_check(reg2.component("Docasna") == docasna,
+			"dočasná komponenta je v registru (component(\"Docasna\"))")
+		docasna.free()
+		# DVĚ kontroly, ne jedna: samotné `== null` by prošlo i tehdy, kdyby
+		# přiřazení uvolněného uzlu spadlo a kód se k vyčištění vůbec nedostal
+		# (naměřeno 8. 10. 2026: přesně to se stalo a test byl zelený).
+		_check(reg2.component("Docasna") == null,
+			"uvolněná komponenta se nehlásí jako živá (component() vrátí null)")
+		_check(not reg2.components().has("Docasna"),
+			"uvolněná komponenta se z registru ODSTRANILA (components() ji nezná)")
+		# A měření mechanismu, který to celé způsobuje (aby na něj příště nikdo
+		# nemusel přijít znovu): uvolněný uzel je NEPLATNÝ, a přesto se rovná null.
+		_check(not is_instance_valid(docasna),
+			"uvolněný uzel je neplatný podle is_instance_valid() "
+			+ "(a přesto `== null` – proto se validita nesmí testovat přes null)")
+		_zavri(reg2)
+
+	# Pořadí tiků je SMLOUVA („sim_tick jde v pořadí registrace“) — a zároveň se
+	# tím měří `registered_order()`, které by jinak bylo mrtvé API.
+	var reg3 = _instantiate("engine.registry", "res://scripts/registry.gd")
+	if reg3 != null:
+		var poradi := []
+		var prvni = TestKomponenta.new()
+		prvni.name = "Prvni"
+		prvni.poradi_zapisu = poradi
+		var druhy = TestKomponenta.new()
+		druhy.name = "Druhy"
+		druhy.poradi_zapisu = poradi
+		reg3.register("Prvni", prvni)
+		reg3.register("Druhy", druhy)
+		reg3.step()
+		_check(poradi == ["Prvni", "Druhy"],
+			"sim_tick jde v POŘADÍ REGISTRACE (naměřeno %s)" % str(poradi))
+		_check(reg3.registered_order() == ["Prvni", "Druhy"],
+			"registered_order() vrátí id v pořadí registrace (%s)"
+			% str(reg3.registered_order()))
+		_zavri(reg3)
+
 	_finish()
 
 
@@ -1404,3 +1518,52 @@ class TestZbran:
 	extends Node
 	"""Zbraň v ruce: jediné, co z ní `combat.resolve()` čte, je `damage`."""
 	var damage := 0
+
+
+class TestKomponenta:
+	extends Node
+	"""Atrapa komponenty s `sim_tick` — měří, KOLIK tiků dostala a s jakým `dt`.
+
+	Čítač je tu schválně: kdyby test kontroloval jen „něco se stalo", prošel by
+	i registr, který tiká jednou místo čtyřikrát. `poradi_zapisu` je sdílené pole
+	(v Godotu 4 se pole předává odkazem), takže je z něj vidět POŘADÍ volání.
+	"""
+	var tiku := 0
+	var posledni_dt := 0.0
+	var poradi_zapisu: Array = []
+
+	func sim_tick(dt: float) -> void:
+		tiku += 1
+		posledni_dt = dt
+		# POZOR: `Node.name` je v Godotu 4 **StringName** (`&"Prvni"`), ne String —
+		# porovnání se seznamem řetězců by tiše neprošlo (naměřeno 8. 10. 2026).
+		poradi_zapisu.append(String(name))
+
+
+class TestBezTiku:
+	extends Node
+	"""Atrapa BEZ `sim_tick` — registr ji musí přeskočit a nespadnout.
+
+	Komponenta, která nesimuluje, NENÍ vada: přeskočení je normální stav.
+	Ohlásit se musí jen komponenta, která ZMIZELA (uvolněná) — to měří kontrola
+	„uvolněná komponenta se nehlásí jako živá".
+	"""
+	var tiku := 0
+
+
+class TestCteSourozence:
+	extends Node
+	"""Komponenta, která bere službu z registru RODIČE — vzor z `hud.gd` a `save.gd`.
+
+	PROČ JE TO DŮLEŽITÉ: `hud.gd:90`, `save.gd:148`, `combat.gd:125`,
+	`mining.gd:70` a `offline.gd:55` volají `get_parent().component(id)`.
+	Kdyby registr nebyl jejich RODIČ, dostanou `null` a hra poběží s nulami —
+	což se přesně stalo (naměřeno 8. 10. 2026: `func component(` nebylo
+	v `scripts/` ani jednou). Tahle atrapa to ověří bez pouštění celé hry.
+	"""
+	var nalezeno: Node = null
+
+	func sim_tick(_dt: float) -> void:
+		var kostra = get_parent()
+		if kostra != null and kostra.has_method("component"):
+			nalezeno = kostra.component("Skills")
