@@ -429,6 +429,25 @@ splnitelný** → nahrazuje se (např. „100 ingotů“).
 rozhodnutá je — **obvazy** (§13.1). Kdo hledá v `items.json` lektvar, nenajde ho
 a **není to vada**.
 
+> **⚠ `N9` PŘEFORMULOVÁNO 2026-10-09 (rozhodnutí uživatele; záznam se
+> nepřepisuje, jen doplňuje).** Původní znění `N9` („automatická asistence =
+> rozpor s `P2`") **platí dál pro to, co zakazovalo**: hra nesmí **rozhodnout
+> za hráče**. Nově je dovolené, aby hra **provedla, co hráč rozhodl** — i když
+> u hry není (offline doběh), a to i podle pravidel s podmínkami („udělej toto;
+> když nastane tamto, udělej tamto"). Dovednost hráče se tím přesouvá
+> z klikací zručnosti na **plánování a rozhodnutí** — to je jiná obrana pilíře
+> `P2`, ne jeho opuštění.
+>
+> **Co z toho plyne pro tenhle projekt:** `scripts/assist.gd` (17 řádků, pravidla
+> „hp < X" a „target dead") a `scripts/offline.gd` (57 řádků, denní strop
+> `DAILY_CAP = 100`, efektivita 0,3) **nejsou v rozporu s designem**, pokud
+> platí hranice výš: **rozhoduje hráč, hra provádí**. Kdo je zapojí do monolitu,
+> ať napíše, které rozhodnutí je hráčovo a které dělá kód — jinak se
+> z asistence stane automat, který hraje místo hráče.
+>
+> **Zdroj rozhodnutí a plná hranice (i cena a cesta zpět):**
+> `E:\Workspaces\game-clone\ROZHODNUTI-2026-10-09-SMER.md` §2 D3.
+
 ---
 
 ## 12. Milníky `M0`–`M6` — každý je vidět na obrazovce
