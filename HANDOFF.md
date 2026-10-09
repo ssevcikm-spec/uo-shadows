@@ -190,7 +190,7 @@ nepoužívá“ **není přesné** — `assets/sprites/player.png` a `npc.png` j
 
 ```powershell
 cd E:\Workspaces\uo-shadows
-python _analyza\over-dokumenty.py             # 95 kontrol, 0 FAIL, exit 0
+python _analyza\over-dokumenty.py             # 97 kontrol, 0 FAIL, exit 0  (95 před poznámkou k N9 z 2026-10-09; čítač roste s tvrzeními v dokumentech)
 python _analyza\over-dokumenty.py --selftest  # sabotér dokumentu: 9/9 chyceno
 python .forge\check-schema.py .               # tvrdá brána: exit 0
 python .forge\check-wiring.py .               # 97 funkcí v 16 souborech, exit 0
