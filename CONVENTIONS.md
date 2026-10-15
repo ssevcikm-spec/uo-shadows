@@ -216,6 +216,15 @@ label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 | `yield(x, "signal")` / `yield(x, "completed")` | `await x.signal` / `await x.completed` |
 | `export var` / `onready var` | `@export var` / `@onready var` |
 | `OS.get_ticks_msec()` | `Time.get_ticks_msec()` |
+| `get_global_position()` / `set_global_position()` | `global_position` (vlastnost), `global_position = …` |
+
+> **⚠ DOPLNĚNO 15. 10. 2026 (naměřeno v běhu orchestry #378, granule `engine.input`):**
+> `Parse Error: Function "get_global_position()" not found in base self.` — model
+> použil **getter, který v Godotu 4 neexistuje**. Godot 4 zrušil `get_*`/`set_*`
+> **metody** u vlastností uzlů: místo `get_global_position()` se čte vlastnost
+> `global_position`, místo `set_position()` se přiřazuje `position = …`.
+> Pozor na výjimky, které `get_*` **mají** (`get_node`, `get_parent`,
+> `get_tree`, `get_meta`) — ty jsou skutečné metody a parsují se.
 | `instance()` | `instantiate()` |
 | `PoolStringArray` a ostatní `Pool*Array` | `PackedStringArray` a ostatní `Packed*Array` |
 
