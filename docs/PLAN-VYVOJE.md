@@ -118,16 +118,47 @@ z 8. 10. (434–556 t), který se do stropu nevešel.
 dokument (naměřeno +8 000 tokenů na request); smlouva patří **do zadání**, ne
 odkazem. Validátor to hlásí jako poznámku u každé granule.
 
-## 6. Co musí proběhnout před spuštěním orchestry
+## 6. Spuštění orchestry — co proběhlo 15. 10. 2026
 
 | # | Krok | Stav |
 |---|---|---|
 | 1 | Nový plán: **10 granulí** v `.forge/roadmap.json` (5 hotových, 5 k vydání) + validátor | ✅ hotovo |
 | 2 | Archiv starého plánu — celý předešlý plán je v `_analyza/PRACE-2026-10-15/ROADMAPA-STARA-2026-10-15.json` (oddíl „2. Milníky a co je v nich" výš uvádí, kolik položek měl) | ✅ hotovo |
-| 3 | **Push do `origin/main`** — orchestra čte roadmapu z GitHubu, ne z disku | ⬜ **čeká na rozhodnutí** (commity v repu, repo je veřejné) |
-| 4 | **Reset cache roadmapy** — `node tools\roadmap-reset.mjs uo-shadows` (jinak se conductor drží starých id) | ⬜ po pushi |
-| 5 | **Aktivace hry** — `node tools\aktivuj-hru.mjs --hra uo-shadows` | ⬜ **čeká na rozhodnutí uživatele** |
-| 6 | Vypnutí `coin-picker` (dnes aktivní) — dvě aktivní hry = rozdělená pozornost a kvóta | ⬜ čeká na rozhodnutí |
+| 3 | **Push do `origin/main`** — orchestra čte roadmapu z GitHubu, ne z disku | ✅ `ca7fa4a`, k odeslání 0 |
+| 4 | **Reset cache** — jinak se conductor drží starých id | ✅ `POST /roadmap/reset` cache vyčistil a fronta se postavila znovu (5 hotových, 5 `queued`) |
+| 5 | **Aktivace hry** — `node tools\aktivuj-hru.mjs --hra uo-shadows` | ✅ `active=1` |
+| 6 | Vypnutí `coin-picker` — dvě aktivní hry = rozdělená pozornost a kvóta | ✅ `active=0` (granule zůstávají v cache pro návrat) |
+
+### 6.1 První vlna (naměřeno, ne odhad)
+
+Conductor vydal **3 granule paralelně** (`shell.coins` #519, `engine.input` #520,
+`world.bodies` #521) a **všechny tři selhaly**. Důvody jsou různé a oba jsou
+opravitelné — a oba se opravily **hned**:
+
+| Běh | Granule | Model | Co se stalo | Oprava |
+|---|---|---|---|---|
+| #519 | `shell.coins` | cerebras → mistral | **agent nic nezměnil** (`# cerebras … běh skončil jako „agent nic nezměnil"`) | fallback na dalšího poskytovatele je součást řetězce; zadání zůstává |
+| #520 | `engine.input` | mistral | `Parse Error: Cannot infer the type …` | do zadání i do `CONVENTIONS.md` §1 doplněna pravidla (viz níž) |
+| #521 | `world.bodies` | mistral | `Parse Error: Cannot infer the type of "bunka"…` a `Could not find type "Level"` | totéž |
+
+**Co se z toho zjistilo (a je to poučení, ne stížnost):** zadání sice mělo smlouvu
+a rozpočet, ale **nemělo dvě pasti parsování**, na které v GDScriptu narazí každý
+model: (1) `:=` u hodnoty bez typu (např. `Vector2.ZERO`, klíč z `Dictionary`)
+a (2) **typ z cizího skriptu v anotaci** — `Level`, `Player`, `Registry` jsou jen
+**jména uzlů**, soubory nemají `class_name`, takže `var lvl: Level` neparsuje.
+Dopsáno do `CONVENTIONS.md` §1 (doplněk „DOPLNĚNO 15. 10. 2026") a do zadání
+`world.bodies` a `engine.input`. **Kdo píše další zadání, ať ty dvě věty kopíruje.**
+
+**Proč druhá vlna neběží hned:** `RETRY_HOURS` = **3 h** — selhaná granule se vrací
+do fronty až po cooldownu (guard se ptá na **čas**, ne na stav, takže fronta může
+hlásit `queued` a dispatch přesto čeká). Je to **záměr orchestry**: free modely
+mají denní limity a okamžitý retry jen pálí pokusy. Další pokus tedy přijde sám
+kolem **16:13**; `sim.wire` navíc čeká na `shell.coins`.
+
+**Stav orchestry po prvním kole:** `/health` → `main_ci = success` (na commitu
+`ca7fa4a`), `ready` 0–3, `/failed` prázdné, PR zatím žádné.
+
+## 7. Co musí proběhnout před DALŠÍ vlnou
 
 **Poznámka k pořadí:** úklid cache je v orchestraci **operace**, ne editace
 souboru — conductor si drží vlastní tabulku a stará id v ní zůstávají, dokud se
@@ -135,7 +166,7 @@ neresetují (naměřeno 9. 10.: v souboru 21 granulí, v cache 25 řádků → 5
 mezi nimi úloha ve stavu `ready`). A **`uo-shadows` je dnes `active: 0`** —
 registr her ji vede, ale práce se jí nevydává.
 
-## 7. Co v tomhle plánu ZÁMĚRNĚ NENÍ
+## 8. Co v tomhle plánu ZÁMĚRNĚ NENÍ
 
 - **Termíny ani odhady hodin** — „hotovo" se u téhle hry měří, ne plánuje.
 - **Granule pro `M2`–`M6`** — jsou v §4 jako zásoba; doplní se při otevření
