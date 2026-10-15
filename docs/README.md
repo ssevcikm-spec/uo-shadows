@@ -47,7 +47,7 @@ se odvozuje z té nad sebou). **Tabulka je navigace, ne náhrada** — čti soub
 | **5** | Rozsah a non-goals | `GDD §10` + `GDD §11` (`N1`–`N11`) | plné |
 | **6** | Technika | `TDD §0` (engine a platformy), `§1`, `§6`, `§7`, `§8` | plné |
 | **7** | Smlouvy | `TDD §3` (**19 smluv** s tvarem dat), `§4`, `§5` | plné v dokumentu; **v plánu nejsou strojově** (`provides`/`consumes` se v granulích nevedou — smlouva je vložená v zadání, ne odkazem) |
-| **8** | Plán | `docs/PLAN-VYVOJE.md` + `GDD §12` (milníky) + `.forge/roadmap.json` (dnes **10 granulí**, z toho 5 k vydání) | **částečné** — k vydání `M0`+`M1`; `M2`–`M6` jsou zásoba, doplní se při otevření milníku |
+| **8** | Plán | `docs/PLAN-VYVOJE.md` + `GDD §12` (milníky) + `.forge/roadmap.json` (dnes **11 granulí**, z toho 5 k vydání) | **částečné** — k vydání `M0`+`M1`; `M2`–`M6` jsou zásoba, doplní se při otevření milníku |
 | **9** | Brány | **`docs/BRANY-HRY.md`** (+ `TDD §9` = jen pořadí v CI) | plné |
 | **10** | Pravidla a pasti | `CONVENTIONS.md`, `AGENTS.md`, `TDD §10` (známé vady), `BRANY-HRY.md` (slepá místa), `ZASTAVENO.md §6` | částečné — **rejstřík pastí chybí** (pastí je šest na pěti místech) |
 
