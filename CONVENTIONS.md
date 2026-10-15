@@ -26,6 +26,20 @@ for uzel in get_tree().get_nodes_in_group("enemy"):
 Platí to i pro `get_tree().get_first_node_in_group(...)`, `get_node_or_null(...)`
 a cokoli dalšího, co vrací `Node`/`Variant` bez konkrétního typu.
 
+> **⚠ DOPLNĚNO 15. 10. 2026 — dvě podoby téže chyby, které shodily běh orchestry**
+> (`world.bodies`, `engine.input`; naměřeno v logu `Forge agent` na `HEAD d6bb7a9`):
+> `Parse Error: Cannot infer the type of "bunka" variable …` a
+> `Parse Error: Could not find type "Level" in the current scope.`
+>
+> 1. **`:=` u hodnoty z `Dictionary` nebo u konstanty enginu.** `Vector2.ZERO`,
+>    `Vector2.ONE` a `dict["klic"]` **nemají nastavený typ**, takže `:=` spadne na
+>    parsování. Piš `var smer: Vector2 = Vector2.ZERO`, ne `var smer := Vector2.ZERO`.
+> 2. **Typ z cizího skriptu v anotaci.** `var lvl: Level` **nejde**, když soubor
+>    `scripts/level.gd` nemá `class_name` (a mít ho nesmí — §1d) — Godot hlásí
+>    `Could not find type "Level"`. Piš `var lvl: Node` a volej metody dynamicky;
+>    nebo typ vynech úplně. **Platí pro každou komponentu projektu** (`Level`,
+>    `Player`, `Registry`, `Skills`, …): žádná z nich nemá `class_name`.
+
 ## 1b. Do uzlu vytvořeného `Area2D.new()` nejde přidat vlastní vlastnost
 
 ```gdscript
