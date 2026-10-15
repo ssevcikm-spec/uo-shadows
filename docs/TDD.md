@@ -341,7 +341,7 @@ název(argument: Typ) -> NávratovýTyp
 - **status:** **`neexistuje`** — `scripts/world.gd` je **0 B** (naměřeno
   15. 10. 2026: `os.path.getsize()` = 0, `splitlines()` = 0 řádků).
   Vlastní ho **granule `world.nodes`** (`.forge/roadmap.json`); **`world.map`
-  byla 8. 10. 2026 z plánu vyřazena** (naměřeno 15. 10. 2026: plán má 21 granulí
+  byla 8. 10. 2026 z plánu vyřazena** (naměřeno 15. 10. 2026: plán má **10 granulí**
   a `world.map` mezi nimi **není**) — je to tedy **mrtvé jméno**, ne druhá
   granule. `save.gd:71–74` na `world.gd` **už** volá `snapshot()`/`restore()`.
 
@@ -887,7 +887,7 @@ co dokument odhalí, **zapíše**, neopraví mimochodem. Vady 1–10 jsou **nam�
 | 6 | **`assets/spec.json` nemá klíč `projekce`** | `level.gd:74` → `{}`, `:83` odvodí izometrii z `96 ≠ 48` | izometrie je **odvozená**, ne deklarovaná → druhé místo pravdy o projekci |
 | 7 | **Název hry se rozejšel ve třech zdrojích — OPRAVENO 8. 10. 2026** | `project.godot` = `uo-shadows`, `forge.json` a `.forge/vision-profile.json` = `uo-shadows`, repo = `uo-shadows`; **před opravou** říkaly `project.godot` a `assets/spec.json` `uo-sandbox` a `export_presets.cfg` `GameForge` | hledání pod jedním jménem teď funguje; **cena opravy:** `user://` se přesunul na `…\app_userdata\uo-shadows\` (ve starém adresáři žádný `save.cfg` nebyl — naměřeno) |
 | 8 | **`npc.gd` a `enemy.gd` v repu NEJSOU** | `scripts/` má **16** souborů `.gd` (naměřeno 15. 10. 2026: `glob('scripts/*.gd')`); žádný z nich se tak nejmenuje. **Patnáct platilo před `M0`** (přibyl `registry.gd`) — ve svém čase správné číslo | dvě smlouvy (`Npc`, `Enemy`) nemají implementaci, přestože na ně plán navazuje |
-| 9 | **`done` není měření: v `.forge/roadmap.json` je 21 granul a `done: true` = 16, ale hra používá 2** | `roadmap.json`: 21 granul, `done: true` = 16 (stav 8. 10. 2026 po postavení `engine.registry`; **předtím 15, ještě předtím 13** — ve svém čase správná čísla); produkční cesta instancuje `level.gd` a `player.gd` | „hotovo“ dnes není měření (definice hotovo to mění) |
+| 9 | **`done` není měření: dřívější podoba plánu hlásila hotovost u 16 položek, ale hra používá 2** | **PŘEPOČÍTÁNO 15. 10. 2026:** dnešní `.forge/roadmap.json` má **10 granulí** a `done: true` u **5** — `done` je nově **měřené** (soubor v `main` A volá ho produkční cesta, nástroj `_analyza/PRACE-2026-10-15/zmer-produkci.py`). Historická čísla (16, předtím 15 a 13) byla **ve svém čase správná** a jsou v archivu plánu | „hotovo“ dnes není měření (definice hotovo to mění) |
 | 10 | **`assets/data/*.json` nemá klíč `material`** | `items.json`: `id`, `name`, `durability`, `damage`, `armor_rating`; `item.gd:25` ho čte jako nepovinný | viz vada 1 |
 | 11 | **`game.gd:181` tweenuje `hud` dřív, než ho `_add_ui()` vytvoří** | naměřeno 15. 10. 2026 během testů: `ERROR: Required object "rp_target" is null.` s backtrace `_add_level (res://scripts/game.gd:181)` ← `_ready (res://scripts/game.gd:33)`; `_ready()` volá `_add_level()` na `:33`, ale `_add_ui()` (které `hud` teprve vytvoří) až na `:45` → `hud` je v tu chvíli `null` | **`ERROR` při každém načtení scény**; CI to **nechytí** — krok smoke hledá jen řetězec `SCRIPT ERROR`, ale naměřená chyba začíná `ERROR:` (`ci.yml:105`) |
 

@@ -26,6 +26,7 @@
 | Jak hra vypadá, assety, pipeline, licence | **`docs/ADD.md`** | lidská vrstva; **čísla vzhledu** jsou v `assets/spec.json` |
 | Co která brána měří a **kde má slepá místa** | **`docs/BRANY-HRY.md`** | jediné místo detailu o branách |
 | Co se má dělat (granule a závislosti) | **`.forge/roadmap.json`** | strojový plán; čte ho orchestra |
+| Jak se hra staví po milnících a co je k vydání | **`docs/PLAN-VYVOJE.md`** | lidská vrstva plánu (lidská vrstva k `.forge/roadmap.json`) |
 | Proč se nevyvíjí a co by ho vrátilo | **`ZASTAVENO.md`** | záznam o zastavení (12. 10. 2026) |
 | Čím se psát kód (poučky pro agenta) | **`CONVENTIONS.md`** | jediný dokument, který agent orchestry dostane |
 | Trvalá pravidla hry | **`AGENTS.md`** | dostane je každá session |
@@ -45,8 +46,8 @@ se odvozuje z té nad sebou). **Tabulka je navigace, ne náhrada** — čti soub
 | **4** | Obsah | `GDD §10` + `TDD §4` + `assets/data/*.json` | plné jako seznam; data rozsahu `M` chybí (práce, ne dokument) |
 | **5** | Rozsah a non-goals | `GDD §10` + `GDD §11` (`N1`–`N11`) | plné |
 | **6** | Technika | `TDD §0` (engine a platformy), `§1`, `§6`, `§7`, `§8` | plné |
-| **7** | Smlouvy | `TDD §3` (**19 smluv** s tvarem dat), `§4`, `§5` | plné v dokumentu; **v plánu chybí** (`provides`/`consumes` = 0 z 21 granul) |
-| **8** | Plán | `GDD §12` (milníky) + `.forge/roadmap.json` | **částečné** — plán nemá klíč `milestone` a obsahuje jen `M0`–`M1` |
+| **7** | Smlouvy | `TDD §3` (**19 smluv** s tvarem dat), `§4`, `§5` | plné v dokumentu; **v plánu nejsou strojově** (`provides`/`consumes` se v granulích nevedou — smlouva je vložená v zadání, ne odkazem) |
+| **8** | Plán | `docs/PLAN-VYVOJE.md` + `GDD §12` (milníky) + `.forge/roadmap.json` (dnes **10 granulí**, z toho 5 k vydání) | **částečné** — k vydání `M0`+`M1`; `M2`–`M6` jsou zásoba, doplní se při otevření milníku |
 | **9** | Brány | **`docs/BRANY-HRY.md`** (+ `TDD §9` = jen pořadí v CI) | plné |
 | **10** | Pravidla a pasti | `CONVENTIONS.md`, `AGENTS.md`, `TDD §10` (známé vady), `BRANY-HRY.md` (slepá místa), `ZASTAVENO.md §6` | částečné — **rejstřík pastí chybí** (pastí je šest na pěti místech) |
 

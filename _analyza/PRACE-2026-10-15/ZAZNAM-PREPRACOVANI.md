@@ -141,6 +141,18 @@ z běhu“):**
 | 12 | **`ZASTAVENO.md §7` uvádí 2 nepushnuté commity, naměřeno jsou 3** | `ZASTAVENO.md:74–76` | číslo bylo **ve svém čase správné** (12. 10.); jen se k němu doplňuje |
 | 13 | **Mimo repo zůstala evidence** `E:\Workspaces\_mereni-uo-shadows-6986b0d\` (698 souborů, 12,5 MB) | — | smazat, až nebude potřeba (je to surový záznam měření) |
 
+### 6.1 Mezery brány, které se našly při resetu plánu (15. 10. 2026)
+
+Při psaní `docs/PLAN-VYVOJE.md` brána opakovaně hlásila `FAIL` na **správných**
+větách. Není to vada dokumentu — je to **mez brány** a je pojmenovaná, aby ji
+příště nikdo neopravoval na špatném místě:
+
+| # | Co brána dělá | Naměřený důsledek | Co s tím |
+|---|---|---|---|
+| 1 | `granulí v roadmapě` bere **první** `(\d+) granul` do 200 znaků za slovem „roadmap(a/y/.json)" | věta, která uvádí **dnešní i historický** počet, se čte jako tvrzení o dnešku („dokument 21 != zdroj 10") | text musí mít **jedno číslo na tvrzení**; formulace se opravila v dokumentech |
+| 2 | `granul s done: true` bere **jakékoli** číslo do 20 znaků za `done: true` | **nepozná minulý čas**: „dřív hlásila hotovost u 16" se hlásí jako rozpor s dneškem | historické číslo se v textu **odděluje od řetězce `done: true`**; brána by si zasloužila časový rozpoznávač (patří vlastníkovi brány) |
+| 3 | `N řádků <soubor>.py` se čte jako **délka souboru** | blok s výčtem souborů a číslem řádků se čte jako tvrzení o velikosti (`dokument 847 != zdroj 135`) | do dokumentů nepsat počet řádků vedle cesty k souboru; stejná past jako u `has_method` (`BRANY-HRY.md`) |
+
 ## 7. Jak si to ověřit (5 minut)
 
 ```powershell
