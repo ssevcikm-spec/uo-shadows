@@ -1,0 +1,271 @@
+==============================================================================
+1) OBSAH assets/data/*.json
+==============================================================================
+items.json       JSON VALIDNI  typ=list  zaznamu=2  radku=14  B=216
+    klice: ARRAY
+    klice prvku: ['id', 'name', 'durability', 'damage']
+      - id='iron_sword' name='Železný meč'
+      - id='iron_armor' name='Železná zbroj'
+materials.json   JSON VALIDNI  typ=list  zaznamu=4  radku=22  B=321
+    klice: ARRAY
+    klice prvku: ['id', 'name', 'difficulty']
+      - id='iron_ore' name='Železná ruda'
+      - id='wood' name='Dřevo'
+      - id='stone' name='Kámen'
+      - id='iron_ingot' name='Meziprodukt - železný ingot'
+monsters.json    JSON VALIDNI  typ=list  zaznamu=1  radku=11  B=201
+    klice: ARRAY
+    klice prvku: ['id', 'name', 'hp', 'drops']
+      - id='skeleton' name='Kostlivec'
+recipes.json     JSON VALIDNI  typ=list  zaznamu=3  radku=33  B=612
+    klice: ARRAY
+    klice prvku: ['id', 'name', 'inputs', 'outputs']
+      - id='smelting' name='Tavení'
+      - id='kovani_mece' name='Kování mece'
+      - id='kovani_zbroje' name='Kování zbroje'
+skills.json      JSON VALIDNI  typ=list  zaznamu=4  radku=18  B=243
+    klice: ARRAY
+    klice prvku: ['id', 'name']
+      - id='tezba' name='Těžba'
+      - id='drevorubectvi' name='Dřevorubectví'
+      - id='kovarstvi' name='Kovářství'
+      - id='boj_na_blizko' name='Boj na blízko'
+
+==============================================================================
+2) OBSAH assets/levels/*.json
+==============================================================================
+main.json: JSON VALIDNI, B=1745, radku=87
+    klice: ['name', 'seed', 'cell', 'width', 'height', 'viewport', 'offset', 'legend', 'tiles', 'grid', 'markers', 'stats', 'generated', '_projekce']
+    name: 'main'
+    seed: 648754554
+    cell: 96
+    width: 30
+    height: 16
+    viewport: ARRAY delka 2
+    offset: ARRAY delka 2
+    legend: DICT {"0": "wall", "1": "floor", "2": "corridor"}
+    tiles: DICT {"0": "brick", "1": "stone", "2": "dirt"}
+    grid: ARRAY delka 16
+    markers: ARRAY delka 4
+        klice prvku: ['type', 'cell']
+        pocty podle typu: {'spawn': 1, 'coin': 2, 'exit': 1}
+    stats: DICT {"width": 30, "height": 16, "cells": 480, "walkable": 109, "floor_ratio": 0.2271, "reachable": 109, "connectivity": 1.0, "spawn_walkable": true, "markers": 4, "markers_unreachable": []}
+    generated: '2026-09-29 14:10:46'
+    _projekce: 'izometricka – mřížka je jen znaky, projekci určuje assets/spec.json a scripts/level.gd'
+manifest.json: JSON VALIDNI, B=493, radku=19
+    klice: ['generated', 'levels', 'note']
+    generated: '2026-09-29 14:10:46'
+    levels: ARRAY delka 1
+        klice prvku: ['name', 'file', 'seed', 'cell', 'size', 'markers', 'connectivity', 'preview']
+        pocty podle typu: {'None': 1}
+    note: 'mřížka je text (0=zeď, 1=místnost, 2=chodba); buňka 96 px podle assets/spec.json; spawn a mince jsou středy místností, průchodnost ověřená flood fillemp'
+
+ROZMERY MAPY (ze main.json, autorita je soubor):
+
+==============================================================================
+3) PLAN .forge/roadmap.json
+==============================================================================
+VALIDACE JSON: OK  (B=34977, radku=288)
+koren: typ=dict, klice=['_popis', 'grains']
+pocet granul (klice 'grains'): 21
+unikátních id: 21, duplicit: zadne
+done: true .......... 16
+done != true ........ 5
+  z toho done chybi/None: 4, done: false: 1
+klic zavislosti: depends_on
+READY (nedone a vsechny zavislosti done) ... 4
+      engine.shell
+      world.nodes
+      engine.input
+      world.bodies
+BLOKOVANE (nedone a nejaka zavislost neni done) ... 1
+      entity.move.smooth  chybi: ['engine.input']
+VISICI zavislosti (odkaz na neexistujici id): zadne
+granule s 'provides' .... 0  (celkem polozek: 0)
+granule s 'consumes' .... 0  (celkem polozek: 0)
+granule s 'acceptance' .. 21  (celkem polozek: 43)
+granule s 'owns' ........ 21
+granule s 'size_lines' .. 15
+granule s 'model' ....... 10
+vsechny klice granul: ['acceptance', 'depends_on', 'done', 'done_note', 'id', 'kind', 'model', 'owns', 'prompt', 'size_lines', 'title']
+
+==============================================================================
+4) KONFIGURACE
+==============================================================================
+project.godot: radku=35, B=904
+    sekce: [application]
+    sekce: [input]
+    sekce: [display]
+    sekce: [rendering]
+    sekce: [physics]
+    config/name: uo-shadows
+    run/main_scene: res://main.tscn
+    config/features: PackedStringArray("4.7")
+    [autoload] sekce pritomna: False  -> autoloadu: 0
+    input/* akce: 0  []
+    input_devices: PackedStringArray("keyboard", "mouse")
+    window/size/viewport_width = 960
+    window/size/viewport_height = 540
+    window/stretch/mode = "viewport"
+    window/stretch/aspect = "keep"
+    renderer/rendering_method = "mobile"
+    default_texture_filter = 0
+    common/physics_ticks_per_second = 60
+
+export_presets.cfg: radku=116, B=2923
+    name= -> ['"Windows Desktop"', '"Web"', '"Linux"']
+    platform= -> ['"Windows Desktop"', '"Web"', '"Linux"']
+    export_path= -> ['"build/windows/game.exe"', '"build/web/index.html"', '"build/linux/game.x86_64"']
+    export_filter= -> ['"all_resources"', '"all_resources"', '"all_resources"']
+    application/config/name= -> []
+
+assets/spec.json -- jen cisla:
+    viewport: [960, 540]
+    tile: {'sirka': 96, 'vyska': 48, 'pomer': '2:1'}
+    role (8):
+      player   visual_height=  96 canvas= 128 smery=4 framy=8 stin=True
+      npc      visual_height=  96 canvas= 128 smery=4 framy=8 stin=True
+      enemy    visual_height=  64 canvas=  96 smery=4 framy=4 stin=True
+      ore      visual_height=  48 canvas=  64 smery=1 framy=1 stin=True
+      chest    visual_height=  48 canvas=  64 smery=1 framy=1 stin=True
+      weapon   visual_height=  48 canvas=  64 smery=1 framy=1 stin=False
+      potion   visual_height=  32 canvas=  48 smery=1 framy=1 stin=False
+      coin     visual_height=  24 canvas=  32 smery=1 framy=1 stin=False
+    vrstvy.slot_poradi (8): ['body', 'legs', 'feet', 'torso', 'cloak', 'head', 'shield', 'weapon']
+    vrstvy.pocatecni_sada (4): ['body', 'torso', 'legs', 'weapon']
+    vrstvy.render_na_vrstvu: True, tonovani: ['cloak', 'torso', 'legs']
+    gates (6 ciselnych):
+      height_tolerance = 0.1
+      max_holes = 0
+      max_border_opaque = 0.05
+      min_silhouette_iou = 0.8
+      max_centroid_shift = 3.0
+      min_contrast_vs_floor = 150
+    styl.technika: 3D model → render do 2D spritu (Blender headless, zdarma) v 5 směrech
+    stin: 0.7 / 0.35
+    paleta.zdroj: None
+    celkem roli: 8, celkem slotu vrstev: 8
+    pocatecni sada je 4 z 8 slotu
+
+==============================================================================
+5) UKLADANI -- co a kam se uklada
+==============================================================================
+save.gd: const SOUBOR = user://save.cfg
+save.gd: const POTREBNE = ["Attributes", "Skills", "Economy", "Player"]
+save.gd -- klice zapisovane pres cfg.set_value:
+    [attributes] Str
+    [attributes] Dex
+    [attributes] Int
+    [skills] dovednosti
+    [economy] gold
+    [player] position
+    [inventory] items
+    [inventory] equipped_id
+    [world] data
+save.gd -- klice ctene pres cfg.get_value / has_section_key:
+    [attributes] Str
+    [attributes] Dex
+    [attributes] Int
+    [skills] dovednosti
+    [skills] dovednosti
+    [economy] gold
+    [economy] gold
+    [player] position
+    [player] position
+    [player] position
+    [inventory] items
+    [inventory] equipped_id
+    [world] data
+
+game.gd -- DRUHE ukladani (mimo save.gd):
+    [stav] tezba
+    [stav] kovarstvi
+    [stav] ruda
+    [stav] ingot
+    [stav] zbran_poskozeni
+    [stav] zbran_trvanlivost
+    soubor: ['sandbox.cfg']
+    volani _save_state()/_load_state() v game.gd: 2 (definice viz nize)
+      _save_state: definice na radku 355
+      _load_state: definice na radku 366
+
+==============================================================================
+6) CI -- .github/workflows/*.yml
+==============================================================================
+--- agent.yml: 698 radku, 35084 B
+    name: Forge agent
+        name: Agent (free LLM)
+        name: Otevři pull request
+        name: Automatické sloučení (jen bezpečné změny)
+    kroky (run/uses v poradi):
+       1. uses: - uses: actions/checkout@v4
+       2. uses: uses: actions/cache@v4
+       3. run: bash .forge/install-godot.sh
+       4. uses: - uses: actions/setup-python@v5
+       5. run: python -m pip install --upgrade pip python -m pip install aider-chat
+       6. run: node .forge/pick-provider.mjs
+       7. run: set -o pipefail nacti_poskytovatele() { # GITHUB_ENV platí až pro DALŠÍ krok, proto si pick-provider.mjs # píše i .forge/provider.env, který jde načís
+       8. run: ZMENENE=$(git status --porcelain \ | grep -Ev '\.(uid|import)$|^.. (smoke|agent)\.log$|^.. \.forge/provider\.(env|json)$' \ | awk '{print $NF}' | grep
+       9. run: '"$FORGE_GODOT" --headless --path . --import 2>&1 | tail -3'
+      10. run: set -o pipefail spust_testy() { timeout 150 "$FORGE_GODOT" --headless --path . \ --script res://tests/run_tests.gd 2>&1 | tee -a agent.log } if ! spus
+      11. run: git add -A git diff --cached --binary > agent.patch || true echo "--- zmeny ---" git diff --cached --stat | tail -20 # „Změnil agent něco?" se NESMÍ p
+      12. run: echo "::error::Agent nezměnil žádný kód. Zkusí se to znovu (u jiného pokusu to vyjde)." exit 1
+      13. run: node .forge/report.mjs failed "Testy po zasahu agenta selhaly"
+      14. uses: uses: actions/upload-artifact@v4
+      15. uses: - uses: actions/checkout@v4
+      16. uses: uses: actions/download-artifact@v4
+      17. run: git apply --binary --whitespace=nowarn agent.patch
+      18. uses: uses: peter-evans/create-pull-request@v8
+      19. run: node .forge/report.mjs success "PR vytvoren" "${{ steps.pr.outputs.pull-request-url }}"
+      20. run: set -euo pipefail # Velikost změny se počítá BEZ generovaných souborů. Godot si k obrázkům # píše .import a ke skriptům .uid; nejsou to změny agenta, 
+      21. run: set -euo pipefail # Zajímá nás JEN naše kontrola z ci.yml ("Testy a build"). Dřív se # čekalo na celý statusCheckRollup a jakákoli cizí červená kontro
+      22. run: gh pr merge "$PR" --squash --delete-branch
+      23. run: gh pr comment "$PR" --body "🤖 **Automatické sloučení neproběhlo** (pravidla: ${{ steps.gate.outputs.ok }}, CI: ${{ steps.ci.outputs.ci }}). Buď je změ
+    spoustene brany/nastroje: ['.forge/files-to-edit.mjs', '.forge/pick-provider.mjs', '.forge/report.mjs']
+--- ci.yml: 181 radku, 8729 B
+    name: CI (testy a build)
+        name: Testy a build
+    kroky (run/uses v poradi):
+       1. uses: - uses: actions/checkout@v4
+       2. uses: uses: actions/cache@v4
+       3. run: bash .forge/install-godot.sh
+       4. run: '"$FORGE_GODOT" --headless --path . --import'
+       5. run: # POZOR – PILLOW JE TU POVINNÝ, i když se to nezdá: # `.forge/check-schema.py:386` importuje `PIL` UVNITŘ funkce a jen když # hra má sprity (`assets/s
+       6. run: timeout 150 "$FORGE_GODOT" --headless --path . --script res://tests/run_tests.gd
+       7. run: python3 -m pip install --quiet pillow python3 .forge/check-assets.py .
+       8. run: python3 .forge/check-wiring.py .
+       9. run: set -o pipefail SMOKE="${RUNNER_TEMP:-/tmp}/smoke.log" timeout 60 "$FORGE_GODOT" --headless --path . --quit-after 120 2>&1 | tee "$SMOKE" if grep -q "
+      10. run: set -o pipefail sudo apt-get update -qq sudo apt-get install -y -qq xvfb libgl1-mesa-dri libglx-mesa0 mesa-utils mkdir -p /tmp/frames xvfb-run -a "$FO
+      11. run: SNIMEK=$(ls /tmp/frames/frame*.png 2>/dev/null | tail -1 || true) if [ -z "$SNIMEK" ]; then echo "::warning::snímek není, vizuální kontrola přeskočena
+      12. run: mkdir -p build/linux build/web "$FORGE_GODOT" --headless --path . --export-release "Linux" build/linux/game.x86_64 "$FORGE_GODOT" --headless --path . 
+      13. uses: uses: actions/upload-artifact@v4
+    spoustene brany/nastroje: ['.forge/vision.mjs']
+--- model-check.yml: 52 radku, 2019 B
+    name: Kontrola modelů
+    kroky (run/uses v poradi):
+       1. uses: - uses: actions/checkout@v4
+       2. uses: - uses: actions/setup-node@v4
+       3. run: node .forge/node/providers-check.mjs --no-ping | tee /tmp/check.txt
+       4. run: gh issue create \ --title "Mrtvé modely v providers.json (kontrola modelů)" \ --body-file /tmp/check.txt
+    spoustene brany/nastroje: ['.forge/node/providers-check.mjs']
+--- release.yml: 152 radku, 6185 B
+    name: Vydání hry (build + Release + web)
+        name: Build a vydání
+        name: Nasazení webu
+    kroky (run/uses v poradi):
+       1. uses: - uses: actions/checkout@v4
+       2. uses: uses: actions/cache@v4
+       3. run: bash .forge/install-godot.sh
+       4. run: '"$FORGE_GODOT" --headless --path . --import'
+       5. run: set -euo pipefail mkdir -p build/windows build/linux build/web "$FORGE_GODOT" --headless --path . --export-release "Windows Desktop" build/windows/gam
+       6. run: set -euo pipefail (cd build/windows && zip -qr "$GITHUB_WORKSPACE/game-windows.zip" .) (cd build/linux   && zip -qr "$GITHUB_WORKSPACE/game-linux.zip"
+       7. run: set -euo pipefail POPIS=$(mktemp) { echo "Automatický build ze commitu \`${GITHUB_SHA:0:7}\` ($(date -u '+%Y-%m-%d %H:%M UTC'))." echo echo "**Jak si 
+       8. run: # .nojekyll: bez něj Jekyll zahodí soubory začínající podtržítkem touch build/web/.nojekyll ls -la build/web | head -12
+       9. uses: uses: actions/configure-pages@v5
+      10. uses: uses: actions/upload-pages-artifact@v3
+      11. run: echo "::warning::GitHub Pages nejsou zapnuté, webová verze se nenasadila." echo "Zapni je jedním kliknutím: Settings → Pages → Source: GitHub Actions.
+      12. run: echo "Web se nasadí na https://ssevcikm-spec.github.io/uo-shadows/"
+      13. uses: uses: actions/deploy-pages@v4
+    spoustene brany/nastroje: []
+
+git rev-parse --short HEAD -> 6986b0d

@@ -4,6 +4,11 @@
 > document). Říká, co hra je, jak se hraje, jaké má mechaniky s čísly a co v ní
 > **záměrně není**.
 >
+> **Platí z něj:** co je v tomhle dokumentu, **platí** — je to **zdroj pravdy
+> o designu**; `TDD`, `ADD` i `BRANY-HRY` na něj **odkazují a neopisují ho**.
+> Kde GDD tvrdí něco o **kódu** a měření ukáže opak, platí **měření** (kód je
+> realita) — text se pak označí datem, nepřepíše se potichu.
+>
 > **Nahrazuje `docs/DESIGN.md`** jako zdroj pravdy. `DESIGN.md` zůstává v repu
 > jako **historie** (sám se hlásí jako zrušený) a needituje se.
 >
@@ -12,6 +17,15 @@
 > s uživatelem, 8. 10. 2026). Každé rozhodnutí tady má odtud zdroj; odkazy
 > `(§N)` míří do `DESIGN-REVIZE-2.md`. Technický stav je v `docs/TDD.md`
 > a v `.forge/roadmap.json`, vzhled v `docs/ADD.md`.
+>
+> **Datum spotřeby:** design v GDD **nezaniká commitem**; čísla o **kódu** jsou
+> měření k **15. 10. 2026** (`HEAD = 6986b0d`) a po dalším commitu se **přeměří,
+> ne opíšou** (postupy a naměřené hodnoty: `_analyza/PRACE-2026-10-15/FAKTA.md`).
+> Starší čísla nesou značku **„ve svém čase správná“**.
+>
+> **Vlastník a údržba:** o designu rozhoduje **uživatel**; text GDD udržuje
+> **agent** — smí ho přepisovat, ale **jen podle rozhodnutí**, nikdy vlastním
+> nápadem. Co rozhodnuté není, patří do §14.1 (otevřené body), ne do textu.
 >
 > **Vzniklo:** 8. 10. 2026 sepsáním z `_analyza/DESIGN-REVIZE-2.md` (zadání
 > `ZADANI-GDD-ADD-TDD.md`). **Nic tady není domyšlené** — co rozhodnuté není,
@@ -71,7 +85,9 @@ Když si dva nápady odporují, **vyhrává ten, který víc zviditelní měřit
 růst** (§3, rozhodnutí uživatele `K2`). Co z toho plyne konkrétně:
 
 - hra musí **brzy ukazovat čísla** — dnešní HUD umí jen `Skóre: 2 / 2`, takže
-  „růst je vidět“ dnes **nemá kde být vidět** (§1, `kód`: `scripts/game.gd`);
+  „růst je vidět“ dnes **nemá kde být vidět** (§1, `kód`: `scripts/game.gd`;
+  naměřeno 15. 10. 2026 čtením `game.gd`: na obrazovce je `Label` s textem
+  `Skóre: %d / %d` — na mapě jsou **2** coin markery, takže ukazuje `2 / 2`);
 - „pocit pokroku“ bez čísla je **proti hlavnímu pilíři**, i kdyby se líbil;
 - platí to i na `P5`: vliv na svět se musí projevit **jako číslo nebo stav**
   („vesnice je zásobenější“ musí být vidět), ne jako dojem.
@@ -199,6 +215,9 @@ potvrzeno uživatelem (`R2-4` „Sedí“). (§12.4)
 
 **Cena:** dnešní mapa má **2 mince a žádný zdroj rudy** — „prvních 5 minut“ tedy
 znamená postavit vesnici, zdroje, pec, kovadlinu, HUD s čísly a stav světa.
+(naměřeno 15. 10. 2026 v `assets/levels/main.json`: markery jsou **4** —
+`spawn` 1, `coin` **2**, `exit` 1; zdroj surovin tam není. Uzly surovin má nést
+granule `world.nodes`, ale její `scripts/world.gd` je **0 B**.)
 Je to **největší jednotlivý kus práce z celé revize** — a zároveň **první věc,
 která má být vidět na obrazovce**. (§12.4, §12.7 `R2-4`)
 
@@ -218,7 +237,7 @@ která má být vidět na obrazovce**. (§12.4, §12.7 `R2-4`)
 | **Vyhlazení** | Rychlost **neskáče** — rozběh a zastavení musí ladit se vstupem. Měří se **číslem**: doba do plné rychlosti a doba do zastavení (v ms). |
 | **Mřížka** | Svět zůstává **dlaždicový** — dlaždice určují, kudy se dá jít, a kreslí se po nich. **Plynulá je POSTAVA po nich, ne mřížka** (pozice je spojitá, ve světových souřadnicích). |
 | **Kolize** | Objekty se **nesmí překrývat**; hloubkové řazení je spojité (ne celá čísla), jinak bude postava „na střeše“. |
-| **Směry** | Prototyp zůstává u **4 směrů**; **osm směrů se rozhodne, až bude vidět pohyb** (`N-2` „Až po prototypech“). Kdyby se pro 8 směrů rozhodlo později, je to **2× obrázků na každý kus výbavy** (dnes 32 → 64 na kus). |
+| **Směry** | Prototyp zůstává u **4 směrů**; **osm směrů se rozhodne, až bude vidět pohyb** (`N-2` „Až po prototypech“). Kdyby se pro 8 směrů rozhodlo později, je to **2× obrázků na každý kus výbavy** (dnes 32 → 64 na kus; naměřeno 15. 10. 2026 v `assets/spec.json`: role `player` má **4 směry × 8 framů = 32** obrázků na vrstvu). |
 
 **Co v této sekci NENÍ rozhodnuté:** konkrétní hodnoty mrtvé zóny a vyhlazení
 (poloměr v px, doba náběhu v ms). Rozhodnutý je **požadavek, že jsou měřitelné
@@ -253,6 +272,17 @@ S rozpadem na MVP (§14.1):
 **které kód neobsluhuje**. `hud.gd` existuje, ale **hra ho neinstancuje** —
 v produkční cestě nejsou HUD, boj, výroba, ekonomika ani ukládání. Rozdíl proti
 téhle sekci je tedy **celý**.
+
+**Přeměřeno 15. 10. 2026 — sedí beze změny** (postup: čtení `scripts/game.gd`,
+`scripts/player.gd` a `project.godot`): nápověda je v `game.gd` text
+`E těžba rudy, C tavení, B kování, X použít zbraň, R oprava, M hudba` (tedy
+**6** kláves) a `Input.` se v celém `scripts/` vyskytuje **jen** v `player.gd` —
+naměřeno extrakcí volání `Input.` ze `scripts/`: **8 volání** (`KEY_W/A/S/D`
+a `KEY_UP/DOWN/LEFT/RIGHT`); `project.godot` nemá ani
+jednu `input/*` akci (sekce `[input]` obsahuje jen `input_devices`), `[autoload]`
+tam **není**. Do produkční cesty (`main.tscn` → `game.gd` → `load()`) vedou
+**jen** `scripts/level.gd` a `scripts/player.gd` — `hud.gd` se nenačítá
+(v `game.gd` je `hud` jen `Label`). (`FAKTA.md` #13, #29, #66–#68.)
 
 ---
 
@@ -332,13 +362,33 @@ v roadmapě, se **nepřepisuje**, jen se přebírá. (§13.3)
 
 | Co | Vzorec / hodnota | Zdroj |
 |---|---|---|
-| **Výnos těžby** | `1 + (dovednost − obtížnost)/10` | už v kódu (`mining.gd`), §13.3 |
+| **Výnos těžby** | `1 + (dovednost − obtížnost)/10` | už v kódu, §13.3 — naměřeno 15. 10. 2026: `scripts/mining.gd:56` počítá `int(max(0, 1 + (hodnota - difficulty) / 10))` |
 | **Směs u všech zdrojů** | Každý zdroj má **běžnou i vzácnou složku**; **delší těžba vydá víc vzácného**. | §12.1 |
 | **Vzácná složka — šance** | start **2 %**, **+1 % za každých 10 s** nepřetržité těžby, **strop 30 %** | §13.3 |
-| **Kvalita výrobku** | `dovednost/20` → **0–5 stupňů** (cena + trvanlivost) | už v roadmapě (`sim.crafting`), §13.3 |
-| **Zmetkovost** | část výroby se nepovede (uživatelovo „menší ztrátovost“) | **rozhodnuto 8. 10. 2026** (§13.8) |
-| **Palivo** | tavení spotřebuje **uhlí** — uhlí se musí těžit | **rozhodnuto 8. 10. 2026** (§13.8) |
-| **Opotřebení nástroje** | krumpáč a kladivo se **ničí** (trvanlivost už v kódu je) → nutí opravovat = další odběratel materiálu | **rozhodnuto 8. 10. 2026** (§13.8) |
+| **Kvalita výrobku** | `dovednost/20` → **0–5 stupňů** (cena + trvanlivost) | už v kódu i v roadmapě (`sim.crafting`), §13.3 — naměřeno 15. 10. 2026: `scripts/crafting.gd:42` počítá `int(floor(dovednost / 20.0))` |
+| **Zmetkovost** | část výroby se nepovede (uživatelovo „menší ztrátovost“); **ztrátovost je jedno z čísel, kterými je vidět růst** (GDD §3, pilíř `P2`) | **ROZHODNUTO 8. 10. 2026** — `_analyza/DESIGN-REVIZE-2.md` `§13.8` (menu nákladů) a **§17** (rozhodnutí) |
+| **Palivo** | tavení spotřebuje **uhlí** — uhlí se musí těžit | **ROZHODNUTO 8. 10. 2026** — `§13.8` (menu) a **§17** (rozhodnutí) |
+| **Opotřebení nástroje** | krumpáč a kladivo se **ničí** (trvanlivost už v kódu je) → nutí opravovat = další odběratel materiálu | **ROZHODNUTO 8. 10. 2026** — `§13.8` (menu) a **§17** (rozhodnutí) |
+
+#### Tři náklady řemesla: kde vstupují, jaký mají vzorec — a co na nich (ne)je rozhodnuté
+
+**Odkud rozhodnutí je:** `_analyza/DESIGN-REVIZE-2.md` **§17** (dodatek z 8. 10. 2026,
+session 3) — uživatel doslovně: „*Zatím palivo, opotřebení, zmetkovost a můžeme
+rozvíjet časem.*“ Vzaty jsou **první tři** náklady z menu v §13.8; **poplatek za
+stanici a riziko cesty zůstávají pro rozsah `L`**. Technický dopad (tvar dat
+a smlouva) patří do `TDD` — `TDD` §3.11 (smlouva `Crafting`); tady je jen to,
+co je design.
+
+| Náklad | Kde vstupuje | Vzorec (tvar, ne hodnota) | Číslo |
+|---|---|---|---|
+| **Palivo** | tavení a výroba oceli (recepty `smelting`, ocel) | uhlí je **vstup receptu** (`inputs`), takže se při výrobě odečte: `vstupy = recept.inputs` | **NEMĚŘENO** — „kolik uhlí na dávku“ **není rozhodnuté**; hodnoty až při ladění (milník `M3`) |
+| **Opotřebení nástroje** | těžba krumpáčem, kování kladivem | `trvanlivost −= opotřebení_za_použití`; v nule je nástroj `broken()` a musí se opravit (`repair()`) | **NEMĚŘENO** — kolik opotřebení na použití, **není rozhodnuté**; v kódu je dnes jen `trvanlivost`, `repair()` a `broken()` (`scripts/item.gd` — naměřeno 15. 10. 2026) |
+| **Zmetkovost** | každá výroba | výsledek výroby je `{ok, id, kvalita, zmetek: bool}`; `zmetek: true` = vstupy odešly a výstup není | **NEMĚŘENO** — pravděpodobnost **není rozhodnutá**; rozhodnutý je jen **směr** (ztrátovost má s dovedností klesat — GDD §3) |
+
+**Proč u těch čísel stojí `NEMĚŘENO`, a ne nula:** nula by tvrdila, že náklad nic
+nestojí — a to rozhodnuté není. Čísla se **ladí hraním, ne plánováním** (§13.8)
+a projekt je zastavený, takže hodnoty patří k milníku `M3`. Vymyšlené číslo by se
+četlo jako rozhodnuté a nikdo by ho nepřeměřil.
 
 > **✅ ROZHODNUTO 8. 10. 2026 (uživatel):** berou se **první tři náklady —
 > palivo, opotřebení nástroje a zmetkovost**; doslova „*zatím palivo,
@@ -392,9 +442,12 @@ to je náklad, který **není čas**, je to **příležitost**. (§13.1, §13.8)
 | **Délka sezení** | 30–60 min |
 | **Práce (odhad)** | **+20–30 granulí** |
 
-**Co to znamená proti dnešnímu stavu:** naměřeno 8. 10. 2026 je obsah hry
+**Co to znamená proti dnešnímu stavu:** naměřeno 8. 10. 2026 **čtením
+`assets/data/*.json`** je obsah hry
 **4 materiály, 4 dovednosti, 3 recepty, 1 nestvůra a 2 předměty** (§1) — rozdíl
-je **řádový**, a to je cena rozsahu `M`.
+je **řádový**, a to je cena rozsahu `M`. **Přeměřeno 15. 10. 2026 — sedí beze
+změny** (`json.loads` nad `assets/data/*.json`; `creatures.json` v repu **není**,
+přítel je `monsters.json`).
 
 **Proč `M` a ne `S`/`L`:** `S` nechá smyčku tenkou (málo věcí k výrobě →
 „uplatnění“ je prázdné, `V5` nemá co ukázat) a `L` řádově přeroste to, co dnes
@@ -475,21 +528,26 @@ produkční kód**. Hotovo **NENÍ** „PR je sloučené“, „testy jsou zelen
 
 ---
 
-## 13. Odkud hra startuje (naměřeno 8. 10. 2026)
+## 13. Odkud hra startuje (naměřeno 8. 10. 2026; přeměřeno 15. 10. 2026)
 
 Tahle sekce **není design** — je to **srovnávací základ**: co z GDD dnes
-existuje. Detail technického stavu je v `docs/TDD.md` a v `.forge/roadmap.json`.
-(Zdroj: `§1` — měřeno čtením souborů k `HEAD = bc51e46`.)
+existuje. Detail technického stavu je v `docs/TDD.md` a v `.forge/roadmap.json`;
+naměřená čísla **s postupem** jsou v `_analyza/PRACE-2026-10-15/FAKTA.md`.
+Prostřední sloupec je **stav k 8. 10. 2026** (zdroj: `§1` — měřeno čtením
+souborů k `HEAD = bc51e46`) a **nepřepisuje se** (historické číslo je „ve svém
+čase správné“); pravý sloupec je **přeměření 15. 10. 2026** (`HEAD = 6986b0d`)
+s postupem, odkud bylo čteno.
 
-| Co | Naměřeno |
-|---|---|
-| Hra dnes | **sběračka dvou mincí** — mapa 30×16, 2 coin markery, `Label` se skóre; nápověda inzeruje **6** kláves, které kód neobsluhuje |
-| Obsah | 4 materiály, 4 dovednosti, 3 recepty, 1 nestvůra, 2 předměty |
-| Plán vs. realita | **`done` se nerovná „hra to používá“: v roadmapě je `done: true` u 16 granul** (stav 8. 10. 2026 po postavení `engine.registry`; předtím 15 a ještě předtím 13), **ale hra používá 2** (`level.gd`, `player.gd`); HUD, boj, výroba, ekonomika ani ukládání nejsou v produkční cestě |
-| Mrtvá granule | `scripts/world.gd` = **0 B** — blokuje `world.map` i `engine.shell` |
-| Vstupní akce | `project.godot` nemá **ani jednu** (`[input]` obsahuje jen `input_devices`) |
-| Dva výtvarné systémy | 258 PNG v `tools/blender/sprites/**` (kód na ně **neodkazuje ani jednou**) vs. 16 plochých v `assets/sprites/**`. **Naměřeno 8. 10. 2026:** `assets/sprites/player.png` je **pixel-identický** se složením 4 vrstev `d0_f1` z Blenderu — hra tedy zobrazuje **1 frame ze 128**, zploštěný. Není to cizí systém, je to **tatáž grafika zploštěná** (detail: `docs/ADD.md` §3) |
-| Smlouvy | `ARCHITEKTURA.md` má 18 smluv, **tvar dat 3** |
+| Co | Naměřeno 8. 10. 2026 | Přeměřeno 15. 10. 2026 (postup) |
+|---|---|---|
+| Hra dnes | **sběračka dvou mincí** — mapa 30×16, 2 coin markery, `Label` se skóre; nápověda inzeruje **6** kláves, které kód neobsluhuje | **sedí**: `assets/levels/main.json` je 30×16 = **480** dlaždic, markerů **4** (`coin` 2, `spawn` 1, `exit` 1), spawn (17, 7) — čteno `json.loads` a ověřeno během testů; 6 kláves je text v `game.gd` a `Input.` je v celém `scripts/` jen v `player.gd` (`FAKTA.md` #48–#51, #67, #68) |
+| Obsah | 4 materiály, 4 dovednosti, 3 recepty, 1 nestvůra, 2 předměty | **sedí** (`json.loads` nad `assets/data/*.json`): 4 / 4 / 3 / 1 / 2; `creatures.json` v repu **není** — přítel je `monsters.json` (`FAKTA.md` #43–#47) |
+| Plán vs. realita | **`done` se nerovná „hra to používá“: v roadmapě je `done: true` u 16 granul** (stav 8. 10. 2026 po postavení `engine.registry`; předtím 15 a ještě předtím 13), **ale hra používá 2** (`level.gd`, `player.gd`); HUD, boj, výroba, ekonomika ani ukládání nejsou v produkční cestě | **sedí**: `.forge/roadmap.json` má **21** granul a `done: true` u **16**; z granul s prací v `main` vedou do produkční cesty jen `world.level` (`level.gd`) a `entity.player` (`player.gd`) — `game.gd` patří granulí `engine.shell`, která `done` nemá. READY jsou **4** (`engine.shell`, `world.nodes`, `engine.input`, `world.bodies`), blokovaná **1** (`entity.move.smooth`) (`FAKTA.md` #56–#59) |
+| Mrtvá granule | `scripts/world.gd` = **0 B** — blokuje `world.nodes` a přes ni `sim.mining` a `persist.save.state` (milník `M2`) | **potvrzeno**: `scripts/world.gd` = **0 B**, 0 řádků, nikdo ho nenačítá a v testech je zmíněn 0×; vlastní ho granule `world.nodes` (`done: false`). Původní znění „blokuje `world.map` i `engine.shell`“ bylo **nepravdivé**: `world.map` byla **8. 10. 2026 vyřazena z plánu** (v roadmapě není) a `engine.shell` závisí jen na `engine.registry` (`FAKTA.md` #17, `.forge/roadmap.json`) |
+| Vstupní akce | `project.godot` nemá **ani jednu** (`[input]` obsahuje jen `input_devices`) | **sedí**: sekce `[input]` má jen `input_devices=PackedStringArray("keyboard", "mouse")` a `[autoload]` v souboru **není** (`FAKTA.md` #66, #67) |
+| Dva výtvarné systémy | 258 PNG v `tools/blender/sprites/**` (kód na ně **neodkazuje ani jednou**) vs. 16 plochých v `assets/sprites/**`. **Naměřeno 8. 10. 2026:** `assets/sprites/player.png` je **pixel-identický** se složením 4 vrstev `d0_f1` z Blenderu — hra tedy zobrazuje **1 frame ze 128**, zploštěný. Není to cizí systém, je to **tatáž grafika zploštěná** (detail: `docs/ADD.md` §3) | **sedí**: `rglob` nad `tools/blender/sprites/` dal **258** PNG (130 v kořeni + 128 v `npc/`) a **0** odkazů na ně z `scripts/`, `assets/`, `main.tscn`, `project.godot`, `export_presets.cfg`; `assets/sprites/` má **16** PNG a hra odkazuje **2** (`player.png`, `coin.png`); `player.png` i `npc.png` mají **shodný `sha256`** se složeninou vrstev `d0_f1` (`FAKTA.md` #26, #28, #29, #35, #37, #38) |
+| Smlouvy | `ARCHITEKTURA.md` má 18 smluv, **tvar dat 3** | **dnes platí `TDD` §3** — smlouvy **s tvarem dat** jsou tam (počet je v nadpisu oddílu; `Registry` přibyla 15. 10. 2026); `ARCHITEKTURA.md` je od 8. 10. 2026 **historie** (`_analyza/PRACE-2026-10-15/ROZPORY.md` R19). Naměřeno 15. 10. 2026 čtením: tabulka smluv v `ARCHITEKTURA.md` §2 má **18** komponent a tvar dat popisuje u **3** z nich |
+| Známé vady běhu (ne design) | — | `game.gd:181` tweenuje `hud` dřív, než ho `_add_ui()` vytvoří (chyba při každém načtení scény; CI hledá jen `SCRIPT ERROR`, takže ji nechytí) a `economy.price()` vrací **0** pro oba předměty, přitom hlásí chybu na `economy.gd:21`. **Nezapisuje se sem podrobně** — seznam a postup je v `TDD` §10 a v `FAKTA.md` #92–#99 (naměřeno 15. 10. 2026) |
 
 ---
 
@@ -499,14 +557,24 @@ existuje. Detail technického stavu je v `docs/TDD.md` a v `.forge/roadmap.json`
   chybové chování) → `docs/TDD.md`. GDD říká **co** a **proč**, ne **jak**.
 - **Vzhled a assety** (rozměry, role, vrstvy, pipeline, katalog) → `docs/ADD.md`
   a strojově `assets/spec.json`.
-- **Plán granulí a pořadí práce** → `.forge/roadmap.json` (vzniká z §12).
+- **Plán granulí a pořadí práce** → `.forge/roadmap.json`. Dřívější znění
+  „**vzniká z §12**“ platilo **ve svém čase** (plán se navrhoval z milníků);
+  dnes plán obsahuje **otevřené granule `M0`–`M1`** (+ granule s prací
+  v `main`); granule pro `M2`–`M6` se doplňují **při otevření milníku**
+  (`_analyza/NAVRH-ROADMAPY-M0-M6.md` §4) — **ne dopředu naslepo**. Naměřeno
+  15. 10. 2026 (`json.loads` nad plánem): 21 granul a klíč `milestone` **není
+  ani u jedné**, takže vazba na `M0`–`M6` je dnes jen v zadání granul, ne
+  ve strojovém klíči; vyřazené granule (8. 10. 2026, mimo jiné `world.map`) jsou
+  zapsané v `_popis` plánu.
 - **Ceny rozhodnutí a historie dialogu** → `_analyza/DESIGN-REVIZE-2.md`
   (needituje se; je to záznam, ne stav).
 - **Konkrétní čísla obsahu** (kolik má který předmět damage, kolik HP má vlk) —
   patří do `assets/data/*.json`; GDD určuje **rozsah a vzorce**, ne hodnoty
   jednotlivých záznamů.
-- **Ceny a ladicí hodnoty nákladů řemesla** → **rozhodnuto** (GDD §9.2:
-  palivo, opotřebení nástroje, zmetkovost); konkrétní čísla patří k ladění.
+- **Ceny a ladicí hodnoty nákladů řemesla** → **rozhodnuto je jen to, KTERÉ tři
+  náklady to jsou** (GDD §9.2: palivo, opotřebení nástroje, zmetkovost);
+  **konkrétní čísla rozhodnutá nejsou** — GDD §9.2 je vede jako `NEMĚŘENO`
+  a patří k ladění (milník `M3`).
 
 ### 14.1 Otevřené body (pojmenované, ne zapomenuté)
 
@@ -514,11 +582,20 @@ existuje. Detail technického stavu je v `docs/TDD.md` a v `.forge/roadmap.json`
 |---|---|---|
 | **O-2** | **Luk a zvěř (hraničář).** Vize zmiňuje hraničáře („spolehlivěji střílí, jezdí, ochočí zvěř“); luk je ale **nový druh souboje** (projektily, dostřel). V rozsahu `M` je hraničář zastoupen **lovem zvěře na blízko a kůží**; luk a zvěř jako systém **později** (`L`). | §13.5 — vědomě odloženo do `L`. |
 | **O-4** | **Hodnoty mrtvé zóny a vyhlazení** pohybu (GDD §6). Rozhodnutý je jen požadavek, že jsou měřitelné číslem. | Ladění při milníku `M1`. |
-| **O-5** | **Klíče dovedností a části receptů jsou v datech česky** (`tezba`, `drevorubectvi`, `kovarstvi`, `boj_na_blizko`; recepty `kovani_mece`, `kovani_zbroje`), zatímco pravidlo jazyka (`R-3`) žádá **klíče anglicky** (a `items.json`/`materials.json` už anglicky jsou: `iron_sword`, `iron_ore`; recept `smelting` taky). | **Naměřeno 8. 10. 2026** čtením `assets/data/*.json`. Sjednocení **mění kód i data** → samostatný úkol; do té doby platí pravidlo `R-3` pro **nové** klíče a stávající české klíče se **nepřejmenovávají mimochodem** (rozbité by byly testy, roadmapa i uložené pozice). |
+| **O-5** | **Klíče dovedností a části receptů jsou v datech česky** (`tezba`, `drevorubectvi`, `kovarstvi`, `boj_na_blizko`; recepty `kovani_mece`, `kovani_zbroje`), zatímco pravidlo jazyka (`R-3`) žádá **klíče anglicky** (a `items.json`/`materials.json` už anglicky jsou: `iron_sword`, `iron_ore`; recept `smelting` taky). | **Naměřeno 8. 10. 2026** čtením `assets/data/*.json` (**přeměřeno 15. 10. 2026 — sedí**: české klíče jsou v datech dál). Sjednocení **mění kód i data** → samostatný úkol; do té doby platí pravidlo `R-3` pro **nové** klíče a stávající české klíče se **nepřejmenovávají mimochodem** (rozbité by byly testy, roadmapa i uložené pozice). |
+
+**Odložené (ne otevřené — zůstávají pojmenované):** `N-2` **osm směrů** („až po
+prototypech“, GDD §6 — rozhodne se, až bude vidět pohyb) a `A-1` **paperdoll
+a vrstvená grafika** („až s vrstvenou grafikou“, GDD §7 a milník `M6` v §12).
+Oba jsou rozhodnuté jako **odložené**, proto nejsou v tabulce výš.
+
+**Kam se podívat za všechny:** `O-1`…`O-5` jsou tady a v §14.2, `N-2` a `A-1`
+ve větě výš — **nic se nemazalo**, jen se přesunulo (`O-1`, `O-3` jsou
+rozhodnuté, proto jsou v §14.2).
 
 ### 14.2 Už není otevřené (rozhodnuto 8. 10. 2026 — záznam se nemaže)
 
 | # | Co bylo otevřené | Jak je rozhodnuto |
 |---|---|---|
 | **O-1** | **Čím platí řemeslník, když ne grindem** (§13.8) — menu nákladů: palivo, opotřebení nástroje, zmetkovost, poplatek za stanici, riziko cesty. | **VZATO: palivo, opotřebení nástroje a zmetkovost** (uživatel: „*zatím palivo, opotřebení, zmetkovost a můžeme rozvíjet časem*“). Poplatek za stanici a riziko cesty zůstávají pro `L`. Zapsáno v GDD §9.2. |
-| **O-3** | **Sjednocení názvu hry** `uo-sandbox` → `uo-shadows`. | **PROVEDENO 8. 10. 2026** (uživatel: „*přejmenuj hru na uo-shadows*“): `project.godot` `config/name` = `uo-shadows`, `assets/spec.json` `_popis` = „projekt uo-shadows“, `export_presets.cfg` `product_name` = `uo-shadows`. **Důsledek, který se musí vědět:** `user://` se přesunul z `%APPDATA%\Godot\app_userdata\uo-sandbox\` na `…\uo-shadows\` — ve starém adresáři ale **žádný `save.cfg` nebyl** (naměřeno: jen cache a logy), takže se nic neztratilo. `company_name` v `export_presets.cfg` zůstává `GameForge` (je to vydavatel, ne název hry). |
+| **O-3** | **Sjednocení názvu hry** `uo-sandbox` → `uo-shadows`. | **PROVEDENO 8. 10. 2026** (uživatel: „*přejmenuj hru na uo-shadows*“): `project.godot` `config/name` = `uo-shadows`, `assets/spec.json` `_popis` = „projekt uo-shadows“, `export_presets.cfg` `product_name` = `uo-shadows`. **Důsledek, který se musí vědět:** `user://` se přesunul z `%APPDATA%\Godot\app_userdata\uo-sandbox\` na `…\uo-shadows\` — ve starém adresáři ale **žádný `save.cfg` nebyl** (naměřeno: jen cache a logy), takže se nic neztratilo. `company_name` v `export_presets.cfg` zůstává `GameForge` (je to vydavatel, ne název hry). **Změněno 8. 10. 2026 rozhodnutím uživatele** (`01a9649`): `company_name = "ssevcikm-spec"`, `copyright = "© 2026 ssevcikm-spec"`. Text výš je **stav před touto změnou** (ve svém čase správný). **Naměřeno 15. 10. 2026 čtením `export_presets.cfg`:** řádek 43 `application/company_name="ssevcikm-spec"`, řádek 44 `application/product_name="uo-shadows"`, řádek 46 `application/copyright="© 2026 ssevcikm-spec"` — tvrzení „`copyright` je prázdné“ a „`company_name` zůstává `GameForge`“ jsou tedy **nepravdivá**; platí soubor. |

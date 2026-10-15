@@ -1,0 +1,104 @@
+==============================================================================
+A) _check( v tests/run_tests.gd -- je 155 vyskytu 155 VOLANI, nebo i definice?
+==============================================================================
+radku celkem (splitlines): 1569
+  DEFINICE na radku 46: func _check(ok: bool, label: String) -> void:
+vyskytu retezce '_check('                  : 155
+z toho radku s 'func _check'               : 0
+radku obsahujicich '_check('               : 155
+=> VOLANI _check( (vyskyt mimo definici)   : 155
+
+Podminene kontroly: _check( uvnitr bloku, ktery predtim testoval has_method
+  (hruby odhad: radky _check, ktere nasleduji po has_method ve stejnem if-bloku se stejnym odsazenim)
+  radku s has_method: 28
+
+==============================================================================
+B) export_presets.cfg -- je v nem 'uo-shadows'? (HANDOFF.md:183 tvrdi, ze ano)
+==============================================================================
+obsahuje 'uo-shadows': True
+obsahuje 'uo-sandbox': False
+vsechny radky s 'name':
+   9: name="Windows Desktop"
+   43: application/company_name="ssevcikm-spec"
+   44: application/product_name="uo-shadows"
+   54: name="Web"
+   90: name="Linux"
+export_path radky:
+   export_path="build/windows/game.exe"
+   export_path="build/web/index.html"
+   export_path="build/linux/game.x86_64"
+
+Kde vsude je 'uo-shadows' (jen konfiguracni soubory):
+   project.godot                'uo-shadows'=True  'uo-sandbox'=False
+   export_presets.cfg           'uo-shadows'=True  'uo-sandbox'=False
+   assets/spec.json             'uo-shadows'=True  'uo-sandbox'=False
+   forge.json                   'uo-shadows'=True  'uo-sandbox'=False
+   hra.cmd                      'uo-shadows'=True  'uo-sandbox'=False
+   .forge/roadmap.json          'uo-shadows'=True  'uo-sandbox'=False
+
+==============================================================================
+C) ROADMAP -- vsechny granule (id, done, depends_on)
+==============================================================================
+  data.content           done=True  DONE      kind=code      deps=[] unmet=[]
+      done_note: PR #14 sloučené 29. 9.
+  core.attributes        done=True  DONE      kind=code      deps=[] unmet=[]
+  core.skills            done=True  DONE      kind=code      deps=[] unmet=[]
+      done_note: PR #24 sloučené 30. 9.
+  world.level            done=True  DONE      kind=code      deps=[] unmet=[]
+      done_note: PR #13 sloučené 29. 9. (level.gd načítá main.json, průchodnost, markery)
+  entity.item            done=True  DONE      kind=code      deps=['data.content'] unmet=[]
+      done_note: PR #14 (data) + práce v main; ⚠ NAMĚŘENÁ VADA 8. 10. 2026: repair() nastaví trvanlivost na 20 natvrdo (item.gd:36), zatímco items.json deklaruje 100 (
+  entity.player          done=True  DONE      kind=code      deps=['core.attributes', 'core.skills', 'entity.item'] unmet=[]
+      done_note: ROZHODNUTÍ 3. 10. 2026 (uživatel): závislost `world.map` VYPUŠTĚNA — práce hráče ji nepotřebuje (bere level.is_walkable_at a level.cell_center; uzly s
+  sim.combat             done=True  DONE      kind=code      deps=['core.attributes', 'core.skills', 'entity.item'] unmet=[]
+      done_note: PR #26 sloučené 1. 10.; oprava (Godot 4 API + tvar smlouvy + volající test) 2. 10. 2026
+  sim.mining             done=True  DONE      kind=code      deps=['core.skills', 'world.nodes', 'data.content'] unmet=['world.nodes']
+      done_note: PR #30 sloučené 2. 10. 2026; oprava (registr komponent místo /root, Godot 4 API) v PR #31
+  sim.crafting           done=True  DONE      kind=code      deps=['core.skills', 'core.attributes', 'entity.item', 'data.content'] unmet=[]
+      done_note: SLUČENÉ (ne „hotové“ podle docs/GDD.md §12): práce je v main — commit 9876586 (3. 10. 2026), PR #34 „Výroba — tavení, kování, oprava“; scripts/craftin
+  sim.economy            done=True  DONE      kind=code      deps=['entity.item', 'data.content'] unmet=[]
+      done_note: PR #22 sloučené 30. 9. ⚠ NAMĚŘENÁ VADA 8. 10. 2026: price() vrací 0 pro každý skutečný předmět — čte item.material („wood/stone/metal“) a item.quality
+  sim.offline            done=True  DONE      kind=code      deps=['core.skills', 'sim.mining', 'sim.crafting', 'sim.combat'] unmet=[]
+      done_note: SLUČENÉ (ne „hotové“ podle docs/GDD.md §12): práce je v main — commit ee7af53 (3. 10. 2026), PR #35 „Offline — rozřešení nečinnosti s denním stropem“;
+  sim.assist             done=True  DONE      kind=code      deps=['entity.player', 'entity.item'] unmet=[]
+      done_note: PR #27 sloučené 1. 10.
+  persist.save           done=True  DONE      kind=code      deps=['core.skills', 'core.attributes', 'entity.player', 'world.nodes', 'sim.economy'] unmet=['world.nodes']
+      done_note: PR #28 sloučené 2. 10. 2026 (oprava: registr komponent místo skupin, Godot 4 API)
+  ui.hud                 done=True  DONE      kind=code      deps=['core.skills', 'core.attributes', 'entity.player', 'sim.economy'] unmet=[]
+      done_note: PR #29 sloučené 2. 10. 2026 (oprava: Godot 4 API margin_* → offset_*, registr komponent)
+  engine.shell           done=None  READY     kind=code      deps=['engine.registry'] unmet=[]
+  world.nodes            done=False READY     kind=code      deps=['world.level', 'data.content'] unmet=[]
+      done_note: Měřeno 3. 10. 2026: granule NENÍ hotová a její soubor v main je PRÁZDNÝ — PR #32 byl sloučen (1eb7daf, 2. 10. 2026 18:12), ale scripts/world.gd má 0 B
+  persist.save.state     done=True  DONE      kind=code      deps=['persist.save', 'entity.player', 'world.nodes'] unmet=['world.nodes']
+      done_note: SLUČENÉ (ne „hotové“ podle docs/GDD.md §12): práce je v main — commit 7ad8d04 (5. 10. 2026), PR #37 „Ukládání — inventář hráče a stav uzlů světa“; scr
+  engine.registry        done=True  DONE      kind=code      deps=[] unmet=[]
+      done_note: POSTAVENO RUČNĚ 8. 10. 2026 (agent se svolením uživatele, včetně výjimky pro tests/) — orchestra nevydávala (forge.ok = false, 20 selhání v řadě), tak
+  engine.input           done=None  READY     kind=code      deps=['engine.registry'] unmet=[]
+  entity.move.smooth     done=None  BLOKOVANA kind=code      deps=['engine.registry', 'engine.input', 'world.level', 'entity.player'] unmet=['engine.input']
+  world.bodies           done=None  READY     kind=code      deps=['engine.registry', 'world.level'] unmet=[]
+
+_popis roadmapy: ['UO Shadows (uo-shadows) — plán podle milníků M0-M6 z docs/GDD.md §12', '(zdroj rozhodnutí: _analyza/DESIGN-REVIZE-2.md; smlouvy: docs/TDD.md §3).', 'ZMĚNA 8. 10. 2026: roadmapa přepsána z plánu „první hratelný řez“', '(docs/ARCHITEKTURA.md §0.1, 22 granulí) na milníky M0-M6. Dokumenty', 'docs/GDD.md, docs/ADD.md a docs/TDD.md jsou nový zdroj pravdy.', 'Každá granule = jeden soubor (owns), deklaruje depends_on a je samostatně ověřitelná.', "Conductor vydá granuli, až když jsou všechny depends_on sloučené (task='done')", 'a její owns je disjunktní s owns běžících granulí — tak můžou běžet paralelně.', 'NOVÉ PRAVIDLO (naměřeno 8. 10. 2026): dva grains smí vlastnit TENTÝŽ soubor,', 'jen když je druhý depends_on první. Jinak vznikne past world.map/world.nodes —', 'obě granule byly připravené a obě vlastnily scripts/world.gd.', 'Pravidla pro agenta: jen do owns, používat jen deklarované provides, neměnit', 'tests/ ani .forge/ ani project.godot.', 'Velikost granule se řídí modelem: bez deklarace platí size_lines <= 60 a', 'model any (zvládne slabý model). Granule se size_lines > 60 mají model', 'strong — conductor je smí vydat jen silnému modelu a auto-merge posuzuje', 'limit podle granule, ne globálně.', 'acceptance = čím se ověřuje hotovo (tests = tests/run_tests.gd, wiring =', 'check-wiring, render = verify-level-render). done = SLUČENÉ (práce je v main),', 'conductor je přeskakuje. POZOR: „sloučené“ NENÍ totéž co „hotové“ podle', 'definice hotovo (docs/GDD.md §12: soubor v main A brána zavolala funkci A', 'kritérium proběhlo s hodnotou A volá to produkční kód) — kde se to rozchází,', 'je to v done_note.', 'PROMPT SE GENERUJE ZE SMLOUVY v docs/TDD.md §3, ne ručně prózou: naměřeno,', 'že entity.npc a entity.enemy měly nejkratší zadání ze všech a nikdy neprošly', '(58 běhů, 0 úspěchů).', 'VYŘAZENO 8. 10. 2026 (3 granule): world.map (mrtvá, duplikovala soubor),', 'entity.player.api (duplikát entity.player), tests.harness (granule nad', 'tests/ se nemůže sloučit sama a CONVENTIONS.md §5 zakazuje agentovi měnit testy).', 'PARKOVÁNO 8. 10. 2026 (2 granule, NEsmazány z historie — jsou v gitu a v', '_analyza/NAVRH-ROADMAPY-M0-M6.md §3): entity.npc (patří do M4) a entity.enemy', '(patří do M5). Byly JEDINÉ, které nikdy neprošly (58 běhů, 0 úspěchů) a měly', 'nejkratší zadání ze všech; v plánu byly READY, takže by je conductor vydal', 'okamžitě a mimo pořadí milníků. Vrátí se s promptem vygenerovaným ze smlouvy', 'docs/TDD.md §3.8 a §3.9 ve chvíli, kdy se milník M4/M5 otevře.']
+
+==============================================================================
+D) sprites.json v koreni repa -- co to je a pouziva ho neco?
+==============================================================================
+existuje: True, B=951
+{
+  "_popis": [
+    "Co má pipeline vygenerovat (forge sprites). Uprav si to podle hry.",
+    "name   = název souboru i uzlu ve hře (bez přípony)",
+    "desc   = popis pro SDXL (anglicky, čím konkrétnější, tím lepší)",
+    "size   = cílová velikost ve hře v pixelech (generuje se větší a zmenšuje)",
+    "colors = počet barev výsledné palety (méně = víc pixel-art)",
+    "seed   = volitelné; pevný seed = reprodukovatelný výsledek"
+  ],
+  "sprites": [
+    {"name": "player", "desc": "hero knight character, full body, front view", "size": 64, "colors": 16},
+    {"name": "enemy", "desc": "small green
+
+'sprites.json' je zmineno v: ['docs/ADD.md']
+
+==============================================================================
+E) check-assets.py -- slouzi k tomu? (spustit znovu nize v pwsh)
+==============================================================================
+(viz vystup v FAKTA.md)

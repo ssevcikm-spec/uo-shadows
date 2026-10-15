@@ -1,0 +1,103 @@
+==============================================================================
+1) SKRIPTY scripts/*.gd -- radky splitlines()
+==============================================================================
+assist.gd           17 radku     617 B  | (bez hlavicky)
+attributes.gd       21 radku     416 B  | (bez hlavicky)
+combat.gd          127 radku    5292 B  | Boj — rozřešení zásahu a poškození.
+crafting.gd         78 radku    2394 B  | Crafting system
+economy.gd          47 radku    1105 B  | (bez hlavicky)
+game.gd            377 radku   12567 B  | Hlavní scéna startovní šablony: hráč sbírá mince.
+hud.gd              92 radku    3543 B  | HUD — stavová lišta: HP, atributy, dovednosti, zlato, vybavená zbraň/z
+item.gd             39 radku    1111 B  | (bez hlavicky)
+level.gd           283 radku   10390 B  | Mapa úrovně postavená z JSON, který vygeneroval `forge level`.
+mining.gd           72 radku    2234 B  | Těžba a dřevorubectví — výtěžek podle skillu a obtížnosti suroviny.
+offline.gd          57 radku    1913 B  | Offline activity resolution.
+player.gd          191 radku    7192 B  | Hráč: stav (hp/mana/cíl), inventář, pohyb a smrt.
+registry.gd        150 radku    5722 B  | Registr komponent, pevný tik simulace a fronty příkazů a událostí.
+save.gd            150 radku    5888 B  | Ukládání a načtení stavu přes ConfigFile do user://save.cfg.
+skills.gd           15 radku     394 B  | (bez hlavicky)
+world.gd             0 radku       0 B  | (bez hlavicky)
+CELKEM scripts/*.gd: 16 souboru, 1716 radku
+tests/run_tests.gd: 1569 radku, 65732 B
+
+==============================================================================
+2) DOSAZITELNOST Z main.tscn (produkcni cesta vs. mrtva knihovna)
+==============================================================================
+main.tscn ext_resource: ['scripts/game.gd']
+Dosazitelne z main.tscn (3): ['scripts/game.gd', 'scripts/level.gd', 'scripts/player.gd']
+
+Kdo koho referencuje (load/preload z jinych .gd):
+  crafting.gd      -> ['scripts/item.gd', 'scripts/skills.gd']
+  game.gd          -> ['scripts/level.gd', 'scripts/player.gd']
+  save.gd          -> ['scripts/item.gd']
+
+Kdo je referencovany z main.tscn nebo z jineho .gd (dopredny graf):
+  referencovane: ['scripts/item.gd', 'scripts/level.gd', 'scripts/player.gd', 'scripts/skills.gd']
+
+PRODUKCNI CESTA (3 souboru, 851 radku):
+   game.gd            377
+   level.gd           283
+   player.gd          191
+MIMO PRODUKCNI CESTU (13 souboru, 865 radku):
+   assist.gd           17  referencuje ho: NIKDO (ani load/preload)
+   attributes.gd       21  referencuje ho: NIKDO (ani load/preload)
+   combat.gd          127  referencuje ho: NIKDO (ani load/preload)
+   crafting.gd         78  referencuje ho: NIKDO (ani load/preload)
+   economy.gd          47  referencuje ho: NIKDO (ani load/preload)
+   hud.gd              92  referencuje ho: NIKDO (ani load/preload)
+   item.gd             39  referencuje ho: ['scripts/item.gd']
+   mining.gd           72  referencuje ho: NIKDO (ani load/preload)
+   offline.gd          57  referencuje ho: NIKDO (ani load/preload)
+   registry.gd        150  referencuje ho: NIKDO (ani load/preload)
+   save.gd            150  referencuje ho: NIKDO (ani load/preload)
+   skills.gd           15  referencuje ho: ['scripts/skills.gd']
+   world.gd             0  referencuje ho: NIKDO (ani load/preload)
+
+Dalsi resourcy zminene v kodu (load/preload mimo .gd):
+   main.tscn  existuje=True
+
+==============================================================================
+3) STATICKA METRIKA TESTU (pocet z BEHU je jinde -- viz [test] N kontrol)
+==============================================================================
+radku obsahujicich 'has_method' : 28
+vyskytu 'has_method'            : 41
+volani '_check(' (vyskytu)      : 155
+radku obsahujicich '_check('    : 155
+POZOR: staticke cislo NENI pocet kontrol z behu.
+
+==============================================================================
+4) TESTOVANE SOUBORY A PRISTUP DO KODU
+==============================================================================
+  assist.gd        zminek v run_tests.gd: 3
+  attributes.gd    zminek v run_tests.gd: 2
+  combat.gd        zminek v run_tests.gd: 1
+  crafting.gd      zminek v run_tests.gd: 2
+  economy.gd       zminek v run_tests.gd: 2
+  game.gd          zminek v run_tests.gd: 1
+  hud.gd           zminek v run_tests.gd: 2
+  item.gd          zminek v run_tests.gd: 2
+  level.gd         zminek v run_tests.gd: 3
+  mining.gd        zminek v run_tests.gd: 1
+  offline.gd       zminek v run_tests.gd: 2
+  player.gd        zminek v run_tests.gd: 1
+  registry.gd      zminek v run_tests.gd: 3
+  save.gd          zminek v run_tests.gd: 1
+  skills.gd        zminek v run_tests.gd: 2
+  world.gd         zminek v run_tests.gd: 0
+
+==============================================================================
+5) KDO VOLA _save_state / _load_state (mrtvy kod?)
+==============================================================================
+  game.gd          _save_state        vyskytu volani: 1
+  game.gd          _load_state        vyskytu volani: 1
+  game.gd          play_sfx           vyskytu volani: 4
+  game.gd          save               vyskytu volani: 1
+  game.gd          load               vyskytu volani: 8
+  level.gd         load               vyskytu volani: 1
+  save.gd          save               vyskytu volani: 5
+  save.gd          load               vyskytu volani: 4
+
+==============================================================================
+6) HEAD pri behu skriptu
+==============================================================================
+git rev-parse --short HEAD -> 6986b0d (exit 0)

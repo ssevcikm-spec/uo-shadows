@@ -13,6 +13,19 @@
 > `_analyza/DESIGN-REVIZE-2.md` (`§N` = jeho oddíl); co má hra dělat, říká
 > `docs/GDD.md`; jak je postavená, `docs/TDD.md`.
 >
+> **Datum poslední revize: 15. 10. 2026** — přepis podle
+> `_analyza/PRACE-2026-10-15/` (`BRIEF-PREPIS.md`, `FAKTA.md`, `ROZPORY.md`).
+> Co se změnilo: hlavička dostala **datum revize a vlastníka**; **§1** má nad
+> tabulkou označení „opis deklarace“ (`R24`); **§10** je odkaz na
+> `docs/BRANY-HRY.md` místo druhé tabulky bran; **§11** má u vyřešených rozporů
+> slovo **vyřešeno** s datem (a **nic se z něj nemazalo**); **§12** uvádí
+> `copyright` na pravou míru (`R17`).
+>
+> **Vlastník a režim údržby:** dokument udržuje **ten, kdo mění vzhled nebo
+> assety hry** (session nad `assets/`, `tools/blender/` a `assets/spec.json`).
+> ADD je **stav** — přepisuje se; **naměřené rozpory (§11) se jen doplňují**
+> a historická čísla se nepřepisují (označí se „ve svém čase správná“).
+>
 > **Vzniklo:** 8. 10. 2026 sepsáním z `assets/spec.json`,
 > `_analyza/DESIGN-REVIZE-2.md` §7 a §14.1, `_analyza/REKONSTRUKCE-ADD-TDD-GDD.md`
 > §2 a **měřením** assetů a pipeline (naměřeno 8. 10. 2026 — u čísel je řečeno,
@@ -31,6 +44,10 @@
 
 **Strojová ADD je `assets/spec.json`** (88 řádků, 5 496 B — naměřeno). Není to
 sbírka čísel, jsou to **rozhodnutí s odůvodněním**. Co v ní je:
+
+**Opis deklarace k 8. 10. 2026** — závazná čísla jsou v `assets/spec.json`;
+když se rozejdou, platí `spec.json`. *(Kontrolováno 15. 10. 2026: tabulka níž
+se `spec.json` shoduje — 8 rolí, 8 slotů, 6 bran, `smery` 4.)*
 
 | Co | Hodnota | Zdroj / důvod v souboru |
 |---|---|---|
@@ -311,21 +328,34 @@ kroky, skoky, motiv, smyčka), takže „hudba se neměří“ (`BRANY-HRY.md`).
 
 ---
 
-## 10. Brány, které na vzhled dohlížejí (a kde mají slepá místa)
+## 10. Brány, které na vzhled dohlížejí (odkaz, ne druhá tabulka)
 
-Detail: `docs/BRANY-HRY.md`. Tady jen to, co se týká **vzhledu**:
+**Detail je na jednom místě: `docs/BRANY-HRY.md`** — co která brána měří, kde
+má naměřené slepé místo a past „TIŠE PŘESTALA MĚŘIT“. Sem se **tabulka
+neopisuje** (dvě kopie téhož se jednou rozejdou — `REJSTRIK-NAVRH.md` §3, `D1`;
+proto je §1 označená jako **opis deklarace**). Co se týká **vzhledu**:
 
-| Brána | Co měří | ⚠ Slepé místo (naměřené) |
-|---|---|---|
-| `check-schema.py` (**tvrdá**) | že deklarace (`spec.json`), mapy, vykreslování a dlaždice říkají totéž číslo | — |
-| `check-assets.py` | sprity proti `spec.json`: výška vs. spec, neprůhledný okraj, díry v siluetě, počet barev, poměry mezi rolemi, shoda siluet mezi framy chůze; hudbu z manifestu | **animace se NEMĚŘÍ** — hledá `assets/sprites/walk_*.png`, jenže chůze je rozložená po vrstvách v `tools/blender/sprites/`; limit `min_silhouette_iou: 0.80` se tak **nikdy neuplatní**, i když spec deklaruje `framy: 8` |
-| `verify-level-render.py` | že snímek hry odpovídá mapě | nemá offline test |
-| `vision.mjs` | **vidí** — pošle obrázek modelu a vrátí text/JSON (režimy `presence`/`diff`) | **neblokuje** (`exit 1` běh nezhodí); názor modelu má chybovost a falešný poplach je dražší než přehlédnutí |
-| `baseline.py` | co je vizuálně **schválené (LGTM)** a co se změnilo | **LGTM cache je lokální optimalizace — v CI neplatí nikdy** (`baseline.py:252` chce obrázek uvnitř repa, CI píše do `/tmp/frames`) |
+- **`check-assets.py`** — měří sprity proti `assets/spec.json` (výška, okraj,
+  díry v siluetě, barvy, poměry mezi rolemi, shoda siluet mezi framy chůze;
+  hudbu z manifestu).
+  ⚠ **Animace se neměří:** hledá `assets/sprites/walk_*.png`, jenže chůze je
+  rozložená po vrstvách v `tools/blender/sprites/` → limit
+  `min_silhouette_iou: 0.80` se **nikdy neuplatní**, i když spec deklaruje
+  `framy: 8`. Detail a naměřená čísla: `docs/BRANY-HRY.md`.
+- **`vision.mjs`** + **`vision-profile.json`** — „oči“ hry: pošle obrázek
+  modelu (režimy `presence`/`diff`). Je to **poradní** kontrola: `exit 1` běh
+  nezhodí, protože názor modelu má chybovost.
+- **`baseline.py`** — co je vizuálně **schválené (LGTM)** a co se změnilo;
+  schválené jsou **sprity, ne snímky hry** a `baseline.json` má
+  `_ceka_na_lgtm: true` (schválil **agent**, na lidské LGTM se čeká —
+  naměřeno 15. 10. 2026). **Cache je lokální optimalizace a v CI neplatí**
+  (`baseline.py:252` chce obrázek uvnitř repa, CI píše snímek do `/tmp/frames`).
+- **`check-schema.py`** (**tvrdá**) — deklarace (`spec.json`), mapy,
+  vykreslování a dlaždice musí říkat totéž číslo.
+- **`verify-level-render.py`** — snímek hry vs. mapa; **nemá offline test**.
 
-**Naměřená čísla k baseline:** `.forge/vision/baseline.json` má **272 záznamů**
-= 16 z `assets/sprites` + 256 z `tools/blender/sprites` (pomocné soubory
-s podtržítkem se přeskakují). **Schválené jsou tedy sprity, ne snímky hry.**
+**Naměřená čísla k baseline** (kolik položek je schválených a že je schválil
+agent) jsou v `docs/BRANY-HRY.md` — **neopisují se sem** jako druhá kopie.
 
 > **Pravidlo pro „hotový asset“:** brány umí změřit, že sprite **odpovídá
 > specu** — **neumí** říct, že je to **on**. „Tohle je ono“ je lidské rozhodnutí
@@ -336,25 +366,36 @@ s podtržítkem se přeskakují). **Schválené jsou tedy sprity, ne snímky hry
 ## 11. Naměřené rozpory ve vzhledu (zapsané, ne opravené)
 
 **Zadání je psaní dokumentů, ne oprava kódu** (`ZADANI-GDD-ADD-TDD.md` §6.1):
-co dokument odhalí, **zapíše**. Všechno níž je naměřeno 8. 10. 2026.
+co dokument odhalí, **zapíše**. Všechno níž je naměřeno 8. 10. 2026 — kde je
+u řádku **jiné datum**, je to **přeměření 15. 10. 2026** (`FAKTA.md`,
+`ROZPORY.md`). **Řádky se nemažou:** vyřešené dostanou slovo **vyřešeno**
+s datem a s tím, co platí; původní znění zůstává jako „ve svém čase správné“.
 
 | # | Rozpor | Důkaz | Proč to vadí |
 |---|---|---|---|
-| 1 | **„v 5 směrech“ vs. 4 směry** | `spec.json` `styl.technika` říká „v 5 směrech“; `role.*.smery` = **4** u všech rolí a pipeline renderuje 4 (`build_character.py`, `range(4)`) | kdo se řídí textem, vyrenderuje 5. směr, který nikdo nepoužije |
-| 2 | **Filtr textur vs. zákaz nearest** | `project.godot` `default_texture_filter = 0` = **Nearest** (s komentářem „u pixel-artu žádoucí“); `spec.json` přitom zakazuje **nearest-neighbour** a pixel art | u **celočíselného zvětšení 2×** je Nearest zamýšlený (ostrý obraz); u dlaždic, které `level.gd` škáluje poměrem `cell_w / šířka_textury`, vznikne **neceločíselné** zvětšení — a to je přesně to, co spec zakazuje |
+| 1 | **„v 5 směrech“ vs. 4 směry** — **VYŘEŠENO rozhodnutím 15. 10. 2026** | `spec.json` `styl.technika` **ještě říká** „v 5 směrech“ (naměřeno 15. 10. 2026); `role.*.smery` = **4** u všech rolí a pipeline renderuje 4 (`build_character.py`, `range(4)`) | platí **4 směry** (deklarace `role.*.smery` + kód); oprava **textu** ve `spec.json` je **mimo ADD** (spec se tady needituje). Kdo se řídí textem, vyrenderuje 5. směr, který nikdo nepoužije |
+| 2 | **Filtr textur vs. zákaz nearest** — **VYŘEŠENO rozhodnutím 15. 10. 2026** | `project.godot` `default_texture_filter = 0` = **Nearest** (s komentářem „u pixel-artu žádoucí“); `spec.json` přitom zakazuje **nearest-neighbour** a pixel art | **Rozhodnutí:** u **celočíselného zvětšení 2×** je Nearest zamýšlený (ostrý obraz); u dlaždic, které `level.gd` škáluje poměrem `cell_w / šířka_textury`, vznikne **neceločíselné** zvětšení, a proto se na ně Nearest nehodí. **Chybí deklarace** — filtr není ve `spec.json` jako klíč, takže se to zatím **nedá měřit** (`ROZPORY.md` `R21` navrhuje `filtr`); patří mimo ADD |
 | 3 | **`sprites.json` v kořeni repa** | 17 řádků, deklaruje `colors: 16/12` a `size: 64` pro hráče — legacy manifest šablony; **žádný skript ho nečte** (0 výskytů jinde v repu) | druhý zdroj pravdy o rozměrech a paletě, který `spec.json` popírá |
-| 4 | **`spec.json` odkazuje na soubory, které neexistují** | `_stav` uvádí `tools/gamewindow_preview.py` → `_gamewindow_preview.png` (960×540) — **soubor není**; `:11` uvádí zdroj meče `assets/sprites/items/sword.png` — **soubor není** (je tam `sword_final.png`) | historie v `_stav` se čte jako stav |
+| 4 | **`spec.json` odkazuje na soubory, které neexistují** — **VYŘEŠENO rozhodnutím 15. 10. 2026** | `_stav` uvádí `tools/gamewindow_preview.py` → `_gamewindow_preview.png` (960×540) — **soubor není**; `:11` uvádí zdroj meče `assets/sprites/items/sword.png` — **soubor není** (je tam `sword_final.png`) | platí, že `_stav` je **historie** (stav k 8. 10. 2026), ne dnešní stav; `tools/gamewindow_preview.py` **existuje**, chybí jen `_gamewindow_preview.png`. Označit/přejmenovat `_stav` se má **mimo ADD** — kdo ho čte jako stav, hledá soubory, které nejsou |
 | 5 | **Docstringy pipeline lžou o počtu framů** | `build_character.py` docstring říká „4 framy“, kód má `FRAMES = 8`; `postprocess.py` popisky říkají „4 framy“, kód skládá **8** | kdo čte popis, vyrobí 4 framy a rozbije vazbu na `spec.json` (`framy: 8`) |
-| 6 | **Zmíněná brána `check-licence.py` neexistuje** | `docs/BRANY-HRY.md` ji zmiňuje; v `.forge/` **není** (14 souborů, měřeno) | kdo se na ni spolehne, nemá kontrolu licence — a licence chybí úplně (ADD §12) |
-| 7 | **Název projektu ve exportu — OPRAVENO 8. 10. 2026** | `export_presets.cfg` má `product_name` = `uo-shadows` a `copyright` prázdné; **`company_name` zůstává `GameForge`** (je to vydavatel, ne název hry — k rozhodnutí zvlášť) | jméno hry je sjednocené s repem; zbývá jen vydavatel a copyright |
+| 6 | **Zmíněná brána `check-licence.py` neexistuje** — **VYŘEŠENO 15. 10. 2026 v `docs/BRANY-HRY.md`** | `docs/BRANY-HRY.md` ji **už nejmenuje** a říká, že kontrola licence **neexistuje**; v `.forge/` **není** (**naměřeno 15. 10. 2026**: 13 souborů v rootu, 22 rekurzivně — dřív tu stálo „14 souborů“ bez rozsahu) | kdo se na ni spolehne, nemá kontrolu licence — a záznam o licenci chybí úplně (ADD §12) |
+| 7 | **Název projektu ve exportu — OPRAVENO 8. 10. 2026; vydavatel a copyright VYŘEŠENY téhož dne** | `export_presets.cfg` má `product_name` = `uo-shadows`; **`company_name` = `ssevcikm-spec`** (`:43`) a **`copyright` = „© 2026 ssevcikm-spec“** (`:46`) — **naměřeno 15. 10. 2026** | jméno hry, vydavatel i copyright jsou sjednocené s vlastníkem repa. **Co platilo dřív** (do 8. 10. 2026, ve svém čase správné): `copyright` prázdné a `company_name` = `GameForge` — změnil to **commit `01a9649`** „export: vydavatel a copyright hry (rozhodnuti uzivatele)“ |
+| 8 | **`spec.json` `_popis` popírá vlastní `paleta`** — **VYŘEŠENO rozhodnutím 15. 10. 2026** (`R5`) | `_popis` (řádek 26) říká „Barvy se mapuji na paletu hry“; `paleta.zdroj` = `null` (mapování **ZRUŠENO**) a `styl.barvy` = „plné barvy … žádná kvantizace na paletu“ — **naměřeno 15. 10. 2026** | platí **zrušená paleta** (ADD §1 ji tak vede); text `_popis` je **starší plán** a opravuje se **mimo ADD** — kdo čte `_popis`, zavede paletu, kterou uživatel zamítl |
+| 9 | **`spec.json` `_popis` popírá vlastní `styl.zmenšování`** — **VYŘEŠENO rozhodnutím 15. 10. 2026** (`R6`) | `_popis` (řádky 24–25) říká „zmensuji celociselnym delitelem 8“; `styl.zmenšování` = „Lanczos/bilineární (hladké), NE celočíselný nearest“ a pipeline opravdu zmenšuje Lanczosem (ADD §7.1, `tools/blender/postprocess.py`) — **naměřeno 15. 10. 2026** | platí **Lanczos** (ADD §1 a §7.1 to tak vedou); text `_popis` je starý plán a opravuje se **mimo ADD** |
 
 ---
 
 ## 12. Licence a původ assetů
 
-**Stav: v repu není žádný záznam.** Naměřeno: `LICENSE`/`LICENCE`/`CREDITS`/
-`COPYING`/`NOTICE` **neexistuje** (kontrolováno `os.walk` i `git ls-files`);
-`assets/**/*.txt` **není**; `export_presets.cfg` má `copyright` **prázdné**.
+**Stav: v repu není žádný záznam o licenci.** Naměřeno: `LICENSE`/`LICENCE`/
+`CREDITS`/`COPYING`/`NOTICE` **neexistuje** (kontrolováno `os.walk`
+i `git ls-files`); `assets/**/*.txt` **není**. `export_presets.cfg` má
+`copyright` **vyplněné** — `"© 2026 ssevcikm-spec"` (řádek 46) a
+`company_name` = `ssevcikm-spec` (řádek 43), **naměřeno 15. 10. 2026**;
+**do 8. 10. 2026 bylo `copyright` prázdné** (ve svém čase správný údaj —
+změnil to commit `01a9649` rozhodnutím uživatele, viz „Měřené rozpory“ č. 7).
+**Pozor: jméno vlastníka v copyrightu není záznam o licenci assetů** —
+povinnost doložit původ u free assetů (níž) trvá.
 
 **Co se dá doložit nepřímo (a v repu to nikde není napsané):**
 
@@ -382,7 +423,8 @@ záznam**, a patří na seznam úkolů před prvním stažením.
 - **Rozpis výroby assetů po granulích a pořadí** → `.forge/roadmap.json`
   (vzniká z milníků v GDD §12).
 - **Konkrétní rozměry, role, vrstvy a tolerance** → `assets/spec.json`
-  (ADD je neopisuje jako druhý zdroj; vysvětluje je).
+  (ADD je **neopisuje jako druhý zdroj** — §1 je jen **opis deklarace
+  k 8. 10. 2026**; závazná čísla jsou ve `spec.json`).
 - **Finální vzhled a rozhodnutí „ploché vs. vrstvené“** → **vědomě odloženo**
   na `M6` po prototypech `M0`–`M5` (ADD §4). ADD **neslibuje**, jak to dopadne.
 - **Rozhodnutí o zvuku** (odkud, jaká licence, jaký manifest) → plán;

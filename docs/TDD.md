@@ -5,25 +5,47 @@
 > datové formáty, vlastnictví stavu, výkonnostní rozpočet, ukládání, chybové
 > chování a jazyk rozhraní.
 >
-> **Nahrazuje `docs/ARCHITEKTURA.md`** jako zdroj pravdy. `ARCHITEKTURA.md`
-> zůstává v repu jako **historie** (nese smlouvy `§2.1`–`2.3` a naměřené
-> případy, které se needitují) — viz jeho hlavička.
+> **Čím NENÍ:** není design (`docs/GDD.md`), není vzhled (`docs/ADD.md`), není
+> plán granulí (`.forge/roadmap.json`) a **není katalog bran** — co která brána
+> měří a kde má slepá místa, je jediný zdroj `docs/BRANY-HRY.md`.
 >
 > **Odkud brát stav:** tenhle dokument je stav techniky. **Zdroj rozhodnutí** je
 > `_analyza/DESIGN-REVIZE-2.md` (uzavřená revize vize, 8. 10. 2026); odkazy
 > `(§N)` míří tam. **Co má hra dělat**, říká `docs/GDD.md`; **jak vypadá**,
-> `docs/ADD.md`; **co se staví**, `.forge/roadmap.json`.
+> `docs/ADD.md`; **co se staví**, `.forge/roadmap.json`; **co která brána měří**,
+> `docs/BRANY-HRY.md`.
+>
+> **Platí z něj:** smlouvy komponent (`TDD` §3), vrstvy (`TDD` §2) a vlastnictví
+> stavu (`TDD` §5) jsou **závazné** — kdo mění vlastnictví stavu, mění smlouvu,
+> ne kód potichu. Známé vady (`TDD` §10) jsou **záznam**, ne závazek k opravě.
+>
+> **Datum spotřeby:** **čísla o kódu platí k `HEAD = 6986b0d`** (naměřeno
+> 15. 10. 2026, postup u každého čísla a v `_analyza/PRACE-2026-10-15/FAKTA.md`) —
+> po každém dalším commitu se **přeměřují, ne opisují**. Smlouvy a vrstvy platí
+> dál: zestarají rozhodnutím, ne commitem.
 >
 > **Vzniklo:** 8. 10. 2026 sepsáním z `_analyza/DESIGN-REVIZE-2.md` §11 a §14,
 > z `docs/ARCHITEKTURA.md` (18 smluv, 3 s tvarem dat) a **měřením kódu**
-> (naměřeno 8. 10. 2026; u každého čísla je řečeno, čím).
+> (naměřeno 8. 10. 2026; u každého čísla je řečeno, čím). **Přepsáno
+> 15. 10. 2026** podle `_analyza/PRACE-2026-10-15/ROZPORY.md` (`R1`, `R2`,
+> `R3`, `R9`, `R12`): status `Assist`, vlastník tiku (nová smlouva `Registry`),
+> vlastník `world.gd`, počet skriptů, `Mining.gather` a oddíl bran (`TDD` §9).
 >
-> **Co tenhle dokument NENÍ:** není design (to je GDD), není plán granulí
-> (roadmapa) a **není seznam hotových věcí** — kde je hotovo, se **měří**
-> (definice hotovo, GDD §12).
+> **Vlastník a údržba:** dokument patří **hře** (`docs/TDD.md`) — **údržbu má
+> ten, kdo mění architekturu běhu nebo smlouvu**, a mění ji **tady**, ne
+> v kódu potichu. Historie rozhodnutí (`_analyza/DESIGN-REVIZE-2.md`) se
+> needituje.
+>
+> **Nahrazuje `docs/ARCHITEKTURA.md`** jako zdroj pravdy. `ARCHITEKTURA.md`
+> zůstává v repu jako **historie** (nese smlouvy `§2.1`–`2.3` a naměřené
+> případy, které se needitují) — viz jeho hlavička.
+>
+> **Co tenhle dokument NENÍ:** není seznam hotových věcí — kde je hotovo, se
+> **měří** (definice hotovo, `GDD` §12).
 >
 > **Jak se mění:** TDD je **stav** — přepisuje se. Naměřené případy a vady
-> (hlavně §10) se **needitují**, jen doplňují.
+> (hlavně `TDD` §10) se **needitují**, jen doplňují; co přestalo platit, se
+> označí jako **„ve svém čase správné“**, ne maže.
 
 ---
 
@@ -42,14 +64,25 @@
 
 **Cena `R-1` (a proč to není kosmetika):** znamená to **přepsat monolit**
 `scripts/game.gd` (**377 řádků**, naměřeno 8. 10. 2026). Granule `engine.shell`
-v plánu je, ale byla blokovaná mrtvou granulí `world.map` (`scripts/world.gd` =
-**0 B** — ta je z plánu vyřazená). Dokud přepis neproběhne, je **10 hotových
+v plánu je; byla blokovaná mrtvou granulí `world.map` (`scripts/world.gd` =
+**0 B**), **která je od 8. 10. 2026 z plánu vyřazená** — dnes je `engine.shell`
+**READY** (`depends_on` = `engine.registry`, naměřeno 15. 10. 2026
+v `.forge/roadmap.json`). Dokud přepis neproběhne, je **10 hotových
 komponent mrtvá knihovna**: `hud.gd`, `save.gd`, `combat.gd`, `mining.gd`
 a `offline.gd` hledají `get_parent().component(id)`. **Registr už v kódu JE**
-(`scripts/registry.gd`, hotový ručně 8. 10. 2026 — viz §3.18), ale **monolit ho
+(`scripts/registry.gd`, hotový ručně 8. 10. 2026 — viz §3.19), ale **monolit ho
 nevolá**, takže v běžící hře dostanou `null` dál. **Zároveň je to podmínka cesty
 B** (§11): kdyby se oddělení simulace a zobrazení porušilo, byla by síť přepis
 jádra.
+
+**Technika, kterou hra dnes běží** (naměřeno 15. 10. 2026, `HEAD = 6986b0d`;
+postup v `_analyza/PRACE-2026-10-15/FAKTA.md` #65–#71) — **nikde jinde to
+zapsané není**: **Godot 4.7.2-stable** (`project.godot` → `config/features =
+"4.7"`), export **Windows + Web + Linux** (`export_presets.cfg`, tři presety:
+`Windows Desktop`, `Web`, `Linux`), `product_name` = `uo-shadows`, okno
+**960×540**, **0 autoloadů** a **0 `input/*` akcí** — vstup jde přes
+`Input.is_key_pressed` (`scripts/player.gd`, 8×). Tik i vrstvy z toho
+vycházejí; kdo hru přenese na jiný engine, mění tenhle odstavec, ne kód.
 
 ---
 
@@ -81,9 +114,12 @@ jádra.
   tik enginu**, ne tik simulace hry; simulace si drží **vlastní akumulátor**
   50 ms, aby byly výsledky **opakovatelné a testovatelné** (stejný vstup → stejný
   výsledek).
-- **Tik řídí kořen**, ne jednotlivé komponenty. Komponenta **nesmí** mít vlastní
-  `_process`/`_physics_process` s vlastním časem — jinak si každá vymyslí svůj
-  čas a **budou se hádat o to, co se stalo dřív** (`VSTUPY` §6).
+- **Tik vlastní registr, ne jednotlivé komponenty.** Čas drží
+  **`scripts/registry.gd`** (`TICK_MS` = 50 na `:26`, `advance()` na `:91`,
+  `step()` na `:108` — naměřeno 15. 10. 2026); kořen (kostra) ho jen **vytvoří
+  a volá** — dnes ho `scripts/game.gd` nevolá (viz §3.19). Komponenta **nesmí**
+  mít vlastní `_process`/`_physics_process` s vlastním časem — jinak si každá
+  vymyslí svůj čas a **budou se hádat o to, co se stalo dřív** (`VSTUPY` §6).
 - **Pořadí v rámci jednoho tiku je závazné:**
 
   | # | Krok | Kdo to dělá |
@@ -153,7 +189,7 @@ Událost (simulace → zobrazení)
 
 | Vrstva | Odpovědnost | Soubory |
 |---|---|---|
-| **engine** | smyčka, tik, vstup, okno, registr | `main.tscn`, `scripts/game.gd` (kostra) |
+| **engine** | smyčka, tik, vstup, okno, registr | `main.tscn`, `scripts/game.gd` (kostra), `scripts/registry.gd` (tik a fronty — naměřeno 15. 10. 2026: `TICK_MS`, `advance()`, `push_command()`, `push_event()`; smlouva `Registry` je §3.19) |
 | **svět** | mapa, dlaždice, izo projekce, průchodnost, uzly surovin, respawn, stav světa | `scripts/level.gd`, `scripts/world.gd` |
 | **entity** | hráč, NPC, nepřítel, předmět | `scripts/player.gd`, `npc.gd`, `enemy.gd`, `item.gd` |
 | **simulace** | dovednosti, atributy, řemesla, boj, ekonomika, offline, asistence | `scripts/skills.gd`, `attributes.gd`, `crafting.gd`, `mining.gd`, `combat.gd`, `economy.gd`, `offline.gd`, `assist.gd` |
@@ -180,7 +216,7 @@ smazaná verze tam dodnes je: `_retired/world.gd`, 47 řádků — naměřeno).
 
 ---
 
-## 3. Smlouvy komponent (18) — s tvarem dat
+## 3. Smlouvy komponent (19) — s tvarem dat
 
 **Agent volá jen to, co komponenta poskytuje (`provides`), nikdy nečte cizí
 vnitřek.** Smlouva bez tvaru dat je jen jméno — a podle jména si agent vymyslí
@@ -188,6 +224,10 @@ zbytek. Naměřeno: `ARCHITEKTURA.md` §2 má **18 smluv, tvar dat jen 3**
 (`sim.combat`, `Hráč → move`, `Ukládání → pozice`); důsledek byl konkrétní —
 `get(attr)` v dokumentu vs. `hodnota(attr)` v kódu, `trade(player, item)` vs.
 `buy/sell/gold`, `component(name)`, který **v `scripts/` vůbec není**.
+
+**Dnes (15. 10. 2026) je smluv 19** — přibyla **`Registry`** (`TDD` §3.19): tik,
+registr a fronty příkazů a událostí byly do té doby jen v próze §1 a v §5 je
+vlastnil **nesprávný soubor** (`game.gd` místo `scripts/registry.gd`).
 
 ### 3.0 Vzor zápisu smlouvy (platí pro každou níž)
 
@@ -298,9 +338,12 @@ název(argument: Typ) -> NávratovýTyp
 - **acceptance:** test ZAVOLÁ `gather(cell)` na známém uzlu a ověří, že vrací
   **běžnou složku vždy** a že **dva různě dlouhé zásahy dají jiný obsah**
   (`V4`); a že `snapshot()` → `restore()` vrátí **totéž** `infestation`/`supply`
-- **status:** **`neexistuje`** — `scripts/world.gd` je **0 B** (naměřeno).
-  Vlastní ho **dvě** granule (`world.map`, `world.nodes`), obě nehotové;
-  `save.gd:71–74` na něm **už** volá `snapshot()`/`restore()`.
+- **status:** **`neexistuje`** — `scripts/world.gd` je **0 B** (naměřeno
+  15. 10. 2026: `os.path.getsize()` = 0, `splitlines()` = 0 řádků).
+  Vlastní ho **granule `world.nodes`** (`.forge/roadmap.json`); **`world.map`
+  byla 8. 10. 2026 z plánu vyřazena** (naměřeno 15. 10. 2026: plán má 21 granulí
+  a `world.map` mezi nimi **není**) — je to tedy **mrtvé jméno**, ne druhá
+  granule. `save.gd:71–74` na `world.gd` **už** volá `snapshot()`/`restore()`.
 
 ### 3.6 `Item` — `scripts/item.gd`
 
@@ -395,8 +438,18 @@ název(argument: Typ) -> NávratovýTyp
 - **acceptance:** test ZAVOLÁ `gather()` se **dvěma různými hodnotami
   dovednosti** a ověří **prokazatelně jiný výnos** (`V2`) — ne jen že funkce
   existuje
-- **status:** `částečně` (`scripts/mining.gd`, 72 řádků; bere komponenty z registru, který v běžící
-  hře není → vrací prázdno, viz `TDD` §10 vada 3)
+- **status:** `částečně` — **dnešní stav a cíl se liší v návratovém typu**
+  (naměřeno 15. 10. 2026: `scripts/mining.gd`, 72 řádků):
+  - **dnes** je na `mining.gd:17` `func gather(node: Node) -> int:`
+    (vrací **počet kusů**); komponenty bere z registru, který v běžící hře není
+    → vrací prázdno (viz §10 vada 3).
+  - **cíl** je `Dictionary` **shodný s `World.gather()`** (tabulka výš) —
+    **směs** (dva různě dlouhé zásahy dají jiný obsah) je požadavek designu
+    (`V4`, `GDD` §2 pravidlo A) a `int` ji neunese.
+  - **plán:** prompt granule `sim.mining` v `.forge/roadmap.json` dnes žádá
+    `gather(node) -> int` (naměřeno 15. 10. 2026) — **přepíše se při otevření
+    milníku `M2`** ze smlouvy výš; projekt je zastavený, takže se plán
+    neopravuje dopředu.
 
 ### 3.11 `Crafting` — `scripts/crafting.gd`
 
@@ -478,8 +531,14 @@ název(argument: Typ) -> NávratovýTyp
 - **acceptance:** test ZAVOLÁ `evaluate()` na hráče se **známým** `hp` a ověří
   **ne-prázdný výsledek**; a ZAVOLÁ ho na hráče **bez `hp`** a ověří, že to
   **ohlásí** (dřív vracel prázdné pole a vypadal jako „nic k práci“)
-- **status:** `částečně` (`scripts/assist.gd`, 17 řádků; `assist` je **non-goal `N9`** pro MVP —
-  smlouva zůstává, ale nic na ní v MVP nestaví)
+- **status:** `částečně` (`scripts/assist.gd`, 17 řádků). **`assist` je v MVP
+  přípustný** ve smyslu `N9` po přeformulování z 9. 10. 2026 (`GDD` §11,
+  `docs/GDD.md:432–449`): **rozhoduje hráč, hra provádí** (i offline doběh a i
+  podle pravidel s podmínkami). Zakázané zůstává, aby hra rozhodovala za
+  hráče. Smlouva platí; kdo `assist` zapojí, musí v kódu napsat, které
+  rozhodnutí je hráčovo. *Původní znění TDD („`assist` je non-goal `N9` pro
+  MVP“) odpovídalo `GDD` **před** 9. 10. 2026 — ve svém čase správné; platí
+  `GDD`, protože je zdroj pravdy o designu a je novější (`R1`).*
 
 ### 3.16 `Save` — `scripts/save.gd`
 
@@ -521,20 +580,62 @@ název(argument: Typ) -> NávratovýTyp
   **bez chyby**; a ZAVOLÁ `move` příkaz a ověří, že se hráč posunul
 - **status:** **`částečně`** — **registr existuje** (`scripts/registry.gd`,
   150 řádků, hotový ručně 8. 10. 2026: `component(id)`, `advance()`/`step()`
-  s pevným tikem 50 ms, fronty příkazů a událostí; měřeno testy), ale
+  s pevným tikem 50 ms, fronty příkazů a událostí; měřeno testy — jeho vlastní
+  smlouva je **§3.19**), ale
   **`scripts/game.gd` je pořád monolit** (377 řádků) a registr **nevolá** —
   kostru scény dodá `engine.shell`. `component()` tedy v repu je, ale v běžící
   hře ho zatím nikdo nezavolá
 
-### 3.19 Souhrn: co má tvar dat a co ne
+### 3.19 `Registry` — `scripts/registry.gd`
 
-| | Stav 8. 10. 2026 |
+- **poskytuje:** `register(id: String, node: Node) -> void`,
+  `component(id: String) -> Node`, `components() -> Dictionary`,
+  `registered_order() -> Array[String]`, `advance(delta: float) -> int`,
+  `step(dt: float = TICK_MS / 1000.0) -> void`, `ticks() -> int`,
+  `push_command(cmd: Dictionary) -> void`, `commands() -> Array`,
+  `push_event(ev: Dictionary) -> void`, `events() -> Array`; signál
+  `ticked(dt: float)` a konstanty `TICK_MS` = 50, `MAX_TICKS_PER_FRAME` = 3
+- **spotřebovává:** komponenty **jako své děti** — volá na nich `sim_tick(dt)`,
+  když ho mají (`registry.gd:112`); nic jiného nečte a nic nepočítá
+- **tvar dat:**
+
+  | Prvek | Typ | Význam |
+  |---|---|---|
+  | registr | `Dictionary` `id -> Node` (+ `Array[String]` pořadí registrace) | **v tom pořadí** dostávají komponenty `sim_tick` — pořadí je součást smlouvy |
+  | příkaz | `Dictionary` `{type: String, …}` | vstup → simulace (`TDD` §1.3) |
+  | událost | `Dictionary` `{type: String, …}` | simulace → zobrazení (`TDD` §1.3) |
+  | `commands()`, `events()` | `Array` | frontu **vrátí a VYPRÁZDNÍ** — druhý odběratel dostane prázdno, ne tatáž data dvakrát |
+  | `advance(delta)` | `int` | počet provedených tiků; čas se akumuluje v **milisekundách** (`49 + 1 = 50` přesně, ne plovoucí `0,049 + 0,001`) |
+
+- **odkud čísla:** `TICK_MS` = 50 (`registry.gd:26`) a `MAX_TICKS_PER_FRAME` = 3
+  (`:29`) — vlastní je jen tenhle soubor; `step()` posílá `dt` = 0,05 s.
+  **Ochrana proti spirále smrti:** po pauze (okno na pozadí) se dorovnají
+  nejvýš 3 tiky na snímek (`:123–125`), ne stovky — simulace se tím nezrychluje,
+  jen nezasekne
+- **acceptance:** test **ZAVOLÁ** `register("Skills", uzel)` a ověří, že
+  `component("Skills")` vrátí **týž uzel**, a že `component("Neexistuje")` vrátí
+  `null` **bez chyby**; ZAVOLÁ `advance(0.049)` a ověří **0 tiků**, pak
+  `advance(0.002)` a ověří **právě 1 tik** (49 + 2 ms) a `advance(0.15)` →
+  **3 tiky**; ZAVOLÁ `push_command()` dvakrát a ověří, že `commands()` vrátí
+  **oba příkazy v pořadí** a že **druhé čtení je prázdné**; totéž pro
+  `push_event()` / `events()`; a ZAVOLÁ `step()` nad dvěma komponentami a ověří,
+  že `sim_tick` přišel **v pořadí registrace** (to měří i `registered_order()`).
+  `has_method("advance")` NESTAČÍ.
+- **status:** `hotovo` (`scripts/registry.gd`, 150 řádků, hotový ručně
+  8. 10. 2026; **tyhle acceptance už běží** — naměřeno 15. 10. 2026 během testů,
+  `[test] 113 kontrol, 0 selhání`). **Co chybí:** kostra `scripts/game.gd` ho
+  **nevytváří ani nevolá**, takže v běžící hře dostanou komponenty `null`
+  (§10 vada 3) — to není vada registru, ale chybějící `engine.shell`.
+
+### 3.20 Souhrn: co má tvar dat a co ne
+
+| | Stav 15. 10. 2026 |
 |---|---|
-| Smluv celkem | **18** |
-| S tvarem dat **před** TDD | **3** (`sim.combat`, `Hráč → move`, `Ukládání → pozice`) |
-| S tvarem dat **po** TDD | **18** (tabulky výš) |
-| Komponent, které v `scripts/` **neexistují** | **3** (`world.gd` = 0 B, `npc.gd`, `enemy.gd`) |
-| Komponent, které fungují v běžící hře | **2** (`level.gd`, `player.gd` — naměřeno, `game.gd` instancuje jen ty) |
+| Smluv celkem | **19** (18 do 8. 10. 2026 + `Registry`) |
+| S tvarem dat **před** TDD | **3** (`sim.combat`, `Hráč → move`, `Ukládání → pozice`) — měřeno 8. 10. 2026 v `ARCHITEKTURA.md` |
+| S tvarem dat **po** TDD | **19** (tabulky výš) |
+| Komponent, které v `scripts/` **neexistují** | **3** (`world.gd` = 0 B, `npc.gd`, `enemy.gd` — naměřeno 15. 10. 2026) |
+| Komponent, které fungují v běžící hře | **2** (`level.gd`, `player.gd`; naměřeno 15. 10. 2026: produkční cesta z `main.tscn` je `game.gd` 377 + `level.gd` 283 + `player.gd` 191 řádků) |
 
 ---
 
@@ -643,7 +744,8 @@ se ukládala podmíněně a `load()` ji přepisoval spawnem).
 | uzly surovin, respawn, infestace, zásobenost | `world.gd` | těžba, ekonomika, HUD, save | **dnes soubor neexistuje (0 B)** |
 | mřížka, projekce, spawn | `level.gd` | hráč (kolize), svět, HUD (mapa) | `world.gd` projekci **nesmí opisovat** |
 | trvanlivost a kvalita předmětu | `item.gd` | boj, výroba, ekonomika, save | |
-| tik, registr, fronty příkazů a událostí, seed | `game.gd` (kostra) | všichni přes registr | **dnes neexistuje jako kostra** |
+| tik, registr, fronty příkazů a událostí | `scripts/registry.gd` | všichni přes registr | hotový ručně 8. 10. 2026 (`TICK_MS` na `:26`, `advance()` na `:91`, `push_command()` na `:129`, `push_event()` na `:141` — naměřeno 15. 10. 2026); **kostra scény (`scripts/game.gd`) ho zatím nevolá** (viz §3.19) |
+| seed náhody | kostra (`scripts/game.gd`) | kdo potřebuje náhodu (`TDD` §1.4) | hodnotu dnes nese `assets/levels/main.json`; **sám registr seed nevede** (naměřeno 15. 10. 2026) |
 | uložený stav | `user://save.cfg` | `save.gd` | formát je `ConfigFile` |
 
 ---
@@ -724,28 +826,36 @@ se **nepřejmenovávají potichu**.
 
 ---
 
-## 9. Brány: co měří a kde mají slepá místa
+## 9. Brány: co pouští CI a v jakém pořadí
 
+**Detail bran je jinde a neopisuje se:** **co která brána měří, kde má naměřené
+slepé místo a jaká je past „TIŠE PŘESTALA MĚŘIT", je jediný zdroj
+`docs/BRANY-HRY.md`** (přesunul se tam 7. 10. 2026 ze skillu `orchestra`). TDD
+drží **jen to, co potřebuje sám**: které brány pouští CI a v jakém pořadí.
 **Tvrdá brána je jen jedna** — `check-schema.py` (rozpor v deklaraci je
-objektivní fakt); ostatní jsou poradní nebo mají **naměřená** slepá místa.
-Detail: **`docs/BRANY-HRY.md`** (sem se přesunul 7. 10. 2026 ze skillu
-`orchestra`).
+objektivní fakt); ostatní jsou poradní nebo mají slepá místa (ta vypisuje
+`docs/BRANY-HRY.md`, ne TDD).
 
-| Brána | Co měří | ⚠ Naměřené slepé místo |
-|---|---|---|
-| `.forge/check-schema.py` | deklarace (`spec.json`), mapy, vykreslování a dlaždice musí říkat totéž číslo | — (tvrdá) |
-| `.forge/check-assets.py` | sprity proti specu (výška, okraj, díry v siluetě, barvy) | **animace se neměří** — chůze je rozložená po vrstvách v `tools/blender/sprites/`, v `assets/sprites` nejsou `walk_*`; limit IoU se **nikdy neuplatní** (brána to hlásí jako poznámku) |
-| `.forge/check-wiring.py` | každá funkce je odněkud volaná | **na jiném enginu hlásí zelenou nad NULOU souborů** (`:73` čte jen `scripts/*.gd`); **čte i `tests/`**, takže funkce zmíněná jen v testu se počítá jako použitá |
-| `.forge/verify-level-render.py` | že snímek hry odpovídá mapě | — (nemá offline test) |
-| `.forge/vision.mjs` | **vidí** (režimy `presence`/`diff`) | **neblokuje** — `exit 1` běh nezhodí (v CI `\|\| echo`); názor modelu má chybovost |
-| `.forge/baseline.py` | co je vizuálně schválené (LGTM) a co se změnilo | **LGTM cache je lokální optimalizace — v CI neplatí nikdy** (`baseline.py:252` chce obrázek uvnitř repa, CI píše do `/tmp/frames`) |
-| `tests/run_tests.gd` | herní kontroly | **podmíněný test je tiše zelený**: v souboru o **1569 řádcích** má `has_method` **28 řádků** a **41 výskytů** (hrubě; v kódu bez komentářů a docstringů **20 / 33** — naměřeno 8. 10. 2026) — funkce, která není, se **přeskočí**. ⚠ **Různé čítače téhož jména:** staticky je v souboru **154** volání `_check(`, ale běh hlásí **`[test] 113 kontrol`** (část je v cyklech a podmínkách) — **počet kontrol se čte z BĚHU**, ne ze vzorů v souboru |
+> **TDD tabulku bran záměrně NEMÁ** — byla tady do 15. 10. 2026 a s `BRANY-HRY.md`
+> se **rozešla** (duplicita `D1` v `_analyza/PRACE-2026-10-15/ROZPORY.md`); kdo
+> hledá slepá místa, čte `BRANY-HRY`. Sem se nová tabulka **nevrací**.
 
-**Pořadí kroků v CI je dané a testuje se** (naměřeno z `.github/workflows/ci.yml`,
-181 řádků, job `test-and-build`): checkout → cache Godotu → instalace Godotu →
-**import assetů** → **kontrola schématu** → **testy** → kontrola assetů →
-kontrola zapojení → smoke (hra se spustí bez `SCRIPT ERROR`) → snímek hry →
-`verify-level-render` → **vision** (neblokuje) → export buildů.
+**Pořadí kroků v CI je dané a testuje se** (naměřeno 15. 10. 2026 z
+`.github/workflows/ci.yml`, 181 řádků, job `test-and-build`): checkout → cache
+Godotu → instalace Godotu → **import assetů** → **kontrola schématu** → **testy**
+→ kontrola assetů → kontrola zapojení → smoke (hra se spustí bez `SCRIPT ERROR`)
+→ snímek hry → `verify-level-render` → **vision** (neblokuje) → export buildů.
+
+**Co z toho platí pro TDD:** brány, které kód **volají** (`tests/run_tests.gd`),
+měří **chování**, ne přítomnost metody — proto každá smlouva v §3 říká, **co test
+ZAVOLÁ a co ověří**, a `has_method()` jako acceptance **nestačí**. Naměřený důvod
+(8. 10. 2026, `splitlines()` a `count()` nad `tests/run_tests.gd`): soubor má
+**1569 řádků** a `has_method` **28 řádků** / **41 výskytů** (bez komentářů
+20 / 33) — funkce, která v kódu není, se **přeskočí** a test zůstane tiše zelený.
+⚠ **Různé čítače téhož jména:** staticky je v souboru **154** volání `_check(`
+(155 výskytů řetězce − 1 definice), ale běh hlásí **`[test] 113 kontrol`** —
+**počet kontrol se čte z BĚHU**, ne ze vzorů v souboru. Která brána co měří a kde
+má slepé místo, drží `docs/BRANY-HRY.md`.
 
 **Co u bran chybí** (§15.2, pojmenované, ne zapomenuté):
 
@@ -764,25 +874,40 @@ kontrola zapojení → smoke (hra se spustí bez `SCRIPT ERROR`) → snímek hry
 ## 10. Známé vady, které tenhle dokument NEMĚNÍ (naměřeno)
 
 **Zadání je psaní dokumentů, ne oprava kódu** (`ZADANI-GDD-ADD-TDD.md` §6.1):
-co dokument odhalí, **zapíše**, neopraví mimochodem. Všechny vady níž jsou
-**naměřené 8. 10. 2026** (u každé je čím).
+co dokument odhalí, **zapíše**, neopraví mimochodem. Vady 1–10 jsou **naměřené
+8. 10. 2026**, vada 11 **15. 10. 2026** (u každé je čím).
 
 | # | Vada | Důkaz | Dopad |
 |---|---|---|---|
-| 1 | **`Economy.price()` vrací 0 pro každý skutečný předmět** | `economy.gd:14–30` čte `item.material` (očekává `"wood"/"stone"/"metal"`) a `item.quality` (očekává `"common"…`), ale `item.gd:6–10` má `material` z `items.json` (kde klíč **není** → `""`) a `kvalita: int` | obchod je **zdarma**; `price()` je zároveň druhý zdroj pravdy o kvalitě |
+| 1 | **`Economy.price()` vrací 0 pro každý skutečný předmět** | `economy.gd:14–30` čte `item.material` (očekává `"wood"/"stone"/"metal"`) a `item.quality` (očekává `"common"…`), ale `item.gd:6–10` má `material` z `items.json` (kde klíč **není** → `""`) a `kvalita: int`; **přeměřeno 15. 10. 2026** sondou `_analyza/PRACE-2026-10-15/sonda-cena.gd`: `price()` = 0 u obou předmětů a `SCRIPT ERROR` „Invalid access to property or key 'quality'“ na `economy.gd:21` | obchod je **zdarma**; `price()` je zároveň druhý zdroj pravdy o kvalitě |
 | 2 | **`Item.repair()` předmět ZNIČÍ** | `item.gd:36` nastaví `trvanlivost = 20` natvrdo; `items.json` deklaruje `durability` 100 (meč) a 150 (zbroj) | „oprava“ sníží trvanlivost ze 100 na 20 |
 | 3 | **Registr komponent NEBYL volán z produkčního kódu** | `scripts/registry.gd` **existuje** (hotový ručně 8. 10. 2026, měřený testy), ale `hud.gd:90`, `save.gd:148`, `combat.gd:125`, `mining.gd:70` a `offline.gd:55` ho hledají přes `get_parent().component(id)` — a **`scripts/game.gd` (monolit) registr vůbec nevytváří**, takže v běžící hře dostanou `null` | HUD ukazuje nuly, `save()` neuloží nic. **Opravuje `engine.shell`** (další granule `M0`) — registr sám to nespraví |
-| 4 | **`scripts/world.gd` = 0 B** | naměřeno: 0 bajtů, 0 řádků; vlastní ho **dvě** granule (`world.map`, `world.nodes`), obě nehotové | blokuje `engine.shell`; `save.gd` na něm už volá `snapshot()` |
+| 4 | **`scripts/world.gd` = 0 B** | naměřeno 15. 10. 2026: 0 bajtů, 0 řádků (`os.path.getsize()`, `splitlines()`); vlastní ho **granule `world.nodes`**; **`world.map` byla 8. 10. 2026 z plánu vyřazena** (v plánu je 21 granulí a `world.map` mezi nimi není) | **neblokuje `engine.shell`** (její `depends_on` = `engine.registry`) — `world.nodes` má v `depends_on` **`sim.mining`** a **`persist.save.state`** (naměřeno 15. 10. 2026 v `.forge/roadmap.json`; obě jsou v plánu `done: true`, i když je `world.gd` prázdný — to je vada 9); `save.gd` na něm už volá `snapshot()` |
 | 5 | **`save.gd:14` má zastaralý komentář** | tvrdí, že `player.gd` inventář „nemá“; naměřeno `player.gd:52` (`inventory`), `:130` (`add_item`), `:136` (`remove_item`) | komentář popírá kód — kdo mu věří, „opraví“ fungující věc |
 | 6 | **`assets/spec.json` nemá klíč `projekce`** | `level.gd:74` → `{}`, `:83` odvodí izometrii z `96 ≠ 48` | izometrie je **odvozená**, ne deklarovaná → druhé místo pravdy o projekci |
 | 7 | **Název hry se rozejšel ve třech zdrojích — OPRAVENO 8. 10. 2026** | `project.godot` = `uo-shadows`, `forge.json` a `.forge/vision-profile.json` = `uo-shadows`, repo = `uo-shadows`; **před opravou** říkaly `project.godot` a `assets/spec.json` `uo-sandbox` a `export_presets.cfg` `GameForge` | hledání pod jedním jménem teď funguje; **cena opravy:** `user://` se přesunul na `…\app_userdata\uo-shadows\` (ve starém adresáři žádný `save.cfg` nebyl — naměřeno) |
-| 8 | **`npc.gd` a `enemy.gd` v repu NEJSOU** | `scripts/` má 15 souborů; žádný z nich se tak nejmenuje | dvě smlouvy (`Npc`, `Enemy`) nemají implementaci, přestože na ně plán navazuje |
+| 8 | **`npc.gd` a `enemy.gd` v repu NEJSOU** | `scripts/` má **16** souborů `.gd` (naměřeno 15. 10. 2026: `glob('scripts/*.gd')`); žádný z nich se tak nejmenuje. **Patnáct platilo před `M0`** (přibyl `registry.gd`) — ve svém čase správné číslo | dvě smlouvy (`Npc`, `Enemy`) nemají implementaci, přestože na ně plán navazuje |
 | 9 | **`done` není měření: v `.forge/roadmap.json` je 21 granul a `done: true` = 16, ale hra používá 2** | `roadmap.json`: 21 granul, `done: true` = 16 (stav 8. 10. 2026 po postavení `engine.registry`; **předtím 15, ještě předtím 13** — ve svém čase správná čísla); produkční cesta instancuje `level.gd` a `player.gd` | „hotovo“ dnes není měření (definice hotovo to mění) |
 | 10 | **`assets/data/*.json` nemá klíč `material`** | `items.json`: `id`, `name`, `durability`, `damage`, `armor_rating`; `item.gd:25` ho čte jako nepovinný | viz vada 1 |
+| 11 | **`game.gd:181` tweenuje `hud` dřív, než ho `_add_ui()` vytvoří** | naměřeno 15. 10. 2026 během testů: `ERROR: Required object "rp_target" is null.` s backtrace `_add_level (res://scripts/game.gd:181)` ← `_ready (res://scripts/game.gd:33)`; `_ready()` volá `_add_level()` na `:33`, ale `_add_ui()` (které `hud` teprve vytvoří) až na `:45` → `hud` je v tu chvíli `null` | **`ERROR` při každém načtení scény**; CI to **nechytí** — krok smoke hledá jen řetězec `SCRIPT ERROR`, ale naměřená chyba začíná `ERROR:` (`ci.yml:105`) |
 
 **Co z toho plyne pro plán:** vady 1–4 jsou na kritické cestě milníků `M0`
 (kostra a registr) a `M3` (výroba a ekonomika). **Nejsou to úkoly TDD** — TDD
 je jen **pojmenovává**, aby se na ně nezapomnělo a aby je plán mohl zařadit.
+
+**Už není otevřené** (nezmizelo — přesunulo se sem, protože to **přestalo
+platit**; co platí dál, zůstává v tabulce výš):
+
+- **„Registr komponent neexistuje“** — neplatí od 8. 10. 2026: `scripts/registry.gd`
+  je hotový a **měřený testy** (`component()`, `advance()`, fronty — naměřeno
+  15. 10. 2026; smlouva `Registry` je §3.19). Otevřené zůstává jen to, že ho
+  **kostra `scripts/game.gd` nevytváří ani nevolá** (vada 3).
+- **„`world.map` blokuje `engine.shell`“** — neplatí: `world.map` byla
+  8. 10. 2026 **vyřazena z plánu** a `engine.shell` má `depends_on` =
+  `engine.registry` (naměřeno 15. 10. 2026 v `.forge/roadmap.json`). `world.nodes`
+  má v `depends_on` `sim.mining` a `persist.save.state` (vada 4).
+- **„`scripts/` má 15 souborů“** — ve svém čase správné (stav před `M0`); dnes
+  **16** (vada 8).
 
 ---
 
@@ -794,6 +919,8 @@ je jen **pojmenovává**, aby se na ně nezapomnělo a aby je plán mohl zařadi
   a strojově `assets/spec.json`.
 - **Plán granulí, pořadí a vlny** → `.forge/roadmap.json` (vzniká z milníků
   `M0`–`M6` v GDD §12). **TDD neurčuje, co se kdy staví.**
+- **Detail bran hry** (co která měří, naměřená slepá místa, past „tiše přestala
+  měřit") → `docs/BRANY-HRY.md`; TDD drží jen **pořadí kroků CI** (`TDD` §9).
 - **Samotná síťová vrstva (cesta `B`)** — TDD drží jen podmínku, aby se dala
   přidat (`TDD` §1.4). Kdy a jestli se staví, je rozhodnutí mimo TDD.
 - **Konkrétní ladicí hodnoty** (mrtvá zóna, doba náběhu, obtížnost uzlů) —

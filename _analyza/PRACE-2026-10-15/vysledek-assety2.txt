@@ -1,0 +1,103 @@
+==============================================================================
+0) KONTAMINACE: vylucuji vlastni vystupy
+==============================================================================
+vylouceny adresar: _analyza/PRACE-2026-10-15/  (jinak by si skript nasel vlastni vystup)
+
+==============================================================================
+1) SPRITY, KTERE HRA NACITA -- autorita je KOD, ktery je nacita
+==============================================================================
+game.gd _visual(...) volani: ['walk', 'player', 'coin', 'player']
+game.gd _animation_visual(...): ['walk'] -> hleda res://assets/walk.tres, existuje=False
+  => _visual('player') na 2 mistech: radek 283 (hráč) a 327 (NPC!)
+     radek 228: func _visual(asset_name: String, fallback: Color, size: Vector2) -> Node2D:
+     radek 279: var anim := _animation_visual("walk")
+     radek 283: p.add_child(_visual("player", Color(0.35, 0.85, 1.0), Vector2(10, 10)))
+     radek 287: func _animation_visual(anim_name: String) -> Node2D:
+     radek 312: c.add_child(_visual("coin", Color(1.0, 0.85, 0.2), Vector2(8, 8)))
+     radek 327: n.add_child(_visual("player", Color(1.0, 0.84, 0.0), Vector2(12, 14)))
+
+DUSLEDEK: hra nacita presne tato jmena spritu:
+   coin     -> assets/sprites/coin.png  existuje=True
+   player   -> assets/sprites/player.png  existuje=True
+   walk     -> assets/sprites/walk.png  existuje=False
+
+==============================================================================
+2) DLAZDICE, KTERE HRA NACITA
+==============================================================================
+main.json 'tiles' (kod dlazdice -> jmeno souboru): {'0': 'brick', '1': 'stone', '2': 'dirt'}
+main.json 'legend' (kod -> vyznam): {'0': 'wall', '1': 'floor', '2': 'corridor'}
+grid: 16 radku, delky radku: [30]
+znaky pouzite v mrizce: ['0', '1', '2']
+kody v 'tiles', ktere se v mrizce REALNE vyskytuji: ['0', '1', '2']
+  => dlazdice pouzite mapou: ['brick', 'dirt', 'stone']
+level.gd: TILE_DIR = res://assets/tiles/
+level.gd sklada: TILE_DIR + tile_name + '.png'
+
+game.gd pozadi: _texture('tiles/grass') -> assets/tiles/grass.png
+vsechny dlazdice pouzite hrou: ['brick', 'dirt', 'grass', 'stone']
+existujici PNG v assets/tiles/: ['brick', 'dirt', 'grass', 'sand', 'stone', 'tileset', 'water']
+NEPOUZITE dlazdice (zmereno, ne odhad): ['sand', 'tileset', 'water']
+
+==============================================================================
+3) KOLIK PNG V assets/sprites HRA ODKAZUJE -- dve meritka, obe dolozene
+==============================================================================
+(A) PRISNE -- soubor se skutecne nacte kodem hry (game.gd/level.gd):
+    assets/sprites/chest.png                     nacte hra: False
+    assets/sprites/coin.png                      nacte hra: True
+    assets/sprites/enemy.png                     nacte hra: False
+    assets/sprites/items/chest_final.png         nacte hra: False
+    assets/sprites/items/coin_final.png          nacte hra: False
+    assets/sprites/items/dirt_tex.png            nacte hra: False
+    assets/sprites/items/grass_tex.png           nacte hra: False
+    assets/sprites/items/ore_final.png           nacte hra: False
+    assets/sprites/items/potion_final.png        nacte hra: False
+    assets/sprites/items/slime_final.png         nacte hra: False
+    assets/sprites/items/sword_final.png         nacte hra: False
+    assets/sprites/npc.png                       nacte hra: False
+    assets/sprites/ore.png                       nacte hra: False
+    assets/sprites/player.png                    nacte hra: True
+    assets/sprites/potion.png                    nacte hra: False
+    assets/sprites/weapon.png                    nacte hra: False
+    => 2 z 16
+
+(B) KONFIGURACE -- jmeno je zmínene v assets/spec.json / project.godot / sprites.json
+    (to je deklarace vzhledu, NE nacitani):
+    assets/spec.json: ['chest', 'coin', 'enemy', 'npc', 'ore', 'player', 'potion', 'weapon']
+    project.godot: []
+    sprites.json: ['chest', 'coin', 'enemy', 'player', 'potion']
+
+(C) SIROKE -- jmeno v jakemkoliv textovem souboru repa mimo .godot, .git a {MYDIR}
+    prohledano souboru: 2065 (vsechny), z toho textovych vyse
+    PNG, jejichz jmeno se NEVYSKYTUJE NIKDE v textu repa: []
+    PNG, ktere se vyskytuji JEN v dokumentaci/testech/nastrojich (ne v kodu hry a ne v konfiguraci):
+      chest_final      -> ['.forge/vision/baseline.json']
+      coin_final       -> ['tools/gamewindow_preview.py', '.forge/vision/baseline.json']
+      dirt_tex         -> ['docs/ADD.md', 'tools/floor_textures.txt', 'tools/gamewindow_preview.py', '.forge/vision/baseline.json']
+      grass_tex        -> ['docs/ADD.md', 'tools/floor_textures.txt', 'tools/gamewindow_preview.py', '.forge/vision/baseline.json']
+      ore_final        -> ['.forge/vision/baseline.json']
+      potion_final     -> ['tools/gamewindow_preview.py', '.forge/vision/baseline.json']
+      slime_final      -> ['docs/ADD.md', '.forge/vision/baseline.json']
+      sword_final      -> ['docs/ADD.md', 'tools/gamewindow_preview.py', '.forge/vision/baseline.json']
+
+==============================================================================
+4) tools/blender/sprites -- odkazuje je hra?
+==============================================================================
+celkem PNG: 258
+soubory v produkci (scripts/, assets/, main.tscn, project.godot, export_presets.cfg),
+ktere zminuji 'tools/blender' nebo 'blender/sprites': ['assets/spec.json']
+PNG z tools/blender/sprites, jejichz jmeno je v game.gd: 0
+
+koren: 130 PNG, npc/: 128 PNG
+  byte-identickych dvojic koren/npc: 64
+  lisi se: 64 -> ['legs_d0_f0', 'legs_d0_f1', 'legs_d0_f2', 'legs_d0_f3', 'legs_d0_f4', 'legs_d0_f5', 'legs_d0_f6', 'legs_d0_f7', 'legs_d1_f0', 'legs_d1_f1'] ...
+  v koreni navic (mimo 128 vrstev): ['_compare', '_player_vs_npc']
+
+==============================================================================
+5) DUPLICITY uvnitr assets/sprites (stejny hash, jine jmeno)
+==============================================================================
+  26c2eda957b0: ['assets/sprites/coin.png', 'assets/sprites/items/coin_final.png']
+  50005bbe32fa: ['assets/sprites/chest.png', 'assets/sprites/items/chest_final.png']
+  61ca795b377d: ['assets/sprites/enemy.png', 'assets/sprites/items/slime_final.png']
+  d0caf05e20f0: ['assets/sprites/items/ore_final.png', 'assets/sprites/ore.png']
+  e59a56790551: ['assets/sprites/items/potion_final.png', 'assets/sprites/potion.png']
+  fcb1dccfada9: ['assets/sprites/items/sword_final.png', 'assets/sprites/weapon.png']

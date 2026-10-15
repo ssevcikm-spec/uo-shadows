@@ -1,0 +1,270 @@
+==============================================================================
+1) POCTY PNG
+==============================================================================
+assets/sprites/ rekurzivne   : 16   ( primo v assets/sprites: 8, v podadresarich: 8)
+  podadresare: ['items']
+assets/tiles/ rekurzivne     : 7
+tools/blender/sprites/ rekurz.: 258   ( koren: 130, podadresare: 128)
+  podadresare: ['npc']
+assets/sprites/items/        : 8
+
+PNG v assets/sprites (rozmer, bajty, sha256 prvnich 12):
+  assets/sprites/chest.png                        64x64         6895 B  50005bbe32fa
+  assets/sprites/coin.png                         32x32         1987 B  26c2eda957b0
+  assets/sprites/enemy.png                        96x96        10154 B  61ca795b377d
+  assets/sprites/items/chest_final.png            64x64         6895 B  50005bbe32fa
+  assets/sprites/items/coin_final.png             32x32         1987 B  26c2eda957b0
+  assets/sprites/items/dirt_tex.png             1024x1024    2034569 B  e27d2ee9a4fe
+  assets/sprites/items/grass_tex.png            1024x1024    2210440 B  602fb2643ea7
+  assets/sprites/items/ore_final.png              64x64         6673 B  d0caf05e20f0
+  assets/sprites/items/potion_final.png           48x48         1435 B  e59a56790551
+  assets/sprites/items/slime_final.png            96x96        10154 B  61ca795b377d
+  assets/sprites/items/sword_final.png            64x64         1635 B  fcb1dccfada9
+  assets/sprites/npc.png                         128x128        6143 B  04e39cd883ab
+  assets/sprites/ore.png                          64x64         6673 B  d0caf05e20f0
+  assets/sprites/player.png                      128x128        6114 B  735bc784ea01
+  assets/sprites/potion.png                       48x48         1435 B  e59a56790551
+  assets/sprites/weapon.png                       64x64         1635 B  fcb1dccfada9
+
+==============================================================================
+2) KTERE ASSETY HRA SKUTECNE ODEBIRA (staticky ze kodu)
+==============================================================================
+_visual("X")        -> ['coin', 'player', 'walk']   (volani: 4)
+_texture("X")       -> ['sprites/%s', 'tiles/grass', 'ui/panel']  (volani: 4)
+_animation_visual() -> ['walk'] -> hleda assets/<X>.tres
+jmena dlazdic z assets/levels/main.json: []
+SKUTECNE ODEBIRANE (jmena): ['coin', 'grass', 'player', 'sprites/%s', 'tiles/grass', 'ui/panel', 'walk']
+  z toho sprity: ['coin', 'player', 'walk']
+  z toho dlazdice: ['tiles/grass']
+
+==============================================================================
+3) KOLIK PNG JE ODKAZOVANYCH -- dve meritka
+==============================================================================
+prohledavanych textovych souboru v repu (bez .git a .godot): 124
+(A) PRISNE -- jmeno je v kodu, ktery ho nacita (_visual/_texture): 2 z 16
+      assets/sprites/coin.png
+      assets/sprites/player.png
+(B) SIROKE -- jmeno se vyskytuje v NEJAKEM textovem souboru repa: 16 z 16
+    nikde v repu (mimo .git/.godot) se nevyskytuje: 0
+
+Detail (B) -- kde vsude je jmeno zmínene (jen soubory, kde jde o realny odkaz):
+  assets/sprites/chest.png
+      vsechny: ['scripts/game.gd', 'scripts/hud.gd', 'tests/run_tests.gd', 'tests/_dukaz-assist.gd', 'tests/_snimek-hp.gd', 'tests/_sonda-pohyb.gd', 'forge.json', 'sprites.json', '.forge/roadmap.json', '.forge/vision-profile.json', 'assets/spec.json', '.forge/vision/baseline.json', 'AGENTS.md', 'CONVENTIONS.md', 'HANDOFF.md', 'ZADANI-GDD-ADD-TDD.md', 'ZADANI-REVIZE-VIZE.md', 'ZASTAVENO.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/BRANY-HRY.md', 'docs/DESIGN.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/baseline.py', '.forge/check-assets.py', '.forge/check-schema.py', 'tools/items_postprocess.py', '.forge/pick-provider.mjs', '.forge/vision.mjs', '.forge/node/self-test.mjs', '.forge/node/worker.mjs', '_analyza/idle-realm/github-stav.mjs', '_analyza/idle-realm/orchestra-query.mjs', '_analyza/idle-realm/pages-config.mjs', '.forge/node/termux-setup.sh', 'hra.cmd', '.github/workflows/agent.yml', '.github/workflows/ci.yml', 'tools/ore_chest.txt', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt', '_analyza/idle-realm/tmp/jinde.txt']
+      mimo tools/blender/sprites: ['scripts/game.gd', 'scripts/hud.gd', 'tests/run_tests.gd', 'tests/_dukaz-assist.gd', 'tests/_snimek-hp.gd', 'tests/_sonda-pohyb.gd', 'forge.json', 'sprites.json', '.forge/roadmap.json', '.forge/vision-profile.json', 'assets/spec.json', '.forge/vision/baseline.json', 'AGENTS.md', 'CONVENTIONS.md', 'HANDOFF.md', 'ZADANI-GDD-ADD-TDD.md', 'ZADANI-REVIZE-VIZE.md', 'ZASTAVENO.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/BRANY-HRY.md', 'docs/DESIGN.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/baseline.py', '.forge/check-assets.py', '.forge/check-schema.py', 'tools/items_postprocess.py', '.forge/pick-provider.mjs', '.forge/vision.mjs', '.forge/node/self-test.mjs', '.forge/node/worker.mjs', '_analyza/idle-realm/github-stav.mjs', '_analyza/idle-realm/orchestra-query.mjs', '_analyza/idle-realm/pages-config.mjs', '.forge/node/termux-setup.sh', 'hra.cmd', '.github/workflows/agent.yml', '.github/workflows/ci.yml', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt', '_analyza/idle-realm/tmp/jinde.txt']
+  assets/sprites/coin.png
+      vsechny: ['scripts/game.gd', 'scripts/hud.gd', 'tests/run_tests.gd', 'sprites.json', 'assets/spec.json', '.forge/vision/baseline.json', 'assets/levels/main.json', 'CONVENTIONS.md', 'ZADANI-GDD-ADD-TDD.md', 'docs/ADD.md', 'docs/GDD.md', 'docs/TDD.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/check-assets.py', 'tools/gamewindow_preview.py', 'tools/items_postprocess.py', 'tools/items.txt', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+      mimo tools/blender/sprites: ['scripts/game.gd', 'scripts/hud.gd', 'tests/run_tests.gd', 'sprites.json', 'assets/spec.json', '.forge/vision/baseline.json', 'assets/levels/main.json', 'CONVENTIONS.md', 'ZADANI-GDD-ADD-TDD.md', 'docs/ADD.md', 'docs/GDD.md', 'docs/TDD.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/check-assets.py', 'tools/gamewindow_preview.py', 'tools/items_postprocess.py', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+  assets/sprites/enemy.png
+      vsechny: ['scripts/combat.gd', 'scripts/game.gd', 'scripts/hud.gd', 'tests/run_tests.gd', 'sprites.json', '.forge/roadmap.json', 'assets/spec.json', '_analyza/roadmap-navrh.json', '.forge/vision/baseline.json', 'CONVENTIONS.md', 'HANDOFF.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/check-wiring.py', '.github/workflows/ci.yml', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+      mimo tools/blender/sprites: ['scripts/combat.gd', 'scripts/game.gd', 'scripts/hud.gd', 'tests/run_tests.gd', 'sprites.json', '.forge/roadmap.json', 'assets/spec.json', '_analyza/roadmap-navrh.json', '.forge/vision/baseline.json', 'CONVENTIONS.md', 'HANDOFF.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/check-wiring.py', '.github/workflows/ci.yml', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+  assets/sprites/items/chest_final.png
+      vsechny: ['.forge/vision/baseline.json']
+      mimo tools/blender/sprites: ['.forge/vision/baseline.json']
+  assets/sprites/items/coin_final.png
+      vsechny: ['.forge/vision/baseline.json', 'tools/gamewindow_preview.py']
+      mimo tools/blender/sprites: ['.forge/vision/baseline.json', 'tools/gamewindow_preview.py']
+  assets/sprites/items/dirt_tex.png
+      vsechny: ['.forge/vision/baseline.json', 'docs/ADD.md', 'tools/gamewindow_preview.py', 'tools/floor_textures.txt']
+      mimo tools/blender/sprites: ['.forge/vision/baseline.json', 'docs/ADD.md', 'tools/gamewindow_preview.py']
+  assets/sprites/items/grass_tex.png
+      vsechny: ['.forge/vision/baseline.json', 'docs/ADD.md', 'tools/gamewindow_preview.py', 'tools/floor_textures.txt']
+      mimo tools/blender/sprites: ['.forge/vision/baseline.json', 'docs/ADD.md', 'tools/gamewindow_preview.py']
+  assets/sprites/items/ore_final.png
+      vsechny: ['.forge/vision/baseline.json']
+      mimo tools/blender/sprites: ['.forge/vision/baseline.json']
+  assets/sprites/items/potion_final.png
+      vsechny: ['.forge/vision/baseline.json', 'tools/gamewindow_preview.py']
+      mimo tools/blender/sprites: ['.forge/vision/baseline.json', 'tools/gamewindow_preview.py']
+  assets/sprites/items/slime_final.png
+      vsechny: ['.forge/vision/baseline.json', 'docs/ADD.md']
+      mimo tools/blender/sprites: ['.forge/vision/baseline.json', 'docs/ADD.md']
+  assets/sprites/items/sword_final.png
+      vsechny: ['.forge/vision/baseline.json', 'docs/ADD.md', 'tools/gamewindow_preview.py']
+      mimo tools/blender/sprites: ['.forge/vision/baseline.json', 'docs/ADD.md', 'tools/gamewindow_preview.py']
+  assets/sprites/npc.png
+      vsechny: ['scripts/game.gd', 'scripts/hud.gd', 'tests/run_tests.gd', '.forge/roadmap.json', 'assets/spec.json', '_analyza/roadmap-navrh.json', '.forge/vision/baseline.json', 'HANDOFF.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/DESIGN.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', 'tools/make_npc.py', '_analyza/PRACE-2026-10-15/mereni-assety.py', '.forge/files-to-edit.mjs', '.forge/node/provider-choice.mjs', '.github/workflows/agent.yml', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+      mimo tools/blender/sprites: ['scripts/game.gd', 'scripts/hud.gd', 'tests/run_tests.gd', '.forge/roadmap.json', 'assets/spec.json', '_analyza/roadmap-navrh.json', '.forge/vision/baseline.json', 'HANDOFF.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/DESIGN.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', 'tools/make_npc.py', '_analyza/PRACE-2026-10-15/mereni-assety.py', '.forge/files-to-edit.mjs', '.forge/node/provider-choice.mjs', '.github/workflows/agent.yml', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+  assets/sprites/ore.png
+      vsechny: ['scripts/crafting.gd', 'scripts/game.gd', 'scripts/mining.gd', 'scripts/save.gd', 'tests/run_tests.gd', '.forge/roadmap.json', 'assets/spec.json', '_analyza/roadmap-navrh.json', '.forge/vision/baseline.json', 'assets/data/materials.json', 'assets/data/monsters.json', 'assets/data/recipes.json', 'AGENTS.md', 'HANDOFF.md', 'ZADANI-REVIZE-VIZE.md', 'ZASTAVENO.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/BRANY-HRY.md', 'docs/GDD.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/DESIGN-PRACOVNI-VSTUPY.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/baseline.py', '.forge/check-assets.py', '.forge/check-schema.py', '.forge/check-wiring.py', '.forge/verify-level-render.py', 'tools/items_postprocess.py', 'tools/make_iso_tiles.py', '_analyza/over-dokumenty.py', 'tools/blender/build_character.py', 'tools/blender/_analyze.py', '_analyza/PRACE-2026-10-15/mereni-assety.py', '_analyza/PRACE-2026-10-15/mereni-obsah.py', '.forge/files-to-edit.mjs', '.forge/pick-provider.mjs', '.forge/vision.mjs', '.forge/node/provider-choice.mjs', '.forge/node/vision.test.mjs', '.forge/node/worker.mjs', '.github/workflows/agent.yml', '.github/workflows/ci.yml', 'tools/ore_chest.txt', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt', '_analyza/idle-realm/tmp/pozastaveni.txt', '_analyza/idle-realm/tmp/prehled.txt']
+      mimo tools/blender/sprites: ['scripts/crafting.gd', 'scripts/game.gd', 'scripts/mining.gd', 'scripts/save.gd', 'tests/run_tests.gd', '.forge/roadmap.json', 'assets/spec.json', '_analyza/roadmap-navrh.json', '.forge/vision/baseline.json', 'assets/data/materials.json', 'assets/data/monsters.json', 'assets/data/recipes.json', 'AGENTS.md', 'HANDOFF.md', 'ZADANI-REVIZE-VIZE.md', 'ZASTAVENO.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/BRANY-HRY.md', 'docs/GDD.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/DESIGN-PRACOVNI-VSTUPY.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/baseline.py', '.forge/check-assets.py', '.forge/check-schema.py', '.forge/check-wiring.py', '.forge/verify-level-render.py', 'tools/items_postprocess.py', 'tools/make_iso_tiles.py', '_analyza/over-dokumenty.py', 'tools/blender/build_character.py', 'tools/blender/_analyze.py', '_analyza/PRACE-2026-10-15/mereni-assety.py', '_analyza/PRACE-2026-10-15/mereni-obsah.py', '.forge/files-to-edit.mjs', '.forge/pick-provider.mjs', '.forge/vision.mjs', '.forge/node/provider-choice.mjs', '.forge/node/vision.test.mjs', '.forge/node/worker.mjs', '.github/workflows/agent.yml', '.github/workflows/ci.yml', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt', '_analyza/idle-realm/tmp/pozastaveni.txt', '_analyza/idle-realm/tmp/prehled.txt']
+  assets/sprites/player.png
+      vsechny: ['scripts/assist.gd', 'scripts/economy.gd', 'scripts/game.gd', 'scripts/hud.gd', 'scripts/player.gd', 'scripts/save.gd', 'tests/run_tests.gd', 'tests/_dukaz-assist.gd', 'tests/_snimek-hp.gd', 'tests/_sonda-pohyb.gd', 'sprites.json', '.forge/roadmap.json', 'assets/spec.json', '_analyza/roadmap-navrh.json', '.forge/vision/baseline.json', 'CONVENTIONS.md', 'HANDOFF.md', 'ZADANI-GDD-ADD-TDD.md', 'ZADANI-REVIZE-VIZE.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/BRANY-HRY.md', 'docs/DESIGN.md', 'docs/GDD.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/DESIGN-PRACOVNI-VSTUPY.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/check-assets.py', '_analyza/over-dokumenty.py', '_analyza/PRACE-2026-10-15/mereni-assety.py', '_analyza/PRACE-2026-10-15/vysledek-kod.txt', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt', '_analyza/idle-realm/tmp/pozastaveni.txt', '_analyza/idle-realm/tmp/prehled.txt']
+      mimo tools/blender/sprites: ['scripts/assist.gd', 'scripts/economy.gd', 'scripts/game.gd', 'scripts/hud.gd', 'scripts/player.gd', 'scripts/save.gd', 'tests/run_tests.gd', 'tests/_dukaz-assist.gd', 'tests/_snimek-hp.gd', 'tests/_sonda-pohyb.gd', 'sprites.json', '.forge/roadmap.json', 'assets/spec.json', '_analyza/roadmap-navrh.json', '.forge/vision/baseline.json', 'CONVENTIONS.md', 'HANDOFF.md', 'ZADANI-GDD-ADD-TDD.md', 'ZADANI-REVIZE-VIZE.md', 'docs/ADD.md', 'docs/ARCHITEKTURA.md', 'docs/BRANY-HRY.md', 'docs/DESIGN.md', 'docs/GDD.md', 'docs/TDD.md', '_analyza/AUDIT-PLANU-A-DESIGNU.md', '_analyza/DESIGN-PRACOVNI-VSTUPY.md', '_analyza/DESIGN-REVIZE-2.md', '_analyza/NAVRH-ROADMAPY-M0-M6.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', '.forge/check-assets.py', '_analyza/over-dokumenty.py', '_analyza/PRACE-2026-10-15/mereni-assety.py', '_analyza/PRACE-2026-10-15/vysledek-kod.txt', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt', '_analyza/idle-realm/tmp/pozastaveni.txt', '_analyza/idle-realm/tmp/prehled.txt']
+  assets/sprites/potion.png
+      vsechny: ['sprites.json', 'assets/spec.json', '.forge/vision/baseline.json', 'docs/ADD.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', 'tools/gamewindow_preview.py', 'tools/items_postprocess.py', 'tools/items.txt', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+      mimo tools/blender/sprites: ['sprites.json', 'assets/spec.json', '.forge/vision/baseline.json', 'docs/ADD.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', 'tools/gamewindow_preview.py', 'tools/items_postprocess.py', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+  assets/sprites/weapon.png
+      vsechny: ['assets/spec.json', '.forge/vision/baseline.json', 'docs/ADD.md', '_analyza/DESIGN-PRACOVNI-VSTUPY.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', 'tools/gamewindow_preview.py', 'tools/items_postprocess.py', 'tools/make_npc.py', 'tools/blender/build_character.py', 'tools/blender/postprocess.py', '_analyza/PRACE-2026-10-15/mereni-assety.py', 'tools/arming_sword_candidates.txt', 'tools/arming_sword_rest.txt', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+      mimo tools/blender/sprites: ['assets/spec.json', '.forge/vision/baseline.json', 'docs/ADD.md', '_analyza/DESIGN-PRACOVNI-VSTUPY.md', '_analyza/REKONSTRUKCE-ADD-TDD-GDD.md', 'tools/gamewindow_preview.py', 'tools/items_postprocess.py', 'tools/make_npc.py', 'tools/blender/build_character.py', 'tools/blender/postprocess.py', '_analyza/PRACE-2026-10-15/mereni-assety.py', '_analyza/PRACE-2026-10-15/vysledek-obsah.txt']
+
+==============================================================================
+4) assets/sprites/player.png vs slozenina vrstev d0_f1 (tvrzeni HANDOFF.md:170)
+==============================================================================
+Postup: tools/blender/postprocess.py compose() sklada vrstvy v poradi
+        body, legs, torso, weapon pres sebe (alpha_composite). Vrstvy v
+        tools/blender/sprites/ jsou UZ zmensene na 128x128 platno
+assets/sprites/player.png: rozmer cil (128, 128), rozmer slozeniny (128, 128)
+  pixel-identicke (RGBA bytes): True
+  sha256 cil       : 38743559754d93e5b19cfaee6d132eac5651f1a36441cce0dfd24ca2f6d2bdb0
+  sha256 slozenina : 38743559754d93e5b19cfaee6d132eac5651f1a36441cce0dfd24ca2f6d2bdb0
+assets/sprites/npc.png: rozmer cil (128, 128), rozmer slozeniny (128, 128)
+  pixel-identicke (RGBA bytes): True
+  sha256 cil       : 2122afa7ea3dfc66ac9f7cb43839724911408366e133ce37d1e044813292806a
+  sha256 slozenina : 2122afa7ea3dfc66ac9f7cb43839724911408366e133ce37d1e044813292806a
+
+==============================================================================
+5) user:// -- kam se uklada (Godot ignoruje --user-data-dir)
+==============================================================================
+APPDATA = C:\Users\Ssevc\AppData\Roaming
+  [unnamed project]/
+  coin-picker/
+      coin-picker/best_test.json  11 B
+      coin-picker/logs/godot.log  7332 B
+      coin-picker/logs/godot2026-10-14T16.29.49.log  5411 B
+      coin-picker/logs/godot2026-10-14T16.30.58.log  5411 B
+      coin-picker/logs/godot2026-10-14T17.47.51.log  7332 B
+      coin-picker/logs/godot2026-10-15T07.31.36.log  7332 B
+  demo1/
+      demo1/logs/godot.log  401 B
+      demo1/logs/godot2026-09-24T23.05.20.log  519 B
+      demo1/logs/godot2026-09-24T23.05.28.log  525 B
+      demo1/logs/godot2026-09-25T08.12.52.log  552 B
+      demo1/logs/godot2026-09-25T11.19.36.log  474 B
+      demo1/shader_cache/BlitShaderRD/ae4daaa7a60bb17ebd7e9de5db9422fb448b52ad89776ae7aa53fee442f7cc60/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  6484 B
+      demo1/shader_cache/BlurRasterShaderRD/9c5ce6c282305d452850250d675e75b5784d4bd5843cfef7c8c782a789f8ed56/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  7384 B
+      demo1/shader_cache/BokehDofRasterShaderRD/8641c53aea67ee360fd91fe57abfedf8e7ff723cb62ccf7a29ced875fbf9649b/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  11320 B
+      demo1/shader_cache/CanvasOcclusionShaderRD/606df5c981910bc4bc719cf497719273e80d1f314f65e68820bf8e2111368cdb/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  2920 B
+      demo1/shader_cache/CanvasSdfShaderRD/a4f6d732dba9a4cc0c37a1ca52936369e2ee148e9d03efe1b81bfed822adb1eb/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  4776 B
+      demo1/shader_cache/CanvasShaderRD/5454ca85157b6953b76bf324ebe90594c466e36301bf1b3e6adcce117d705c79/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  39424 B
+      demo1/shader_cache/CanvasShaderRD/5454ca85157b6953b76bf324ebe90594c466e36301bf1b3e6adcce117d705c79/89e0c5a264d1558e7bc2ca0dc3d0afd834fbe7b6.vulkan.cache  23900 B
+      demo1/shader_cache/CanvasShaderRD/5454ca85157b6953b76bf324ebe90594c466e36301bf1b3e6adcce117d705c79/8f9335de72e837eeead40640cc01fddc5baf5a7c.vulkan.cache  23584 B
+      demo1/shader_cache/CopyShaderRD/c374588e7ae9bf64919d0186bea3104b4f721cc0691d284a9998e1e7d06c5eb8/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  13948 B
+      demo1/shader_cache/CopyToFbShaderRD/72456b3a82af4da12c412275d4c8ffa4a6a5447d9daffeeef86bc16965803813/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  5464 B
+      demo1/shader_cache/CubeToDpShaderRD/da14e2c9b701a4bd7336b87667bf4f3b4f645de09781824763d2bbceead56c83/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1312 B
+      demo1/shader_cache/CubeToOctmapShaderRD/7a5a6871c4fae131d3fef2e125ac23cbe81a1a042028f8c294461282de463c9a/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1080 B
+      demo1/shader_cache/LuminanceReduceRasterShaderRD/64ab628341e9cf29ef6194796669b84730634d7b0838d39615342160fa4bcea2/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  3432 B
+      demo1/shader_cache/MotionVectorsShaderRD/4d3ba0c01e8b64c74a0f2f0fd20ddc8099d56cfbb3ee9e7dbe6dc3c54c174725/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1628 B
+      demo1/shader_cache/OctmapDownsamplerShaderRD/17404978f453a0a0388dfb81b2d08f173476d2c3b680e2e6aa35bcf438e24f11/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  2896 B
+      demo1/shader_cache/OctmapFilterShaderRD/cd03c4ea34362e2724f4d4536156039ee5ca21c31167b8840dfc65dad2d6bb11/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  23104 B
+      demo1/shader_cache/OctmapRoughnessShaderRD/8470960c68b74292e24251e3b7e41d28e9a5054dce0cd1d77c2a2a865a10af43/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  5208 B
+      demo1/shader_cache/ParticlesCopyShaderRD/ce2b95c8a6b9e21f14c989c3ca095de77d9bb5e86213ae4180fb97cbd2c02a10/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  44972 B
+      demo1/shader_cache/ParticlesShaderRD/f645828ab356b17f1478c77373935ecd2417e1c227a96b62417396293d13970e/07b5904b662900d90454c39c46885098de79aa4c.vulkan.cache  6256 B
+      demo1/shader_cache/ResolveRasterShaderRD/137533f5cd9053770129104644f24ab1233ba842cf0fab2a907f5680ea22aa2d/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  892 B
+      demo1/shader_cache/SceneForwardMobileShaderRD/e1770e5c33fe81774bb96a2af05f6b63f1683492a46b2f4172770fd703f44f60/347259af253e6bbec7ad5c69332af5ca731015aa.vulkan.cache  68560 B
+      demo1/shader_cache/SceneForwardMobileShaderRD/e1770e5c33fe81774bb96a2af05f6b63f1683492a46b2f4172770fd703f44f60/a784797763b72ce058effad41b273eb697df9814.vulkan.cache  143388 B
+      demo1/shader_cache/SceneForwardMobileShaderRD/e1770e5c33fe81774bb96a2af05f6b63f1683492a46b2f4172770fd703f44f60/b600e18e20b53d8932999d48838b29553c586934.vulkan.cache  146944 B
+      demo1/shader_cache/ShadowFrustumShaderRD/248bc9deb54d10af912f2da1bd4b006bc43cfe08659a206fa573baf48e4050e0/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  696 B
+      demo1/shader_cache/SkeletonShaderRD/e6bc641e2a094416c99b1294ac5e453c55d24e0b62c1da47c8f7f93ae7877bfa/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  5140 B
+      demo1/shader_cache/SkyShaderRD/25c4162ba5ed1f15e722f73bf07201837a6ae7b301288dd32ff9f71634118d9c/0fa1946a11e1cca806ebfe4b3b4ac7f723d8b701.vulkan.cache  15384 B
+      demo1/shader_cache/SkyShaderRD/25c4162ba5ed1f15e722f73bf07201837a6ae7b301288dd32ff9f71634118d9c/ff1961ca0c4c55a79eb12f819a7b6345801bbbaf.vulkan.cache  15696 B
+      demo1/shader_cache/SmaaBlendingShaderRD/d7b7c8cec00f24f9aa8db356b4df88c5fe032d38ce38673bd520c280c936fb80/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1940 B
+      demo1/shader_cache/SmaaEdgeDetectionShaderRD/8879d099a2601bd01d4582b1e86a091c5f89a7bc46aecc9e805410f75bcda245/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1400 B
+      demo1/shader_cache/SmaaWeightCalculationShaderRD/de1d49d5ff947e8b8382f43a79f57c4cceb02eed6f86d5175093ca63e94052bf/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  4496 B
+      demo1/shader_cache/SortShaderRD/d8d77897b86870d358bf870233e14233981c2db9ff06641cd8f405379ac8872f/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  3020 B
+      demo1/shader_cache/SpecularMergeShaderRD/70920fc883de48dd253fbc2503dd8f4e65941df0da07e074541df12df090de98/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  3268 B
+      demo1/shader_cache/TexBlitShaderRD/fd9c885eab1da0d330a04ebfd7796019cde57f82208202f3bfc96cae74155212/1e8995c9eb0e9b0b053035999de68595c521a33e.vulkan.cache  6316 B
+      demo1/shader_cache/TonemapMobileShaderRD/d0219d249e06a0fe50412897cc24a137b74c0423bc660911325fe01a359a8273/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  16732 B
+      demo1/shader_cache/VrsShaderRD/fa59a74699f8241cd3f8174eaef045dc8d40f3b29bf36af5414713c289f82717/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  2560 B
+      demo1/vulkan/pipelines.mobile.amd_radeon_rx_6600.cache  489188 B
+  game-clone/
+      game-clone/logs/godot.log  4804 B
+      game-clone/logs/godot2026-10-13T17.11.15.log  143780 B
+      game-clone/logs/godot2026-10-13T17.11.24.log  4001 B
+      game-clone/logs/godot2026-10-13T17.21.22.log  3894 B
+      game-clone/logs/godot2026-10-13T17.21.34.log  4805 B
+      game-clone/probe.sav  292 B
+      game-clone/test_movement_tempo.json  71 B
+      game-clone/test_movement_tempo_cast.json  28 B
+      game-clone/test_movement_tempo_vadne.json  38 B
+      game-clone/test_policy_hook.json  163 B
+      game-clone/test_sim_world.sav  331 B
+  overeni-skeletonu/
+      overeni-skeletonu/logs/godot.log  1331 B
+  policy.json/
+  testovaci-hra/
+      testovaci-hra/logs/godot.log  1331 B
+      testovaci-hra/logs/godot2026-10-15T07.18.10.log  1331 B
+      testovaci-hra/logs/godot2026-10-15T07.18.22.log  1331 B
+      testovaci-hra/logs/godot2026-10-15T07.29.38.log  1331 B
+      testovaci-hra/logs/godot2026-10-15T07.40.51.log  1331 B
+  The Hero Arc/
+      The Hero Arc/logs/godot.log  73 B
+      The Hero Arc/logs/godot2026-10-15T13.37.06.log  2124 B
+      The Hero Arc/logs/godot2026-10-15T13.37.19.log  2123 B
+      The Hero Arc/logs/godot2026-10-15T13.37.23.log  2124 B
+      The Hero Arc/logs/godot2026-10-15T13.37.36.log  2124 B
+      The Hero Arc/shader_cache/CanvasShaderGLES3/82fd3c0e2efb7aa5f6bb9e3c0cdd4748dff4bce27a219d87f80b622a0639a396/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  132187 B
+      The Hero Arc/shader_cache/CopyShaderGLES3/0966d11050130efd093dfb85e35b21f9b257051f5d5522a5373e8492989fc03c/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  155448 B
+      The Hero Arc/shader_cache/FeedShaderGLES3/56cfc7a52ac48872ac58d4db86c7aed1dba3419615856ae94e84a5e33644eaa5/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  9147 B
+      The Hero Arc/shader_cache/PostShaderGLES3/3ae1ebf1f6eb4c6dd237047c71f03e0ead0625c42ee509f9463de5bc26325cb5/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  27510 B
+      The Hero Arc/shader_cache/SceneShaderGLES3/0af64e055a8fe1d2f09eb3e56e64954175c555a0a077d4b3e3a6c7a8eb3b725e/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  568008 B
+  UO klient/
+      UO klient/logs/godot.log  1682 B
+      UO klient/logs/godot2026-10-13T23.08.37.log  1682 B
+      UO klient/logs/godot2026-10-13T23.30.56.log  1364 B
+      UO klient/logs/godot2026-10-13T23.30.58.log  763 B
+      UO klient/logs/godot2026-10-13T23.31.04.log  1537 B
+      UO klient/shader_cache/CanvasShaderGLES3/82fd3c0e2efb7aa5f6bb9e3c0cdd4748dff4bce27a219d87f80b622a0639a396/420ebfcbf92ddde74127b8bb2bb4e33005f666de.cache  52093 B
+      UO klient/shader_cache/CanvasShaderGLES3/82fd3c0e2efb7aa5f6bb9e3c0cdd4748dff4bce27a219d87f80b622a0639a396/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  48288 B
+      UO klient/shader_cache/CopyShaderGLES3/0966d11050130efd093dfb85e35b21f9b257051f5d5522a5373e8492989fc03c/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  155448 B
+      UO klient/shader_cache/FeedShaderGLES3/56cfc7a52ac48872ac58d4db86c7aed1dba3419615856ae94e84a5e33644eaa5/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  9147 B
+      UO klient/shader_cache/PostShaderGLES3/3ae1ebf1f6eb4c6dd237047c71f03e0ead0625c42ee509f9463de5bc26325cb5/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  27510 B
+      UO klient/shader_cache/SceneShaderGLES3/0af64e055a8fe1d2f09eb3e56e64954175c555a0a077d4b3e3a6c7a8eb3b725e/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  568008 B
+  uo-sandbox/
+      uo-sandbox/logs/godot.log  8579 B
+      uo-sandbox/logs/godot2026-10-07T15.57.06.log  9309 B
+      uo-sandbox/logs/godot2026-10-07T15.57.14.log  1446 B
+      uo-sandbox/logs/godot2026-10-07T15.58.32.log  73 B
+      uo-sandbox/logs/godot2026-10-07T16.02.47.log  8579 B
+      uo-sandbox/shader_cache/BlitShaderRD/ae4daaa7a60bb17ebd7e9de5db9422fb448b52ad89776ae7aa53fee442f7cc60/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  6484 B
+      uo-sandbox/shader_cache/BlurRasterShaderRD/9c5ce6c282305d452850250d675e75b5784d4bd5843cfef7c8c782a789f8ed56/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  7384 B
+      uo-sandbox/shader_cache/BokehDofRasterShaderRD/8641c53aea67ee360fd91fe57abfedf8e7ff723cb62ccf7a29ced875fbf9649b/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  11320 B
+      uo-sandbox/shader_cache/CanvasOcclusionShaderRD/606df5c981910bc4bc719cf497719273e80d1f314f65e68820bf8e2111368cdb/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  2920 B
+      uo-sandbox/shader_cache/CanvasSdfShaderRD/a4f6d732dba9a4cc0c37a1ca52936369e2ee148e9d03efe1b81bfed822adb1eb/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  4776 B
+      uo-sandbox/shader_cache/CanvasShaderGLES3/82fd3c0e2efb7aa5f6bb9e3c0cdd4748dff4bce27a219d87f80b622a0639a396/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  48288 B
+      uo-sandbox/shader_cache/CanvasShaderRD/5454ca85157b6953b76bf324ebe90594c466e36301bf1b3e6adcce117d705c79/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  39424 B
+      uo-sandbox/shader_cache/CanvasShaderRD/5454ca85157b6953b76bf324ebe90594c466e36301bf1b3e6adcce117d705c79/89e0c5a264d1558e7bc2ca0dc3d0afd834fbe7b6.vulkan.cache  23900 B
+      uo-sandbox/shader_cache/CanvasShaderRD/5454ca85157b6953b76bf324ebe90594c466e36301bf1b3e6adcce117d705c79/8f9335de72e837eeead40640cc01fddc5baf5a7c.vulkan.cache  23584 B
+      uo-sandbox/shader_cache/CanvasShaderRD/5454ca85157b6953b76bf324ebe90594c466e36301bf1b3e6adcce117d705c79/c2f7efc3419efdd79fabd056897820a83f2ac2c9.vulkan.cache  41284 B
+      uo-sandbox/shader_cache/CopyShaderGLES3/0966d11050130efd093dfb85e35b21f9b257051f5d5522a5373e8492989fc03c/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  155448 B
+      uo-sandbox/shader_cache/CopyShaderRD/c374588e7ae9bf64919d0186bea3104b4f721cc0691d284a9998e1e7d06c5eb8/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  13948 B
+      uo-sandbox/shader_cache/CopyToFbShaderRD/72456b3a82af4da12c412275d4c8ffa4a6a5447d9daffeeef86bc16965803813/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  5464 B
+      uo-sandbox/shader_cache/CubeToDpShaderRD/da14e2c9b701a4bd7336b87667bf4f3b4f645de09781824763d2bbceead56c83/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1312 B
+      uo-sandbox/shader_cache/CubeToOctmapShaderRD/7a5a6871c4fae131d3fef2e125ac23cbe81a1a042028f8c294461282de463c9a/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1080 B
+      uo-sandbox/shader_cache/FeedShaderGLES3/56cfc7a52ac48872ac58d4db86c7aed1dba3419615856ae94e84a5e33644eaa5/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  9147 B
+      uo-sandbox/shader_cache/LuminanceReduceRasterShaderRD/64ab628341e9cf29ef6194796669b84730634d7b0838d39615342160fa4bcea2/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  3432 B
+      uo-sandbox/shader_cache/MotionVectorsShaderRD/4d3ba0c01e8b64c74a0f2f0fd20ddc8099d56cfbb3ee9e7dbe6dc3c54c174725/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1628 B
+      uo-sandbox/shader_cache/OctmapDownsamplerShaderRD/17404978f453a0a0388dfb81b2d08f173476d2c3b680e2e6aa35bcf438e24f11/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  2896 B
+      uo-sandbox/shader_cache/OctmapFilterShaderRD/cd03c4ea34362e2724f4d4536156039ee5ca21c31167b8840dfc65dad2d6bb11/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  23104 B
+      uo-sandbox/shader_cache/OctmapRoughnessShaderRD/8470960c68b74292e24251e3b7e41d28e9a5054dce0cd1d77c2a2a865a10af43/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  5208 B
+      uo-sandbox/shader_cache/ParticlesCopyShaderRD/ce2b95c8a6b9e21f14c989c3ca095de77d9bb5e86213ae4180fb97cbd2c02a10/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  44972 B
+      uo-sandbox/shader_cache/ParticlesShaderRD/f645828ab356b17f1478c77373935ecd2417e1c227a96b62417396293d13970e/07b5904b662900d90454c39c46885098de79aa4c.vulkan.cache  6256 B
+      uo-sandbox/shader_cache/PostShaderGLES3/3ae1ebf1f6eb4c6dd237047c71f03e0ead0625c42ee509f9463de5bc26325cb5/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  27510 B
+      uo-sandbox/shader_cache/ResolveRasterShaderRD/137533f5cd9053770129104644f24ab1233ba842cf0fab2a907f5680ea22aa2d/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  892 B
+      uo-sandbox/shader_cache/SceneForwardMobileShaderRD/e1770e5c33fe81774bb96a2af05f6b63f1683492a46b2f4172770fd703f44f60/347259af253e6bbec7ad5c69332af5ca731015aa.vulkan.cache  68560 B
+      uo-sandbox/shader_cache/SceneForwardMobileShaderRD/e1770e5c33fe81774bb96a2af05f6b63f1683492a46b2f4172770fd703f44f60/a784797763b72ce058effad41b273eb697df9814.vulkan.cache  143388 B
+      uo-sandbox/shader_cache/SceneForwardMobileShaderRD/e1770e5c33fe81774bb96a2af05f6b63f1683492a46b2f4172770fd703f44f60/b600e18e20b53d8932999d48838b29553c586934.vulkan.cache  146944 B
+      uo-sandbox/shader_cache/SceneShaderGLES3/0af64e055a8fe1d2f09eb3e56e64954175c555a0a077d4b3e3a6c7a8eb3b725e/6bb7c9a2fd1c4a8fa77cb96555b9b4a720209981.cache  568008 B
+      uo-sandbox/shader_cache/ShadowFrustumShaderRD/248bc9deb54d10af912f2da1bd4b006bc43cfe08659a206fa573baf48e4050e0/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  696 B
+      uo-sandbox/shader_cache/SkeletonShaderRD/e6bc641e2a094416c99b1294ac5e453c55d24e0b62c1da47c8f7f93ae7877bfa/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  5140 B
+      uo-sandbox/shader_cache/SkyShaderRD/25c4162ba5ed1f15e722f73bf07201837a6ae7b301288dd32ff9f71634118d9c/0fa1946a11e1cca806ebfe4b3b4ac7f723d8b701.vulkan.cache  15384 B
+      uo-sandbox/shader_cache/SkyShaderRD/25c4162ba5ed1f15e722f73bf07201837a6ae7b301288dd32ff9f71634118d9c/ff1961ca0c4c55a79eb12f819a7b6345801bbbaf.vulkan.cache  15696 B
+      uo-sandbox/shader_cache/SmaaBlendingShaderRD/d7b7c8cec00f24f9aa8db356b4df88c5fe032d38ce38673bd520c280c936fb80/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1940 B
+      uo-sandbox/shader_cache/SmaaEdgeDetectionShaderRD/8879d099a2601bd01d4582b1e86a091c5f89a7bc46aecc9e805410f75bcda245/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  1400 B
+      uo-sandbox/shader_cache/SmaaWeightCalculationShaderRD/de1d49d5ff947e8b8382f43a79f57c4cceb02eed6f86d5175093ca63e94052bf/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  4496 B
+      uo-sandbox/shader_cache/SortShaderRD/d8d77897b86870d358bf870233e14233981c2db9ff06641cd8f405379ac8872f/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  3020 B
+      uo-sandbox/shader_cache/SpecularMergeShaderRD/70920fc883de48dd253fbc2503dd8f4e65941df0da07e074541df12df090de98/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  3268 B
+      uo-sandbox/shader_cache/TexBlitShaderRD/fd9c885eab1da0d330a04ebfd7796019cde57f82208202f3bfc96cae74155212/1e8995c9eb0e9b0b053035999de68595c521a33e.vulkan.cache  6316 B
+      uo-sandbox/shader_cache/TonemapMobileShaderRD/d0219d249e06a0fe50412897cc24a137b74c0423bc660911325fe01a359a8273/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  16732 B
+      uo-sandbox/shader_cache/VrsShaderRD/fa59a74699f8241cd3f8174eaef045dc8d40f3b29bf36af5414713c289f82717/8305c75c1294a9f00656f0f14344bb8bedcfe4e7.vulkan.cache  2560 B
+      uo-sandbox/vulkan/pipelines.mobile.amd_radeon_rx_6600.cache  464876 B
+  uo-shadows/
+      uo-shadows/logs/godot.log  10483 B
+      uo-shadows/logs/godot2026-10-08T18.23.37.log  10483 B
+      uo-shadows/logs/godot2026-10-08T18.26.49.log  10483 B
+      uo-shadows/logs/godot2026-10-08T21.08.51.log  10483 B
+      uo-shadows/logs/godot2026-10-15T13.35.45.log  195 B
+  zkouska-hry/
+      zkouska-hry/logs/godot.log  1543 B
+
+git rev-parse --short HEAD -> 6986b0d

@@ -1,12 +1,32 @@
 # Brány hry `uo-shadows` — co měří a kde mají slepá místa
 
-**Co tenhle dokument JE:** **projektová znalost HRY** o jejích branách
-(`.forge/*`) — co která měří, kde má **naměřené** slepé místo a co se u ní
-změřilo. Nejsou to pravidla orchestry (ta jsou v orchestra) ani stav hry.
+**Co tenhle dokument JE:** **brána — katalog bran hry a jejich slepých míst**
+(`.forge/*`): co která měří, kde má **naměřené** slepé místo a co se u ní
+změřilo. **Druh dokumentu: brána (katalog)** — je to **projektová znalost HRY**
+(ne stav hry, ne pravidla orchestry — ta jsou v orchestra — a ne plán).
 
-**Odkud brát dnešní stav:** kód v `.forge/`, běhy `ci.yml`, roadmapa
+**Odkud brát stav:** kód v `.forge/`, běhy `ci.yml`, roadmapa
 `.forge/roadmap.json` a `AGENTS.md` hry (shrnutí + pravidla). Tenhle dokument
-je **znalost a naměřené případy** — čísla jsou **stav v čase měření**.
+je **znalost a naměřené případy** — čísla jsou **stav v čase měření** a mají
+u sebe **datum i postup**, kterým vznikla.
+
+**Vzniklo:** 7. 10. 2026 **přesunem** ze skillu `orchestra` (důvod a doklad
+v oddílu níž). **Datum posledního měření: 15. 10. 2026** — měřeno nad
+`HEAD 6986b0d` (kód se neměnil; spouštěly se brány, Godot smoke a četl se kód;
+u jednotlivých nálezů je postup).
+
+**Vlastník a režim údržby:** dokument udržuje **ten, kdo měří brány hry**
+(typicky session nad `.forge/` a `ci.yml`) — nový naměřený případ se **doplní**
+jako odrážka **s datem a postupem**. Historická čísla se **nepřepisují**;
+označí se jako „ve svém čase správná“.
+
+**Jak se mění:** je to **znalost a záznam**, ne stav — **jen se doplňuje**,
+nikdy nepřepisuje od nuly. ⚠ **Texty v tomhle souboru PINUJE brána orchestry**
+(`E:\Workspaces\forge-orchestra\tools\over-dokumentaci.py`, seznamy na `:197`
+a `:393`): **13 konkrétních textů** musí zůstat **na jednom řádku** a beze změny
+znaků (`Assety a „oči" hry`, `Animace se neměří`, `TIŠE PŘESTALA MĚŘIT`,
+`commitnout do hry` a další). Proto se soubor **nepřejmenovává, nevyprázdní**
+a text se mezi oddíly přesouvá **beze změny znaků**.
 
 > **⚠ ODKUD SE SEM PŘESUNUL (7. 10. 2026):** tenhle obsah byl do té doby
 > v **skillu `orchestra`** (oddíl „Assety a „oči" orchestra", ~11,6 kB). Skill
@@ -18,7 +38,7 @@ je **znalost a naměřené případy** — čísla jsou **stav v čase měření
 > z devíti vzorů o branách hry jich měl **skill 8** a `AGENTS.md` hry **2**.
 > Kdyby se text jen „zkrátil" podle auditu, znalost by **zanikla** a hra by
 > ji neměla čím nahradit. Proto se **přesouvá** a přesměrovala se i brána
-> (`tools/over-dokumentaci.py` v orchestra), která ty texty vyžaduje.
+> (`E:\Workspaces\forge-orchestra\tools\over-dokumentaci.py` v orchestra), která ty texty vyžaduje.
 
 ---
 
@@ -65,6 +85,22 @@ spritu to, co má být. Naměřeno 30. 9. 2026 na `uo-shadows`: `check-assets.py
 hlásí „Vše v pořádku: assety odpovídají specu" (player 38×95 px, 1103 barev,
 0 děr), a přesto o obsahu neříká nic.
 
+## Jak brány spouštět (aby výsledek nebyl falešný)
+
+**Naměřeno 15. 10. 2026 — dva běhy téhož kódu (`HEAD 6986b0d`) daly různý výsledek:**
+
+| Kde se měřilo | Výsledek testů | Proč |
+|---|---|---|
+| **v repu hry** (`E:\Workspaces\uo-shadows`, má `.godot/` s import cache) | **`[test] 113 kontrol, 0 selhání`**, `exit 0` | shoduje se s `FAKTA.md` #1 (stejný postup) |
+| **v čistém exportu** `git archive HEAD` (bez `.godot/`) | **`[test] 111 kontrol, 3 selhání`**, `exit 3` | testy **nemohou načíst** sprity a dlaždice („nelze načíst: res://assets/sprites/player.png“ atd.) — chybí **import cache**, kterou `git archive` nevyveze |
+
+**Pravidlo:** brány, které **jen čtou soubory** (`check-schema.py`,
+`check-wiring.py`, `check-assets.py`), dají na exportu téhož commitu
+**stejný výsledek** (ověřeno, `exit 0`). **Testy potřebují import cache** —
+kdo je pouští na exportu bez `.godot/`, naměří **falešnou regresi**.
+V CI cache vzniká krokem `--import` (`ci.yml`); do repa se `.godot/`
+necommituje.
+
 ## Kde jsou slepá místa brány (změřeno, ne odhad)
 
 - **Animace se neměří.** `check-assets.py` hledá `assets/sprites/walk_*.png`,
@@ -84,10 +120,24 @@ hlásí „Vše v pořádku: assety odpovídají specu" (player 38×95 px, 1103 
   vrátí prázdné `vady` a `main` vytiskne *„Vše v pořádku: každá funkce je
   odněkud volaná."* s **exit 0** (`:169`). Je to nejnebezpečnější brána
   orchestra, protože **nespadne a neohlásí se** — jen přestane měřit.
-  (Pro Godot je v pořádku: naměřeno 57 funkcí v 7 souborech.)
+  (Pro Godot je v pořádku: **naměřeno 15. 10. 2026 na čistém exportu
+  `HEAD 6986b0d`** — `git archive HEAD` + `python .forge/check-wiring.py .` —
+  hlásí **97 funkcí v 16 souborech** a `exit 0`. Číslo **57 v 7 souborech**
+  bylo naměřeno **1. 10. 2026** (do dokumentu se dostalo 7. 10. 2026 přesunem
+  ze skillu `orchestra`; `ROZPORY.md` `N1`) — ve svém čase správné. Dnes
+  neplatí ani jeden z obou údajů: `scripts/*.gd` je **16**.)
+- **Korpus pro hledání použití je CELÝ strom, ne jen `scripts/`.** Kontrola
+  sice cílí na `scripts/*.gd` (`check-wiring.py:73`), ale použití hledá přes
+  `target.rglob("*.gd"/"*.tscn"/"*.tres")` (`:84–88`) — tedy i v `_analyza/`
+  a v čemkoli, co v pracovním stromě zůstane. **Naměřeno 15. 10. 2026:** když
+  v repu ležela rekurzivní kopie repa (`_analyza/_selftest-copy/`,
+  **11 416 souborů / 240 složek**, hloubka 8), brána **spadla**
+  (`FileNotFoundError` u cesty dlouhé 237 znaků) s `exit 1` — a v CI by to byl
+  pád, ne nález o kódu. Čistý export `HEAD 6986b0d` dává `exit 0`. **Poučení:
+  brána „bez vstupu“ není jen slepá — umí i spadnout na odpadu ve stromě.**
 - **Kontrola zapojení čte i testy.** `check-wiring.py:83-89` hledá použití
-  funkce v **celém repu** včetně `tests/`, a `tests/run_tests.gd`
-  má **28 řádků s `has_method`** (**41 výskytů** — **přeměřeno 8. 10. 2026**;
+  funkce v **celém repu** včetně `tests/`, a v `tests/run_tests.gd` je
+  `has_method` na **28 řádcích** (**41 výskytů** — **přeměřeno 8. 10. 2026**;
   ve svém čase správné bylo „26 / 39" naměřené 7. 10. 2026, dřív tu stálo
   „27 podmíněných kontrol", což bylo **nepravdivé číslo na dvou místech** —
   tady a v `AGENTS.md` hry). Číslo roste s každou novou kontrolou: **počet
@@ -96,9 +146,48 @@ hlásí „Vše v pořádku: assety odpovídají specu" (player 38×95 px, 1103 
   nikdy nezavolá. **To je přesně past z `game-developer` skillu** („podmíněný
   test je tiše zelený").
 - **`check-assets.py`, `check-wiring.py` a `verify-level-render.py` nemají
-  žádný offline test** (na rozdíl od `check-schema.py`, `vision.mjs`,
-  `baseline.py` a `check-licence.py`). Brána bez testu se nedá poznat jako
-  nefunkční — proto zůstává nefunkční (tři slepá místa výš jsou toho důkaz).
+  žádný offline test** (na rozdíl od `check-schema.py`, `vision.mjs`
+  a `baseline.py`). Brána bez testu se nedá poznat jako nefunkční — proto
+  zůstává nefunkční (tři slepá místa výš jsou toho důkaz).
+- **Kontrola licence NEEXISTUJE.** Dřív tu stálo, že `check-licence.py` je
+  čtvrtá brána s offline testem — **takový soubor v `.forge/` není**
+  (**naměřeno 15. 10. 2026**: `.forge/` má **13 souborů v rootu** a **22
+  rekurzivně**, žádný `check-licence.py`; výpis `Get-ChildItem`). Kdo se na ni
+  spolehne, **nemá kontrolu licence vůbec** — a záznam o licenci assetů v repu
+  také není (`docs/ADD.md` §12, kde je to řádek 6 naměřených rozporů).
+- **`check-schema.py` hlásí `exit 0`, ale kontrola `world.gd` NEPROBĚHLA.**
+  Brána to řekne — jen jako **poznámku**, ne jako vadu, takže souhrn
+  („Schéma je v souladu“) i `exit` jsou zelené: „*poznámka: scripts/world.gd
+  existuje, ale jeho buňku se NEPODAŘILO přečíst – kontrola „dvě různé
+  představy o mřížce“ NEPROBĚHLA*“ (**naměřeno 15. 10. 2026**, čistý export
+  `HEAD 6986b0d`, `python .forge/check-schema.py .`, `exit 0`). Příčina je
+  naměřená: `scripts/world.gd` je **0 B** (prázdný soubor), takže kontrola nemá
+  co číst. **Je to přesně past „brána, která tiše neměří“** — kdo čte jen
+  poslední řádek a `exit 0`, myslí si, že se změřilo všechno (viz oddíl
+  „TIŠE PŘESTALA MĚŘIT“ níž, kde je stejná past z 1. 10. 2026 u `level.gd`).
+- **CI hledá jen `SCRIPT ERROR` — a nově naměřená vada začíná `ERROR:`.**
+  `game.gd:181` tweenuje `hud` dřív, než ho `_add_ui()` vytvoří: `_ready()` volá
+  `_add_level()` na `:33`, ale `_add_ui()` až na `:45`, a `_add_level()` na
+  `:181` tweenuje `hud` (v tu chvíli `null`). Vzniká
+  `ERROR: Required object "rp_target" is null` **při každém načtení scény**.
+  **Naměřeno 15. 10. 2026** (smoke běh jako `ci.yml` krok 9: `godot --headless
+  --path . --quit-after 120` nad čistým exportem `HEAD 6986b0d`): ve výstupu je
+  **0 řádků se `SCRIPT ERROR`** a **29 řádků s `ERROR:`** (mezi nimi ten
+  o `rp_target`), běh skončí `exit 0`. `ci.yml:105` greppuje **jen
+  `SCRIPT ERROR`** → krok projde a vada se do CI nedostane; testy ani
+  `check-wiring.py` ji taky nechytí.
+- **`economy.price()` vrací 0 pro oba předměty — a hlásí chybu na
+  `economy.gd:21`.** **Naměřeno 15. 10. 2026** spuštěním
+  `_analyza/PRACE-2026-10-15/sonda-cena.gd` nad čistým exportem `HEAD 6986b0d`:
+  `iron_sword → price()=0`, `iron_armor → price()=0`, a při tom
+  `SCRIPT ERROR: Invalid access to property or key 'quality' on a base object
+  of type 'Node (GameItem)'. at: Economy.price (res://scripts/economy.gd:21)`.
+  Proč: `economy.gd:21` čte `item.quality`, ale `item.gd` má vlastnost
+  **`kvalita`** a `items.json` klíč `quality` vůbec nemá (naměřeno: `material`
+  prázdný, `kvalita` = 0 u obou předmětů); cena je pak
+  `material_price * quality_price` = `0 * 0`. **Žádná brána to neměří** —
+  `economy.gd` navíc **není v produkční cestě** (`FAKTA.md` #14), takže se to
+  ve hře dnes neprojeví; vada je zapsaná, ne opravená (projekt je zastavený).
 
 **Pravidlo:** „brána nic nehlásí" může znamenat „brána se na to nedívá".
 Než se spolehneš na zelenou, ověř, že kontrola **skutečně proběhla**.
@@ -119,6 +208,12 @@ přečíst nelze („kontrola NEPROBĚHLA" není totéž jako „je to v pořád
 a rozlišuje šířku od výšky (u izometrie 96×48 se liší). Navíc pojmenovává
 **mrtvé větve**: `world.gd` se při migraci smazal, takže kontroly, které na
 něj sahají, se už nikdy nespustí — to se musí hlásit, ne mlčet.
+**⚠ Přeměřeno 15. 10. 2026: „`world.gd` se smazal“ už neplatí** —
+`scripts/world.gd` **existuje, ale je 0 B** (prázdný soubor; naměřeno
+`os.path.getsize` → 0). Mrtvá větev se tím **neuzavřela, jen změnila tvar**:
+kontrola na soubor **sahá** a nic nenaměří — proto ta poznámka „NEPODAŘILO SE
+PŘEČÍST“ v seznamu slepých míst výš. Znění z 1. 10. 2026 zůstává jako záznam;
+dnešní stav je „existuje a je prázdný“.
 
 **Pojistka proti regresi:** `tools\test-check-schema.py` v orchestra
 (17 offline testů se známým správným i chybným repem, spouští ho
@@ -136,11 +231,13 @@ CI ji nevidí.
 >
 > | soubor | řádků | co to je |
 > |---|---|---|
-> | `.forge\check-schema.py` v repu orchestry (`repo/.forge/`, **šablona**) **i** tady (`.forge/`) | **461** | **opravená verze** — měří oba tvary deklarace, hlásí „kontrola NEPROBĚHLA", pojmenovává mrtvé větve. **Tuhle pouští CI** |
+> | `.forge\check-schema.py` v repu orchestry (`repo/.forge/`, **šablona**) **i** tady (`.forge/`) | **468** (naměřeno 15. 10. 2026; 1. 10. 2026 tu stálo **461** — ve svém čase správné) | **opravená verze** — měří oba tvary deklarace, hlásí „kontrola NEPROBĚHLA", pojmenovává mrtvé větve. **Tuhle pouští CI** |
 > | ~~`tools\kontrola-schematu.py`~~ (v orchestra) | 305 | **stará, slepá verze** — ⚠ **6. 10. 2026 už NEEXISTUJE** (`Test-Path` = False v orchestra i ve hře), takže slepá větev je pryč. Kdo ji hledá podle starého textu, nenajde ji |
 >
 > Obě `.forge/` kopie mají shodný hash se svým protějškem, takže „drift" nic
 > neodhalí — jsou to **dvě různé cesty k témuž nástroji**.
+> **Přeměřeno 15. 10. 2026:** obě mají **468 řádků** a SHA256 začíná
+> `531AE859` (hra i šablona), takže tvrzení „shodný hash“ platí dál.
 > Když budeš bránu ověřovat, **použij tu v `.forge/`**.
 
 ## Kde je slepé místo mezi „vidím sám" a „vidí model"
@@ -156,8 +253,13 @@ repu hry**, ale CI píše snímek do `/tmp/frames` (`ci.yml:109`). Ověřeno:
 snímek mimo repo → `{"v_cache": false, "duvod": "mimo repo hry"}`; schválený
 asset v repu → `{"v_cache": true}`. **Důsledek:** v CI se vision ptá modelu
 **vždy** (a to je správně); nenech se uklidnit tím, že je něco „v baseline".
-Schválených 272 položek v `uo-shadows` jsou **sprity** (16 z `assets/sprites`
-+ 256 z `tools/blender/sprites`), ne snímky hry.
+Schválených **272 položek** v `uo-shadows` (naměřeno 15. 10. 2026 čtením
+`.forge/vision/baseline.json`, klíč `polozky`: 16 z `assets/sprites` + 256
+z `tools/blender/sprites`) jsou **sprity**, ne snímky hry.
+**A schválil je AGENT, ne člověk:** soubor má `_ceka_na_lgtm: true` a `_stav`
+= „PŘEVZATO AGENTEM 30. 9. 2026 – čeká na lidskou kontrolu“ (naměřeno
+15. 10. 2026) — kdo čte „schválené (LGTM)“, nesmí si myslet, že se na to někdo
+podíval očima.
 
 ## 3D → 2D sprity (a kde se to smí renderovat)
 
@@ -182,6 +284,13 @@ kopiích** — v **šabloně** (`E:\Workspaces\forge-orchestra\repo\.forge\`) a
 **Nikdy neměň jen jednu kopii** — a pozor: **`vision.test.mjs` se mezi kopiemi
 ROZEŠEL** (šablona 36/36, hra 28/28) a drift test ten soubor **nehlídá**.
 
+**Přeměřeno 15. 10. 2026 (jen velikosti; testy se nespouštěly):**
+`.forge/node/vision.test.mjs` má **13 318 B** (hra) a
+`repo/.forge/node/vision.test.mjs` **17 576 B** (šablona) — rozchod tedy
+**trvá** a je vidět i na velikosti. Výsledky běhů (**36/36** šablona,
+**28/28** hra) jsou z **1. 10. 2026** a v této session se **NEPŘEMĚŘOVALY** —
+ber je jako tvrzení s datem, ne jako dnešní stav.
+
 ## Kam pro co
 
 | Co | Kde |
@@ -190,3 +299,19 @@ ROZEŠEL** (šablona 36/36, hra 28/28) a drift test ten soubor **nehlídá**.
 | **tento dokument** | `docs/BRANY-HRY.md` |
 | orchestra (kdo hru vyvíjí) | `E:\Workspaces\forge-orchestra`, provoz a invarianty v `PROVOZ-ORCHESTRA.md` |
 | metodika granulí (DAG) | skill `game-developer` |
+
+---
+
+## Co v tomhle dokumentu ZÁMĚRNĚ NENÍ
+
+- **Stav hry a co je hotové** → běhy `ci.yml` a `AGENTS.md`; tenhle dokument
+  říká, co brány **měří**, ne co právě vyšlo.
+- **Pravidla orchestry** (dispatch, cooldown, uzly, fronty) →
+  `E:\Workspaces\forge-orchestra\PROVOZ-ORCHESTRA.md` — jiný repozitář.
+- **Smlouvy a technika hry** → `docs/TDD.md`; **design** → `docs/GDD.md`.
+- **Vzhled a rozhodnutí o assetech** → `docs/ADD.md`; tady je jen to, co
+  o assetech **naměřily brány**.
+- **Historie a záznamy** (co se kdy změnilo) → `HANDOFF.md`, `ZASTAVENO.md`
+  a `_analyza/PRACE-2026-10-15/ROZPORY.md` — **needitují se**.
+- **Oprava kódu** — projekt je zastavený; naměřená vada se sem **zapíše**,
+  neopravuje.
