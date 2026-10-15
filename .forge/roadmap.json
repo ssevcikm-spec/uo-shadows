@@ -28,7 +28,8 @@
     "je přeskočí — POZOR: engine.shell je hotový jen jako ZAPOJENÍ REGISTRU do dnešní scény;",
     "rozdělení monolitu na komponenty dělají právě shell.coins a sim.wire.",
     "⚠ Hra je ZASTAVENÁ (ZASTAVENO.md) a v orchestraci je aktivní jiná hra (coin-picker).",
-    "Tenhle plán je připravený k vydání, ale orchestra na něm začne pracovat až po aktivaci hry."
+    "Tenhle plán je připravený k vydání, ale orchestra na něm začne pracovat až po aktivaci hry.",
+    "ZMĚNA 15. 10. 2026 (večer): world.bodies HOTOVÁ (patch z orchestry #374, integrováno ručně — krok PR nemá funkční FORGE_PAT). `shell.coins` ROZDELENA na `shell.nocoins` (game.gd) a `shell.save` (save.gd), protože dva vlastněné soubory v jednom zadání vyrobily request 40 537 t proti limitu 8 000 a model zadání neviděl."
   ],
   "grains": [
     {
@@ -37,9 +38,14 @@
       "done": true,
       "done_note": "HOTOVO 8. 10. 2026 ručně (commit 799481d, scripts/registry.gd 150 řádků) po neúspěšných pokusech orchestry (úloha #240 v /failed). Ověřeno 15. 10. 2026: [test] 113 kontrol, 0 selhání. POZOR: scripts/game.gd registr ZATÍM NEVOLÁ (naměřeno 15. 10. 2026) — zapojení dělá granule engine.shell.",
       "kind": "code",
-      "owns": ["scripts/registry.gd"],
+      "owns": [
+        "scripts/registry.gd"
+      ],
       "depends_on": [],
-      "acceptance": ["tests", "wiring"],
+      "acceptance": [
+        "tests",
+        "wiring"
+      ],
       "size_lines": 150,
       "model": "strong",
       "milestone": "M0",
@@ -51,35 +57,82 @@
       "done": true,
       "done_note": "HOTOVO 15. 10. 2026 (tato session). Původní zadání „přepiš monolit na registr“ (377 řádků) je přesně to, co free model neutáhne — zadání se proto ZÚŽILO: kostra si drží dnešní scénu a PRIDÁ registr + registraci komponent, které v repu JSOU (Level, Player); komponenty, které nejsou (npc, enemy, bodies, input), se PRESKAKUJI a jen se to ohlásí (aditivní migrace). Rozdělení logiky do komponent dělají shell.coins a sim.wire.",
       "kind": "code",
-      "owns": ["scripts/game.gd"],
-      "depends_on": ["engine.registry"],
-      "acceptance": ["tests", "wiring", "smoke"],
+      "owns": [
+        "scripts/game.gd"
+      ],
+      "depends_on": [
+        "engine.registry"
+      ],
+      "acceptance": [
+        "tests",
+        "wiring",
+        "smoke"
+      ],
       "size_lines": 150,
       "model": "strong",
       "milestone": "M0",
       "prompt": "ZACHOVEJ vše, co v scripts/game.gd funguje (scéna, vstup, ukládání, HUD, hudba). Přidej registr: na začátku `_ready()` vytvoř `var registry = load(\"res://scripts/registry.gd\").new()`, pojmenuj ho, `add_child(registry)` a zaregistruj komponenty, KTERÉ V REPU EXISTUJÍ: `registry.register(\"Level\", <uzel level>)` a `registry.register(\"Player\", <uzel hráče>)`. V `_process(delta)` volej `registry.advance(delta)` (tik vlastní registr, ne kostra). Komponenty, které v repu NEJSOU (npc, enemy, bodies, input), NEPŘIDÁVEJ — jen je přeskoč. Předej registr dál jako vlastnost (`var registry: Node`), aby ho příští granule mohly použít. NESMÍŠ změnit chování hry (hráč se hýbe, skóre se počítá, ukládání funguje) a nesmí přibýt žádná nová chyba do logu. Testy: `python .forge/check-schema.py .` a Godot `--headless` smoke musí projít."
     },
     {
-      "id": "shell.coins",
-      "title": "Kostra: pryč s mincemi a skóre, ukládání do komponenty (M0 — monolit se zbavuje slepé uličky)",
+      "id": "shell.nocoins",
+      "title": "Kostra: pryč s mincemi a skóre (M0 — monolit se zbavuje slepé uličky)",
       "done": null,
       "kind": "code",
-      "owns": ["scripts/game.gd", "scripts/save.gd"],
-      "depends_on": ["engine.shell"],
-      "acceptance": ["tests", "wiring", "smoke"],
-      "size_lines": 90,
+      "owns": [
+        "scripts/game.gd"
+      ],
+      "depends_on": [
+        "engine.shell"
+      ],
+      "acceptance": [
+        "tests",
+        "wiring",
+        "smoke"
+      ],
+      "size_lines": 60,
       "model": "strong",
       "milestone": "M0",
-      "prompt": "V scripts/game.gd ODSTRAŇ logiku mincí a skóre: proměnné `score`/`coin_total`, hledání uzlů ve skupině `coin`, `_update_hud()` s textem „Skóre“ a obsluhu sběru mincí — design je sandbox, ne sběračka mincí. HUD nech existovat, ale ať zobrazuje hodnoty z registru (když registr vrátí null, napiš „—“). Ukládání PŘESUŇ do komponenty: kód, který dnes v game.gd volá `ConfigFile` a `cfg.load(\"user://sandbox.cfg\")`, nahraď voláním komponenty `Save` z registru (`save()` / `load()` podle smlouvy v docs/TDD.md §3.16) a v scripts/save.gd cestu `user://sandbox.cfg` nahraď `user://save.cfg`. ZACHOVEJ veřejné rozhraní save.gd (`save() -> bool`, `load() -> bool`). Když soubor uložit nejde, vrať `false` a ohláš to — tichý úspěch je zakázaný. Testy: `python .forge/check-wiring.py .` (nesmí hlásit mrtvou funkci) a Godot smoke bez nové chyby."
+      "prompt": "V scripts/game.gd ODSTRAŇ logiku mincí a skóre: proměnné `score` a `coin_total`, hledání uzlů ve skupině `coin`, text „Skóre“ v `_update_hud()` a obsluhu sběru mincí — design je sandbox, ne sběračka mincí. HUD nech existovat, ale ať zobrazuje hodnoty z registru (`get_parent().get_node_or_null(\"Registry\")`); když je null, napiš „—“ (dlouhá pomlčka). NIC JINÉHO neměň (ukládání ani hráče). Soubor začíná `extends Node` — zachovej to. Pozor na parsování: `:=` jen u hodnot se známým typem; `Vector2.ZERO` typ nemá, piš `var v: Vector2 = Vector2.ZERO`; typy jako `Level` v anotaci NEEXISTUJÍ (piš `Node`). Testy: `python .forge/check-wiring.py .` a Godot smoke bez nové chyby v logu. POZOR (naměřeno 15. 10. 2026): tahle granule vznikla ROZDELENÍM původní `shell.coins`, která vlastnila DVA soubory. Aider si do chatu přidá každý soubor celý (game.gd ~3 940 t, save.gd ~1 894 t) a request pak měl 40 537 t proti limitu 8 000 (Groq) → model zadání NIKDY neviděl (3× „agent nic nezměnil“). Granule proto vlastní JEDEN soubor."
+    },
+    {
+      "id": "shell.save",
+      "title": "Ukládání z monolitu do komponenty Save (M0 — jedna cesta k souboru)",
+      "done": null,
+      "kind": "code",
+      "owns": [
+        "scripts/save.gd"
+      ],
+      "depends_on": [
+        "engine.shell"
+      ],
+      "acceptance": [
+        "tests",
+        "wiring",
+        "smoke"
+      ],
+      "size_lines": 60,
+      "model": "strong",
+      "milestone": "M0",
+      "prompt": "V scripts/save.gd ZACHOVEJ veřejné rozhraní `save() -> bool` a `load() -> bool` a přepiš cestu z `user://sandbox.cfg` na `user://save.cfg` (smlouva docs/TDD.md §3.16). Když není co uložit, vrať `false` a ohláš to přes `push_error` — TICHÝ ÚSPĚCH JE ZAKÁZANÝ (dřívější verze uložila 35 bajtů a vrátila `true`). Ukládej pozici hráče, atributy, dovednosti, zlato a inventář. Soubor `scripts/game.gd` v téhle granuli NEMĚŇ (patří granuli `shell.nocoins`). Pozor na parsování: `:=` jen u známého typu; `Vector2.ZERO` typ nemá → `var v: Vector2 = Vector2.ZERO`; typy komponent (`Player`, `Level`) v anotaci NEEXISTUJÍ → piš `Node`. Testy: ověř, že `save()` bez komponent vrátí `false`, a že `load()` vrátí pozici. POZOR (naměřeno 15. 10. 2026): tahle granule vznikla ROZDELENÍM původní `shell.coins`, která vlastnila DVA soubory. Aider si do chatu přidá každý soubor celý (game.gd ~3 940 t, save.gd ~1 894 t) a request pak měl 40 537 t proti limitu 8 000 (Groq) → model zadání NIKDY neviděl (3× „agent nic nezměnil“). Granule proto vlastní JEDEN soubor."
     },
     {
       "id": "sim.wire",
       "title": "Komponenty do registru: dnešek zapojený, zbytek ohlášený (M0 — registr přestane být mrtvý kód)",
       "done": null,
       "kind": "code",
-      "owns": ["scripts/game.gd"],
-      "depends_on": ["engine.shell", "shell.coins"],
-      "acceptance": ["tests", "wiring", "smoke"],
+      "owns": [
+        "scripts/game.gd"
+      ],
+      "depends_on": [
+        "engine.shell",
+        "shell.nocoins",
+        "shell.save"
+      ],
+      "acceptance": [
+        "tests",
+        "wiring",
+        "smoke"
+      ],
       "size_lines": 80,
       "model": "strong",
       "milestone": "M0",
@@ -91,9 +144,16 @@
       "done": true,
       "done_note": "KÓD JE V REPU (scripts/save.gd, 150 řádků, smlouva docs/TDD.md §3.16: `save() -> bool`, `load() -> bool`), ale PRODUKČNÍ CESTA HO NEVOLÁ — game.gd dnes píše `ConfigFile` sám na `user://sandbox.cfg` (naměřeno 15. 10. 2026). Proto je `done` MĚŘENÉ jen jako „soubor a smlouva existují“; ZAPOJENÍ dělá granule shell.coins. Dokud není zapojený, je to mrtvá knihovna.",
       "kind": "code",
-      "owns": ["scripts/save.gd"],
-      "depends_on": ["engine.registry"],
-      "acceptance": ["tests", "wiring"],
+      "owns": [
+        "scripts/save.gd"
+      ],
+      "depends_on": [
+        "engine.registry"
+      ],
+      "acceptance": [
+        "tests",
+        "wiring"
+      ],
       "size_lines": 150,
       "model": "strong",
       "milestone": "M0",
@@ -105,9 +165,16 @@
       "done": true,
       "done_note": "KÓD JE V REPU A JE V PRODUKČNÍ CESTĚ: scripts/player.gd (191 řádků) instancuje game.gd:270 (`set_script(load(\"res://scripts/player.gd\"))`) — naměřeno 15. 10. 2026. Smlouva `move(smer, delta)` a vlastnost `cell` platí od 3. 10. 2026. Plynulost, mrtvá zóna a stamina jsou NAD tím práce granule entity.move.smooth.",
       "kind": "code",
-      "owns": ["scripts/player.gd"],
-      "depends_on": ["world.level"],
-      "acceptance": ["tests", "wiring"],
+      "owns": [
+        "scripts/player.gd"
+      ],
+      "depends_on": [
+        "world.level"
+      ],
+      "acceptance": [
+        "tests",
+        "wiring"
+      ],
       "size_lines": 191,
       "model": "strong",
       "milestone": "M1",
@@ -119,9 +186,15 @@
       "done": true,
       "done_note": "KÓD JE V REPU A V PRODUKČNÍ CESTĚ: scripts/level.gd (283 řádků) instancuje game.gd:155 (`load(\"res://scripts/level.gd\")`) — naměřeno 15. 10. 2026. Mřížka se validuje proti hlavičce `assets/levels/main.json`.",
       "kind": "code",
-      "owns": ["scripts/level.gd"],
+      "owns": [
+        "scripts/level.gd"
+      ],
       "depends_on": [],
-      "acceptance": ["tests", "wiring", "render"],
+      "acceptance": [
+        "tests",
+        "wiring",
+        "render"
+      ],
       "size_lines": 283,
       "model": "strong",
       "milestone": "M1",
@@ -132,9 +205,16 @@
       "title": "Vstup → záměr pohybu (M1 — hráč jde za kurzorem)",
       "done": null,
       "kind": "code",
-      "owns": ["scripts/input.gd"],
-      "depends_on": ["engine.registry"],
-      "acceptance": ["tests", "wiring"],
+      "owns": [
+        "scripts/input.gd"
+      ],
+      "depends_on": [
+        "engine.registry"
+      ],
+      "acceptance": [
+        "tests",
+        "wiring"
+      ],
       "size_lines": 60,
       "model": "any",
       "milestone": "M1",
@@ -145,9 +225,18 @@
       "title": "Plynulý pohyb se stamnou a mrtvou zónou (M1 — pohyb není teleport)",
       "done": null,
       "kind": "code",
-      "owns": ["scripts/player.gd"],
-      "depends_on": ["engine.registry", "world.level", "engine.input"],
-      "acceptance": ["tests", "wiring"],
+      "owns": [
+        "scripts/player.gd"
+      ],
+      "depends_on": [
+        "engine.registry",
+        "world.level",
+        "engine.input"
+      ],
+      "acceptance": [
+        "tests",
+        "wiring"
+      ],
       "size_lines": 70,
       "model": "strong",
       "milestone": "M1",
@@ -156,15 +245,24 @@
     {
       "id": "world.bodies",
       "title": "Tělesa a řazení hloubky (M1 — objekty se nepřekrývají)",
-      "done": null,
+      "done": true,
       "kind": "code",
-      "owns": ["scripts/bodies.gd"],
-      "depends_on": ["engine.registry", "world.level"],
-      "acceptance": ["tests", "wiring"],
+      "owns": [
+        "scripts/bodies.gd"
+      ],
+      "depends_on": [
+        "engine.registry",
+        "world.level"
+      ],
+      "acceptance": [
+        "tests",
+        "wiring"
+      ],
       "size_lines": 70,
       "model": "strong",
       "milestone": "M1",
-      "prompt": "Vytvoř scripts/bodies.gd — MALÝ uzel `extends Node` bez `class_name`, `_init()` bez povinného argumentu. Stará se o dvě věci (docs/TDD.md §1.2, docs/GDD.md §6): (1) `func pridej(teleso: Node, bunka: Vector2i) -> void` a `func odeber(teleso: Node) -> void` — vede seznam těles a jejich zabraných buněk; (2) `func je_volno(bunka: Vector2i) -> bool` — nesmí se stát, aby dvě tělesa stála na stejné buňce; (3) `func z_index_pro(bunka: Vector2i) -> int` — spojité řazení hloubky podle izometrické mřížky, aby hráč za stromem byl za ním a před ním byl před ním. Izometrie je 2:1: `screen = offset + Vector2((cx-cy)*cell_w/2, (cx+cy)*cell_h/4)` (konstanty ber z uzlu `Level`: `cell_w`, `cell_h`, `offset` — POZOR: `Level` je jen jméno uzlu, NENÍ to typ, soubor nemá `class_name`, takže `var lvl: Level` spadne na parsování; piš `var lvl: Node`. A `Vector2.ZERO` nemá nastavený typ, takže `var v := Vector2.ZERO` taky spadne — piš `var v: Vector2 = Vector2.ZERO`). Testy: ověř, že `je_volno()` na obsazenou buňku vrátí `false` a že `z_index_pro()` roste s `cx+cy`."
+      "prompt": "Vytvoř scripts/bodies.gd — MALÝ uzel `extends Node` bez `class_name`, `_init()` bez povinného argumentu. Stará se o dvě věci (docs/TDD.md §1.2, docs/GDD.md §6): (1) `func pridej(teleso: Node, bunka: Vector2i) -> void` a `func odeber(teleso: Node) -> void` — vede seznam těles a jejich zabraných buněk; (2) `func je_volno(bunka: Vector2i) -> bool` — nesmí se stát, aby dvě tělesa stála na stejné buňce; (3) `func z_index_pro(bunka: Vector2i) -> int` — spojité řazení hloubky podle izometrické mřížky, aby hráč za stromem byl za ním a před ním byl před ním. Izometrie je 2:1: `screen = offset + Vector2((cx-cy)*cell_w/2, (cx+cy)*cell_h/4)` (konstanty ber z uzlu `Level`: `cell_w`, `cell_h`, `offset` — POZOR: `Level` je jen jméno uzlu, NENÍ to typ, soubor nemá `class_name`, takže `var lvl: Level` spadne na parsování; piš `var lvl: Node`. A `Vector2.ZERO` nemá nastavený typ, takže `var v := Vector2.ZERO` taky spadne — piš `var v: Vector2 = Vector2.ZERO`). Testy: ověř, že `je_volno()` na obsazenou buňku vrátí `false` a že `z_index_pro()` roste s `cx+cy`.",
+      "done_note": "HOTOVO 15. 10. 2026: kód vyrobil agent orchestry v běhu #374 (19:14 UTC) a prošel v CI parsováním i testy. PR nevzniklo — krok „Otevři pull request“ v repu hry nemá fungující secret FORGE_PAT (`fatal: could not read Username for https://github.com`). Patch jsem proto stáhl z artefaktu běhu a integroval ručně (commit 2faed29); ověřeno: [test] 113 kontrol, 0 selhání; check-wiring 102 funkcí v 17 souborech. Artefakt: _analyza/PRACE-2026-10-15/patchy/run374.zip."
     }
   ]
 }
