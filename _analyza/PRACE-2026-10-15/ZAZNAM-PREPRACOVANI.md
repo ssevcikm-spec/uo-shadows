@@ -18,18 +18,17 @@
 
 | # | Výstup | Stav |
 |---|---|---|
-| 1 | `docs/GDD.md` — zdroj pravdy o designu, přepsán podle dnešní metodiky | hotovo |
-| 2 | `docs/TDD.md` — zdroj pravdy o technice (19 smluv, vlastník tiku, verze enginu) | hotovo |
-| 3 | `docs/ADD.md` — vzhled a assety (copyright, opis deklarace, brány odkazem) | hotovo |
-| 4 | `docs/BRANY-HRY.md` — jediný zdroj detailu o branách (+ nová slepá místa) | hotovo |
-| 5 | `docs/README.md` — **rejstřík dokumentů** (vrstvy 0–10 → soubor) | hotovo |
+| 1 | `docs/GDD.md` — zdroj pravdy o designu, přepsán podle dnešní metodiky (**524 → 601** řádků) | hotovo |
+| 2 | `docs/TDD.md` — zdroj pravdy o technice (**19 smluv** místo 18, vlastník tiku, verze enginu; **802 → 929**) | hotovo |
+| 3 | `docs/ADD.md` — vzhled a assety (copyright, opis deklarace, brány odkazem; **392 → 434**) | hotovo |
+| 4 | `docs/BRANY-HRY.md` — jediný zdroj detailu o branách (+ nová slepá místa; **192 → 317**) | hotovo |
+| 5 | `docs/README.md` — **rejstřík dokumentů** (vrstvy 0–10 → soubor; **135** řádků, nový) | hotovo |
 | 6 | `ZASTAVENO.md` — doplněn odkaz na úplný seznam rozporů | hotovo (doplněno, ne přepsáno) |
 | 7 | `_analyza/over-dokumenty.py` — brána rozšířena o vnitřní soulad | hotovo |
 | 8 | `_analyza/PRACE-2026-10-15/` — měření, návrhy, tento záznam | hotovo |
 | 9 | `CONVENTIONS.md` + `AGENTS.md` — opravy pravidel | **NEAPLIKOVÁNO** → `NAVRH-PRAVIDLA.md` |
 
 ## 2. Proč se do toho vůbec šlo — naměřený důvod
-
 **Brána nad dokumentací byla zelená nad dokumenty, které si odporují.**
 Naměřeno sabotáží (15. 10. 2026, na **kopii** repa, ne v repu):
 
