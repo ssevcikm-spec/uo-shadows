@@ -3,6 +3,12 @@
 *.translation
 export_presets.cfg.bak
 
+# Generované nástrojem (nejsou zdroj, vznikají při běhu)
+#
+# `.forge/node/.konvence-<grain>.md` vyrábí `konvence-pro-granuli.mjs` pro
+# jednoho agenta a jednorázově; v repu by byl jen šum a mohl by zestarat.
+.forge/node/.konvence-*.md
+
 # Buildy a artefakty (v CI se generují znovu)
 build/
 artifacts/
