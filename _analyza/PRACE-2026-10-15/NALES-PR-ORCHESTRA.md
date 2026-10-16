@@ -53,6 +53,32 @@ se čte jako „orchestra je rozbitá", i když je rozbitá jen jedna hodnota.
    Stropy `MAX_ATTEMPTS` (5) a `GRAIN_MAX_RUNS` (8) zůstávají, takže kratší
    cooldown nevyrobí nekonečnou smyčku. **Cesta zpět:** `RETRY_HOURS = "3"`.
 
+### 3.1 OVĚŘENO: PR se zakládá a samo se slučuje (16. 10. 2026)
+
+Naměřeno po opravě secretu:
+
+| Co | Hodnota |
+|---|---|
+| Běh | `#546`, granule `engine.input` (úloha #269) |
+| Výsledek | **`success`** |
+| PR | **#38** — `merged: true`, `merged_by: ssevcikm-spec`, merge commit `39f4e03` |
+| CI na PR | `Testy a build = completed/success` |
+| Doručeno do `main` | **`scripts/input.gd`** (26 řádků) |
+| Ověření lokálně | `[test] 113 kontrol, 0 selhání`; `check-wiring` **105 funkcí v 18 souborech** |
+| `/health` | **`forge.ok = true`, `selhání v řadě = 0`** (bylo 20) |
+
+**Kvalita kódu od agenta je čistá** — používá přesně to, co se doplnilo do
+`CONVENTIONS.md`: `var direction: Vector2 = …` (žádné `:=` u hodnoty bez typu),
+žádný typ z cizího skriptu v anotaci a **vlastnost `global_position`** místo
+neexistujícího `get_global_position()`. To je přímý důkaz, že oprava zadání
+a konvencí měla efekt — ne že se „něco opravilo samo".
+
+> **Poznámka k `*.uid`/`*.import`:** PR přineslo i pět takových souborů a může to
+> vypadat jako smetí od agenta. **Není to nová vada:** v repu jich je trackovaných
+> **přes 250** (`.gitignore` kryje jen `.godot/`), takže je to zavedená konvence
+> projektu — agent se chová stejně jako všechno před ním. Měnit ji (a mazat
+> 250 souborů) je samostatné rozhodnutí, ne součást téhle opravy.
+
 ## 4. Co ještě blokuje (a co s tím)
 
 | # | Věc | Naměřeno | Návrh |
