@@ -76,7 +76,7 @@
     {
       "id": "shell.nocoins",
       "title": "Kostra: pryč s mincemi a skóre (M0 — monolit se zbavuje slepé uličky)",
-      "done": null,
+      "done": true,
       "kind": "code",
       "owns": [
         "scripts/game.gd"
@@ -92,12 +92,12 @@
       "size_lines": 60,
       "model": "strong",
       "milestone": "M0",
-      "prompt": "V scripts/game.gd ODSTRAŇ logiku mincí a skóre: proměnné `score` a `coin_total`, hledání uzlů ve skupině `coin`, text „Skóre“ v `_update_hud()` a obsluhu sběru mincí — design je sandbox, ne sběračka mincí. HUD nech existovat, ale ať zobrazuje hodnoty z registru (`get_parent().get_node_or_null(\"Registry\")`); když je null, napiš „—“ (dlouhá pomlčka). NIC JINÉHO neměň (ukládání ani hráče). Soubor začíná `extends Node` — zachovej to. Pozor na parsování: `:=` jen u hodnot se známým typem; `Vector2.ZERO` typ nemá, piš `var v: Vector2 = Vector2.ZERO`; typy jako `Level` v anotaci NEEXISTUJÍ (piš `Node`). Testy: `python .forge/check-wiring.py .` a Godot smoke bez nové chyby v logu. POZOR (naměřeno 15. 10. 2026): tahle granule vznikla ROZDELENÍM původní `shell.coins`, která vlastnila DVA soubory. Aider si do chatu přidá každý soubor celý (game.gd ~3 940 t, save.gd ~1 894 t) a request pak měl 40 537 t proti limitu 8 000 (Groq) → model zadání NIKDY neviděl (3× „agent nic nezměnil“). Granule proto vlastní JEDEN soubor."
+      "prompt": "V scripts/game.gd ODSTRAŇ logiku mincí a skóre: proměnné `score` a `coin_total`, hledání uzlů ve skupině `coin`, text „Skóre“ v `_update_hud()` a obsluhu sběru mincí — design je sandbox, ne sběračka mincí. HUD nech existovat, ale ať zobrazuje hodnoty z registru (`get_parent().get_node_or_null(\"Registry\")`); když je null, napiš „—“ (dlouhá pomlčka). NIC JINÉHO neměň (ukládání ani hráče). Soubor začíná `extends Node2D` (scéna!) — ZACHOVEJ to, nepřepisuj na `Node`; rozbilo by to `get_viewport_rect()` (naměřeno 16. 10. 2026, běh #398). Pozor na parsování: `:=` jen u hodnot se známým typem; `Vector2.ZERO` typ nemá, piš `var v: Vector2 = Vector2.ZERO`; typy jako `Level` v anotaci NEEXISTUJÍ (piš `Node`). Testy: `python .forge/check-wiring.py .` a Godot smoke bez nové chyby v logu. POZOR (naměřeno 15. 10. 2026): tahle granule vznikla ROZDELENÍM původní `shell.coins`, která vlastnila DVA soubory. Aider si do chatu přidá každý soubor celý (game.gd ~3 940 t, save.gd ~1 894 t) a request pak měl 40 537 t proti limitu 8 000 (Groq) → model zadání NIKDY neviděl (3× „agent nic nezměnil“). Granule proto vlastní JEDEN soubor."
     },
     {
       "id": "shell.save",
       "title": "Ukládání z monolitu do komponenty Save (M0 — jedna cesta k souboru)",
-      "done": null,
+      "done": true,
       "kind": "code",
       "owns": [
         "scripts/save.gd"
@@ -203,7 +203,7 @@
     {
       "id": "engine.input",
       "title": "Vstup → záměr pohybu (M1 — hráč jde za kurzorem)",
-      "done": null,
+      "done": true,
       "kind": "code",
       "owns": [
         "scripts/input.gd"
@@ -223,7 +223,7 @@
     {
       "id": "entity.move.smooth",
       "title": "Plynulý pohyb se stamnou a mrtvou zónou (M1 — pohyb není teleport)",
-      "done": null,
+      "done": true,
       "kind": "code",
       "owns": [
         "scripts/player.gd"
@@ -240,7 +240,7 @@
       "size_lines": 70,
       "model": "strong",
       "milestone": "M1",
-      "prompt": "V scripts/player.gd ZACHOVEJ smluvní `move(smer: Vector2, delta: float) -> void` a `cell` (pozici) — nic z toho neměň, testy i ukládání na tom stojí. Přidej plynulost podle docs/GDD.md §6: (1) rychlost se rozjíždí a zastavuje plynule (vyhlazení, žádný skok); (2) mrtvá zóna: ze `smer()` z inputu se pohyb spustí, až když je delší než 12 px; (3) stamina: běh ubírá, chůze ne, při nule se rychlost sníží na polovinu; (4) hráč se nikdy nesmí dostat mimo průchodná políčka (`Level.is_walkable_at()`), ani zůstat ve zdi. Pohyb počítej v pevném tiku (registr), ne ve `_process` s vlastním časem. Testy: ověř, že `move()` se `Vector2.ZERO` hráče neposune a že po 10 ticích stejným směrem je posun menší než 10 × maximální rychlost (vyhlazení funguje)."
+      "prompt": "V scripts/player.gd ZACHOVEJ smluvní `move(dir: Vector2, delta: float = -1.0) -> void` a `cell` (pozici) — nic z toho neměň, testy i ukládání na tom stojí. DŮLEŽITÉ (naměřeno 19. 10. 2026): testy volají `move(dir)` BEZ času a čekají PŘESNĚ jeden plný krok `SPEED/60` po izometrické ose; proto `delta < 0` znamená jeden plný krok a vyhlazení se ho NESMÍ týkat. `_physics_process` musí dál volat DOSLOVA `move(dir, delta)` (test to hledá v textu souboru). Přidej plynulost podle docs/GDD.md §6: (1) při skutečném tiku (`delta >= 0`) se rychlost rozjíždí a zastavuje plynule (ACCEL/DECEL, žádný skok); (2) mrtvá zóna: když směr dodá vstupní komponenta `smer()` (nebo záložní myš), pohyb se spustí, až když je delší než 12 px; (3) stamina: běh ubírá, chůze ne, při nule se rychlost sníží na polovinu; (4) hráč se nikdy nesmí dostat mimo průchodná políčka (`Level.is_walkable_at()`), ani zůstat ve zdi. Testy: ověř, že `move(Vector2.ZERO)` hráče neposune a že po 10 ticích stejným směrem je posun menší než 10 × maximální rychlost (vyhlazení funguje)."
     },
     {
       "id": "world.bodies",

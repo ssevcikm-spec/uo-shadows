@@ -105,6 +105,10 @@ jobs:
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY || vars.CEREBRAS_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || vars.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || vars.OPENROUTER_API_KEY }}
+          # DeepSeek = PLACENÝ poskytovatel (rozhodnutí uživatele 19. 10. 2026).
+          # Když tajemství není, pick-provider ho jen přeskočí („chybí KLÍČ“)
+          # a řetězec funguje dál stejně jako dřív.
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY || vars.DEEPSEEK_API_KEY }}
           # run_key posouvá pořadí poskytovatelů: opakované pokusy téže úlohy
           # tak neběží pořád se stejným modelem (naměřeno: tři pokusy o úlohu
           # #40 selhaly stejně, protože všechny tři vybraly codestral-latest).
@@ -140,6 +144,10 @@ jobs:
           # Prázdné ID není chyba: `files-to-edit.mjs` si cestu v tom případě
           # vytáhne ze zadání.
           FORGE_GRAIN: ${{ inputs.grain }}
+          # Číslo pokusu: pick-provider podle něj posune pořadí modelů, aby
+          # opakovaný pokus nezkoušel stejný model jako ten, co právě selhal.
+          # Naměřeno 30. 9. 2026: task #128 i #131 zkoušely 5× po sobě
+          # mistral/codestral a selhaly pokaždé stejně.
           FORGE_ATTEMPT: ${{ inputs.attempt }}
           # Klíče musí být i TADY, ne jen ve kroku s výběrem poskytovatele:
           # druhý pokus volá pick-provider.mjs znovu a bez klíčů by hlásil
@@ -151,6 +159,7 @@ jobs:
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY || vars.CEREBRAS_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || vars.GROQ_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY || vars.OPENROUTER_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY || vars.DEEPSEEK_API_KEY }}
         run: |
           set -o pipefail
           nacti_poskytovatele() {
@@ -169,11 +178,13 @@ jobs:
           # SPRÁVNĚ odmítl editovat a odpověděl „Please add the file's content to
           # the chat". Udělaly to VŠECHNY modely (mistral 17–36 tokenů,
           # cerebras 179–204) a běh skončil jako „agent nic nezměnil".
+          # (K3, 12. 10. 2026: `--read CONVENTIONS.md` už tu není — konvence jdou
+          # z deklarace granule, viz blok výš. Historii nechávám, je to důvod,
+          # proč soubory k editaci NESMÍ chybět v chatu.)
           #
           # Vysvětluje to i vzorec úspěch/neúspěch: granule, které soubor jen
-          # VYTVÁŘELY (attributes.gd, item.gd), prošly – na nový soubor není
-          # potřeba SEARCH blok. Granule, které existující soubor UPRAVOVALY
-          # (skills.gd, world.gd, economy.gd), selhaly VŽDY, bez ohledu na model.
+          # VYTVÁŘELY, prošly – na nový soubor není potřeba SEARCH blok. Granule,
+          # které existující soubor UPRAVOVALY, selhaly VŽDY, bez ohledu na model.
           #
           # `owns` granule je přesně seznam souborů, které granule vlastní
           # (conductor podle něj zamyká souběh) – proto se bere odtud.
@@ -202,7 +213,6 @@ jobs:
           else
             echo "::warning::granule neurčuje žádný soubor – agent dostane jen zadání"
           fi
-
           # SOUBORY ZÁVISLÝCH GRANULÍ – JEN KE ČTENÍ.
           #
           # Naměřeno 30. 9. 2026 (běh #131, granule entity.npc): model pojmenoval
@@ -220,18 +230,98 @@ jobs:
             done <<< "$CIT_DEPS"
           fi
 
+          # ── K1 (12. 10. 2026): HYGIENA ZADÁNÍ + ROZPOČET REQUESTU ──────────
+          # PROČ: aider si do chatu přidá každý soubor zmíněný v zadání
+          # (`base_coder.get_file_mentions`). Naměřeno z logů 9. 10.: zadání
+          # s „docs/TDD.md §1.1“ přitáhlo CELÝ dokument (16 127 tokenů) a request
+          # vyrostl na 39 167 tokenů proti stropu 8 000 (Groq zdarma) – model se
+          # tedy zadání NIKDY nedozvěděl. Hygiena cesty nahradí a vypíše úsporu.
+          ZADANI=$(node .forge/node/prompt-hygiene.mjs "$FORGE_PROMPT")
+
+          # ── K3 (12. 10. 2026): KONVENCE JEN PODLE DEKLARACE GRANULE ────────
+          # PROČ: do K3 tu bylo `--read CONVENTIONS.md` v KAŽDÉM běhu. Celý
+          # dokument má ~3 900 t a strop Groqu zdarma je 8 000 t/min, takže se
+          # request vůbec neposlal (naměřeno 12. 10. 2026: hygienické zadání M0
+          # mělo 14 097 t a všech 20 běhů dne selhalo). Konvence se proto
+          # rozdělily na sekce (`CONVENTIONS/*.md`) a GRANULE DEKLARUJE, které
+          # potřebuje: `"konvence": ["01-typy", "06-soubor-granule"]` v roadmapě.
+          # „Co se má poslat“ je vlastnost granule — hádat to podle klíčových
+          # slov v zadání by bylo věštění (a věštění se nedaří měřit).
+          # ROZPOČET DOSTÁVÁ TOTÉŽ přes `--konvence` — jinak by počítal request
+          # bez konvencí a brána by byla slepá přesně tam, kde rozhoduje.
+          KONVENCE=$(node .forge/files-to-edit.mjs --grain "$FORGE_GRAIN" --konvence || true)
+          ARG_KONVENCE=""
+          if [ -n "$KONVENCE" ]; then
+            echo "Sekce konvencí (agent je dostane jako --read):"
+            echo "$KONVENCE" | sed 's/^/  /'
+            while IFS= read -r f; do
+              [ -n "$f" ] || continue
+              # shellcheck disable=SC2086
+              ARG_KONVENCE="$ARG_KONVENCE --read $f"
+            done <<< "$KONVENCE"
+          else
+            echo "::warning::granule nedeklaruje konvence a v repu není CONVENTIONS.md – agent dostane jen zadání"
+          fi
+
+          # Rozpočet se ptá PŘED voláním. Když se request nevejde do VYBRANÉHO
+          # poskytovatele, zkusí se DALŠÍ v řetězci (P42, 14. 10. 2026).
+          #
+          # PROČ TO TU JE: dřív tu byl `exit 1` a pokus se spálil, i když
+          # v řetězci byl zdroj, který granuli vezme. Naměřeno na `sim.progress`
+          # (request 9 016 t): třikrát ho pick-provider poslal na groq
+          # (strop 8 000 t) a třikrát to byl spálený pokus — přitom mistral
+          # (625 000 t) i cerebras ho vezmou. `exit 1` proto zůstává jen pro
+          # případ, kdy se request nevejde do ŽÁDNÉHO poskytovatele v řetězci:
+          # to je vada granule (moc velký kontext), ne náhoda volby zdroje.
+          rozpocet_sedi() {
+            node .forge/node/request-budget.mjs \
+              --zadani-text "$ZADANI" --soubory "$DO_EDITACE" --cteni "$CIT_DEPS" \
+              --konvence "$KONVENCE" \
+              --poskytovatel "$FORGE_PROVIDER" --model "$FORGE_MODEL"
+          }
+          rozpocet_ok=0
+          if rozpocet_sedi; then rozpocet_ok=1; fi
+          if [ "$rozpocet_ok" = "0" ]; then
+            # Stejný vzor jako u rotace po neúspěšném běhu níž (`--next` +
+            # `nacti_poskytovatele` + znovu rozpočet). Strop je 4 poskytovatelé,
+            # aby se řetězec nemohl zacyklit.
+            for _pokus_rozpoctu in 1 2 3 4; do
+              if ! node .forge/pick-provider.mjs --next; then break; fi
+              nacti_poskytovatele
+              if rozpocet_sedi; then
+                echo "::notice::request se nevešel do předchozího poskytovatele – použiji $FORGE_PROVIDER/$FORGE_MODEL"
+                rozpocet_ok=1
+                break
+              fi
+            done
+          fi
+          if [ "$rozpocet_ok" = "0" ]; then
+            echo "REQUEST_TOO_LARGE: request se nevejde ani do jednoho poskytovatele v řetězci" >> agent.log
+            echo "TRIDA=REQUEST_TOO_LARGE" >> "$GITHUB_ENV"
+            exit 1
+          fi
+
           spust_agenta() {
             # shellcheck disable=SC2086
-            aider \
+            # TIMEOUT 300 s: aider/litellm zkouší TÝŽ request 9× s backoffem
+            # (0,2 s → 32 s). U „request too large“ je to deterministicky
+            # ztracený čas – naměřeno: běh #360 jím strávil 1214 s z 30min kroku.
+            casovy_kod=0
+            timeout 300 aider \
               --model "openai/${FORGE_MODEL}" \
-              --read CONVENTIONS.md \
+              $ARG_KONVENCE \
               $ARG_CTENI \
               $ARG_SOUBORY \
               --map-tokens 0 \
               --edit-format diff \
-              --message "$FORGE_PROMPT" \
+              --message "$ZADANI" \
               --yes --no-auto-commits --no-stream --no-check-update \
-              2>&1 | tee -a agent.log || echo "aider skoncil s chybou"
+              2>&1 | tee -a agent.log || casovy_kod=$?
+            if [ "$casovy_kod" = "124" ]; then
+              echo "TIMEOUT: aider prekrocil 300 s (request se pravdepodobne opakoval)" | tee -a agent.log
+            elif [ "$casovy_kod" != "0" ]; then
+              echo "aider skoncil s chybou (kod $casovy_kod)"
+            fi
           }
           zmenil_neco() {
             # .uid/.import generuje Godot sám a provider.env je naše – do
@@ -243,39 +333,47 @@ jobs:
           }
           spust_agenta
           if ! zmenil_neco; then
-            # KVÓTA vs. SCHOPNOST (od 30. 9. 2026). Druhý pokus s jiným
-            # poskytovatelem má smysl jen tehdy, když je co zkoušet — tedy když
-            # model odpověděl, ale kód nezměnil (jiný model to může trefit).
-            # Když ale běh spadl na vyčerpané kvótě (rate-limit / denní strop),
-            # druhý pokus je jen další spálený pokus: naměřeno 30. 9. — 9 z 13
-            # běhů skončilo na rate-limitu a 11 z 13 zkoušelo druhého
-            # poskytovatele — žádný z nich neuspěl. Kvóta je vzácnější než čas.
-            if grep -qE 'RateLimitError|rate limit reached|exceeded your current quota' agent.log; then
-              echo "::warning::první pokus spadl na vyčerpané kvótě – druhý poskytovatel se nezkouší (šetřím kvótu)"
-            else
-              echo "::notice::model nezměnil žádný kód – zkouším jiného bezplatného poskytovatele"
-              if node .forge/pick-provider.mjs --next; then
-                nacti_poskytovatele
-                spust_agenta
-              fi
-            fi
+            # ── K2 (12. 10. 2026): ROZHODUJE KLASIFIKÁTOR, NE JEDEN GREP ────
+            # Dřív tu byl `grep RateLimitError`, který slil dohromady
+            # „request too large“ (deterministické, řeší se jiným zdrojem nebo
+            # menším kontextem) a „vyčerpaná kvóta“ (přechodné) – a fallback
+            # VYPNUL. Naměřeno 9. 10.: z 12 běhů, které spadly na VELIKOSTI
+            # requestu, se druhá záchrana nezkusila ani jednou.
+            TRIDA_PRVNI=$(node .forge/node/classify-agent-log.mjs --log agent.log --zmena ne \
+              | sed -n 's/^TRIDA=//p')
+            case "$TRIDA_PRVNI" in
+              AUTH)
+                echo "::warning::AUTH – špatný klíč se sám nespraví, druhý poskytovatel se nezkouší" ;;
+              QUOTA)
+                echo "::warning::QUOTA – šetřím kvótu, druhý poskytovatel se nezkouší" ;;
+              *)
+                echo "::notice::$TRIDA_PRVNI – zkouším jiného bezplatného poskytovatele"
+                if node .forge/pick-provider.mjs --next; then
+                  nacti_poskytovatele
+                  if node .forge/node/request-budget.mjs \
+                        --zadani-text "$ZADANI" --soubory "$DO_EDITACE" --cteni "$CIT_DEPS" \
+                        --konvence "$KONVENCE" \
+                        --poskytovatel "$FORGE_PROVIDER" --model "$FORGE_MODEL"; then
+                    spust_agenta
+                  else
+                    echo "::warning::ani další poskytovatel se do rozpočtu nevejde – request neposílám"
+                    echo "REQUEST_TOO_LARGE: ani dalsi poskytovatel se nevejde do rozpoctu" >> agent.log
+                  fi
+                fi ;;
+            esac
           fi
 
-      - name: Kontrola parsování (rychlá brána)
-        # PROČ A JAK (přepsáno 30. 9. 2026 — první verze byla slepá):
+      - name: Kontrola parsování GDScriptu (rychlá brána)
+        # PROČ A JAK (30. 9. 2026):
         #
-        # 1) První verze pouštěla `godot --import` a hledala parse errory v jeho
-        #    výstupu. To je slepé: import načítá ASSETY, ne skripty, které v hlavní
-        #    scéně nejsou. Naměřeno u granulí core.attributes a entity.item —
-        #    brána hlásila „Parsování v pořádku", a o krok dál testy spadly na
-        #    parse error s „překročen tvrdý limit 90 s".
-        # 2) Kontroluje se proto `--check-only --script <soubor>` pro KAŽDÝ
-        #    ZMĚNĚNÝ .gd soubor. Godot tím vrátí nenulový kód a vypíše přesný
-        #    soubor i řádek — a hlavně to platí i pro nové soubory, které ještě
-        #    nikdo nenačítá (to je přesně případ granulí, které zakládají soubor).
+        # `godot --check-only --script <soubor>` pro KAŽDÝ ZMĚNĚNÝ .gd soubor.
+        # Platí i pro nové soubory, které ještě nikdo nenačítá (přesně případ
+        # granulí, které soubor zakládají) – a vrátí přesný soubor i řádek.
+        # Kontrolují se JEN změněné soubory: staré skripty v repu jsou ověřené.
         #
-        # Kontrolují se JEN změněné soubory: staré skripty v repu jsou ověřené
-        # a jejich varování by bránu zbytečně shazovaly.
+        # Vypisují se VŠECHNY chyby, ne jen první (`head -12` dřív ukázal jednu
+        # a zbytek zahodil, takže model při opakování opravil jednu a spadl na
+        # další). Naměřeno 30. 9. 2026 (běh #131): čtyři chyby v jednom souboru.
         timeout-minutes: 3
         id: parse
         run: |
@@ -298,13 +396,6 @@ jobs:
             if echo "$VYSTUP" | grep -q 'SCRIPT ERROR: Parse Error'; then
               CHYBY=$((CHYBY + 1))
               echo "::error file=$f::Skript se neparsuje – $f"
-              # Vypisují se VŠECHNY chyby souboru, ne jen první (dřív `head -12`
-              # ukázal jednu a zbytek se zahodil). Model jich často udělá víc
-              # najednou a při opakování pak opraví jednu a spadne na další.
-              # Naměřeno 30. 9. 2026 (běh #131, scripts/npc.gd): čtyři různé
-              # chyby v jednom souboru – `Member "position" redefined`,
-              # `Cannot infer the type of "item"` a `Identifier "GameItem" not
-              # declared` (poslední je jen NÁSLEDEK předchozích).
               echo "$VYSTUP" | grep -A1 'SCRIPT ERROR: Parse Error' | head -40
               echo ""
             else
@@ -321,68 +412,76 @@ jobs:
             # Naměřeno 1. 10. 2026 (běh #241): skutečná příčina selhání
             # (ALIGN_LEFT neexistuje v Godotu 4) se v tom šumu ztratila.
             # Kódové ukázky proto BEZ apostrofů – jen slovy a v uvozovkách.
-            echo "TIP: nejčastější příčiny jsou v CONVENTIONS.md §1c (File/json místo"
-            echo "     FileAccess/JSON), §1d (§1e) – kolize jmen s enginem, např."
-            echo "     class_name Item, funkce get(), property name – a §1f:"
-            echo "     NIKDY nedeklaruj promenne position/scale/rotation/visible/name"
-            echo "     (jsou to členové Area2D/Node2D → 'Member redefined'),"
-            echo "     a prirazeni z load(...) nebo z uzlu potrebuje VYJADRENY typ"
-            echo "     ('var x: Node = ...'), jinak 'Cannot infer type'."
-            echo "     Pozor: chyba 'Identifier X not declared' bývá jen NÁSLEDEK"
-            echo "     předchozích chyb v témž souboru – oprav první z nich."
-            echo "     A konstanty z Godotu 3 NEEXISTUJÍ (CONVENTIONS.md §1h):"
-            echo "     ALIGN_LEFT -> HORIZONTAL_ALIGNMENT_LEFT, VALIGN_TOP ->"
-            echo "     VERTICAL_ALIGNMENT_TOP (naměřeno 1. 10. 2026, běh #241)."
+            echo "TIP: nejčastější příčiny (sekce konvencí dostane agent jako --read):"
+            echo "     - File/json místo FileAccess/JSON (CONVENTIONS/04-soubory-json.md §1c)"
+            echo "     - kolize jmen s enginem: class_name Item, funkce get()"
+            echo "       (CONVENTIONS/02-reservovana-jmena.md §1d, 03-kolize-clenu.md §1f)"
+            echo "     - NIKDY nedeklaruj promenne position/scale/rotation/visible/name"
+            echo "       (členové Area2D/Node2D → 'Member redefined')"
+            echo "     - prirazeni z load(...) nebo z uzlu potrebuje VYJADRENY typ"
+            echo "       ('var x: Node = ...'), jinak 'Cannot infer the type of x'"
+            echo "       (CONVENTIONS/01-typy.md §1)"
+            echo "     - 'Identifier X not declared' bývá jen NÁSLEDEK předchozích"
+            echo "       chyb v témž souboru – oprav první z nich."
+            echo "     - konstanty z Godotu 3 NEEXISTUJÍ (CONVENTIONS/05-godot3-konstanty.md §1h):"
+            echo "       ALIGN_LEFT -> HORIZONTAL_ALIGNMENT_LEFT, VALIGN_TOP ->"
+            echo "       VERTICAL_ALIGNMENT_TOP (naměřeno 1. 10. 2026, běh #241)."
             exit 1
           fi
           echo "Parsování v pořádku ($(echo "$ZMENENE" | wc -l) souborů)."
 
-          # DRUHÁ KONTROLA: Godot sám tuhle vadu NEPOZNÁ (naměřeno 30. 9. 2026).
-          #
-          # Když soubor deklaruje `class_name GameItem` a ZÁROVEŇ definuje
-          # `class GameItem extends …`, vnořená třída přebije tu globální. `new()`
-          # pak vrátí vnořenou třídu – ta nemá smluvní metody, a když není
-          # potomkem Node, spadne i `free()` v testech. Testy pak hlásí jen
-          # „překročen tvrdý limit 90 s" a příčina je neviditelná.
-          #
-          # Ověřeno na běhu #122 (granule entity.item): model napsal přesně tenhle
-          # tvar, `--check-only` vrátil exit 0 a bez chyby, a testy spadly.
-          # Kontroluje se zdrojový text, protože na to Godot nemá nástroj.
-          echo ""
-          echo "Kontroluji stínění class_name (staticky, Godot to nepozná):"
-          CHYBY_STIN=0
-          for f in $ZMENENE; do
-            PRVNI=$(grep -m1 -oE '^class_name[[:space:]]+[A-Za-z_][A-Za-z0-9_]*' "$f" | awk '{print $2}' || true)
-            if [ -z "$PRVNI" ]; then
-              continue
-            fi
-            if grep -qE "^class[[:space:]]+$PRVNI([[:space:]]|:|$)" "$f"; then
-              echo "::error file=$f::$f deklaruje class_name $PRVNI a zároveň definuje vnořenou class $PRVNI – vnořená třída přebije globální jméno"
-              CHYBY_STIN=$((CHYBY_STIN + 1))
-            else
-              echo "  OK  $f (class_name $PRVNI)"
-            fi
-          done
-          if [ "$CHYBY_STIN" -gt 0 ]; then
-            echo "::error::vnořená třída stíní class_name – smaž vnořenou 'class $PRVNI' (soubor sám je ta třída; začni 'extends Node')"
-            exit 1
+      - name: Kontrola class_name (staticky, Godot to nepozná)
+        # PROČ (naměřeno 30. 9. 2026, granule entity.item):
+        #
+        # Když soubor deklaruje `class_name GameItem` a ZÁROVEŇ uvnitř definuje
+        # `class GameItem extends Resource`, vnořená třída přebije tu globální.
+        # `new()` pak vrátí vnořenou třídu – nemá smluvní metody (testy hlásí
+        # „item.gd poskytuje use/repair/broken" jako FAIL) a jako RefCounted
+        # navíc spadne na `free()` v testech, což PŘERUŠÍ celý běh testů.
+        # V logu pak není nic než „překročen tvrdý limit 90 s".
+        #
+        # `godot --check-only` tenhle tvar propustí s exit 0 a BEZ chyby
+        # (ověřeno), takže na to engine nemá nástroj – kontroluje se text.
+        timeout-minutes: 2
+        run: |
+          ZMENENE=$(git status --porcelain \
+            | grep -Ev '\.(uid|import)$|^.. (smoke|agent)\.log$|^.. \.forge/provider\.(env|json)$' \
+            | awk '{print $NF}' | grep '\.gd$' || true)
+
+          if [ -z "$ZMENENE" ]; then
+            echo "Agent nezměnil žádný .gd soubor – není co kontrolovat."
+            exit 0
           fi
 
-      - name: Import assetů (než se pustí testy)
-        # PROČ TO TU JE (doplněno 30. 9. 2026 — bez toho orchestr nemohl uspět):
-        #
-        # `ci.yml` tenhle krok MÁ, ale `agent.yml` ho neměl. Agent přitom pouští
-        # TYTÉŽ testy – a v čerstvém checkoutu runneru nejsou `.godot/imported/*.ctex`
-        # (`.godot/` je v .gitignore). Godot v režimu `--script` assety NEimportuje,
-        # takže 16 z 19 assetů nešlo načíst a testy padaly VŽDY, bez ohledu na to,
-        # co agent udělal:
-        #
-        #   [test] FAIL všechny assety jdou načíst (3 OK, 16 chybí)
-        #   [test] FAIL mapa má dlaždici pro každé políčko (0)
-        #   [test] FAIL dlaždicové pozadí je ve scéně
-        #
-        # Naměřeno u běhů #119–#122 (4 granule × 5 pokusů): všech 21 běhů selhalo
-        # na tomhle, žádný PR nevznikl. Lokálně tytéž testy s importem: 26/26 OK.
+          CHYBY=0
+          for f in $ZMENENE; do
+            JMENO=$(grep -m1 -oE '^class_name[[:space:]]+[A-Za-z_][A-Za-z0-9_]*' "$f" | awk '{print $2}' || true)
+            if [ -z "$JMENO" ]; then
+              continue
+            fi
+            if grep -qE "^class[[:space:]]+$JMENO([[:space:]]|:|$)" "$f"; then
+              echo "::error file=$f::$f deklaruje class_name $JMENO a zároveň definuje vnořenou class $JMENO – vnořená třída přebije globální jméno"
+              CHYBY=$((CHYBY + 1))
+            else
+              echo "  OK  $f (class_name $JMENO)"
+            fi
+          done
+
+          if [ "$CHYBY" -gt 0 ]; then
+            echo "TIP: soubor SÁM JE ta třída – začni 'extends Node' a vnořenou class smaž (CONVENTIONS.md §1g)."
+            exit 1
+          fi
+          echo "class_name v pořádku."
+
+      - name: Import assetů (než se pustí brána a testy)
+        # PROČ SAMOSTATNÝ KROK (dřív byl import až uvnitř testů):
+        # assety potřebuje UŽ BRÁNA NA PARSOVÁNÍ. Godot v režimu `--script` ani
+        # `--check-only` assety NEIMPORTUJE, takže skript odkazující na texturu
+        # hlásí chybu, kterou nemá – a v čerstvém checkoutu runneru nejsou
+        # `.godot/imported/*.ctex` (`.godot/` je v .gitignore).
+        # Naměřeno 30. 9. 2026 (hra uo-shadows): bez importu padaly testy VŽDY
+        # na „všechny assety jdou načíst (3 OK, 16 chybí)" a orchestr nemohl
+        # uspět, i když agent udělal svou práci správně.
         timeout-minutes: 5
         run: '"$FORGE_GODOT" --headless --path . --import 2>&1 | tail -3'
 
@@ -463,6 +562,16 @@ jobs:
           # prázdný, i když agent neudělal nic (naměřeno u PR #10).
           ZMENA=$(git diff --cached --name-only | grep -Ev '\.(uid|import)$|^smoke\.log$|^agent\.log$|^\.forge/provider\.(env|json)$' | head -5)
           echo "skutecne zmeny: ${ZMENA:-zadne}"
+          # K2: pojmenovaná příčina do výstupu i do prostředí. `zmena` se
+          # předává klasifikátoru, aby „nic nezměnil“ nebylo zaměněno za chybu.
+          if [ -n "$ZMENA" ]; then echo "zmena=ano" >> "$GITHUB_OUTPUT"; else echo "zmena=ne" >> "$GITHUB_OUTPUT"; fi
+          TRIDA=$(node .forge/node/classify-agent-log.mjs --log agent.log \
+            --zmena "$([ -n "$ZMENA" ] && echo ano || echo ne)" \
+            --parsovani "${{ steps.parse.outcome }}" --testy "${{ steps.tests.outcome }}" \
+            | sed -n 's/^TRIDA=//p')
+          echo "trida=$TRIDA" >> "$GITHUB_OUTPUT"
+          echo "TRIDA=$TRIDA" >> "$GITHUB_ENV"
+          echo "klasifikace: $TRIDA"
           if [ "${{ steps.tests.outcome }}" != "success" ]; then
             echo "status=failed" >> "$GITHUB_OUTPUT"
           elif [ -n "$ZMENA" ]; then
@@ -478,16 +587,31 @@ jobs:
       - name: Agent nic nezměnil → hlásíme neúspěch
         if: steps.verdict.outputs.status == 'nochange'
         run: |
-          echo "::error::Agent nezměnil žádný kód. Zkusí se to znovu (u jiného pokusu to vyjde)."
+          echo "::error::Agent nezměnil žádný kód (TRIDA=${TRIDA:-NEZNAMA}). Zkusí se to znovu (u jiného pokusu to vyjde)."
           exit 1
 
-      - name: Report při selhání
-        if: steps.tests.outcome != 'success'
+      - name: Report při selhání (s POJMENOVANOU příčinou)
+        # K2 (12. 10. 2026): dřív se report posílal JEN když spadly testy.
+        # Při „agent nic nezměnil“ testy projdou, takže conductor nedostal NIC
+        # a v /status zůstalo jen „GitHub Actions: failure“ – a bez příčiny se
+        # nedá rotovat poskytovatele ani odpustit pokus granulí.
+        if: always() && steps.verdict.outputs.status != 'success'
         env:
-          FORGE_URL: ${{ secrets.FORGE_CONDUCTOR_URL }}
+          # K4 (12. 10. 2026): URL se bere i z PROMĚNNÝCH — není to tajemství
+          # (je to adresa služby, kterou stejně vidí každý běh) a díky tomu ji
+          # jde nové hře zapsat přes API bez sealed-box crypto. Hra pak potřebuje
+          # jen DVA secrety: `FORGE_PAT` a `FORGE_WEBHOOK_SECRET`.
+          # Tajemství tajemstvím zůstává: `FORGE_SECRET` se z proměnných NEbere.
+          FORGE_URL: ${{ secrets.FORGE_CONDUCTOR_URL || vars.FORGE_CONDUCTOR_URL }}
           FORGE_SECRET: ${{ secrets.FORGE_WEBHOOK_SECRET }}
           FORGE_RUN_KEY: ${{ inputs.run_key }}
-        run: node .forge/report.mjs failed "Testy po zasahu agenta selhaly"
+        run: |
+          TRIDA="${TRIDA:-$(node .forge/node/classify-agent-log.mjs --log agent.log \
+            --zmena "${{ steps.verdict.outputs.zmena }}" --parsovani "${{ steps.parse.outcome }}" \
+            --testy "${{ steps.tests.outcome }}" | sed -n 's/^TRIDA=//p')}"
+          ROZBOR=$(node .forge/node/classify-agent-log.mjs --log agent.log | tr '\n' ' ')
+          echo "posilam pricinu: $TRIDA"
+          node .forge/report.mjs failed "$TRIDA | $ROZBOR"
         continue-on-error: true
 
       - name: Ulož patch a log
@@ -563,7 +687,8 @@ jobs:
         # otevřený a conductor si ho najde sám přes GitHub API (polling).
         continue-on-error: true
         env:
-          FORGE_URL: ${{ secrets.FORGE_CONDUCTOR_URL }}
+          # K4: URL i z proměnných (viz komentář u kroku „Report při selhání“).
+          FORGE_URL: ${{ secrets.FORGE_CONDUCTOR_URL || vars.FORGE_CONDUCTOR_URL }}
           FORGE_SECRET: ${{ secrets.FORGE_WEBHOOK_SECRET }}
           FORGE_RUN_KEY: ${{ inputs.run_key }}
         run: node .forge/report.mjs success "PR vytvoren" "${{ steps.pr.outputs.pull-request-url }}"
@@ -617,9 +742,10 @@ jobs:
           while read -r a d f; do
             # Generované soubory se přeskakují PRVNÍ, ještě před kontrolou
             # složky. Godot si .import/.uid přepisuje sám a při importu assetů
-            # v runneru jich přepíše stovky – z toho 260 leží pod tools/blender/,
-            # tedy mimo scripts/ a assets/. Když se kontrolovaly složkou dřív,
-            # KAŽDÝ PR skončil na „mimo povolené složky" a nechal se ručně.
+            # v runneru jich přepíše stovky – řada z nich leží mimo scripts/
+            # a assets/ (např. tools/blender/, kde jich u uo-shadows bylo 260).
+            # Když se složka kontrolovala dřív, KAŽDÝ PR skončil na „mimo
+            # povolené složky" a nechal se na ruční sloučení.
             case "$f" in
               *.import|*.uid)
                 echo "  (generované Godotem, přeskočeno: $f)"
@@ -631,6 +757,9 @@ jobs:
             esac
             case "$f" in
               tests/*|.github/*|.forge/*|project.godot) echo "  !! chráněný soubor: $f"; ok=0 ;;
+            esac
+            case "$f" in
+              *.import|*.uid) echo "  (generované, do velikosti se nepočítá) $f"; continue ;;
             esac
             echo "  +$a/-$d  $f"
             add=$((add + a))

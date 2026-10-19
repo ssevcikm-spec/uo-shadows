@@ -1,19 +1,19 @@
 extends Node2D
-## Hlavní scéna startovní šablony: hráč sbírá mince.
+## Hlavní scéna: sandbox s hráčem a mapou.
 ##
 ## Celá scéna se staví programově (žádné ukládané .tscn kromě main.tscn), protože
 ## tak ji umí agent vygenerovat a upravit jako text. Assety se načítají z
 ## res://assets – když v projektu ještě nejsou, použije se barevný obdélník,
 ## takže hra je hratelná i před vygenerováním grafiky.
+##
+## ⚠ `extends` je `Node2D` (scéna) – NEPŘEPISUJ na `Node`, rozbilo by to
+## `get_viewport_rect()` (naměřeno 16. 10. 2026, běh #398).
 
-const COIN_COUNT := 5
 const SPRITE_DIR := "res://assets/sprites/"
 const SFX_DIR := "res://assets/audio/sfx/"
 const LEVEL_DIR := "res://assets/levels/"
 const LEVEL_NAME := "main"
 
-var score := 0
-var coin_total := COIN_COUNT
 var player: Area2D
 var level: Node2D
 var hud: Label
@@ -35,24 +35,29 @@ func _ready() -> void:
 	add_child(player)
 
 	var vp := get_viewport_rect().size
-	var spots := _coin_spots(vp)
-	coin_total = spots.size()
-	for i in coin_total:
-		add_child(_make_coin(i, spots[i]))
-
 	var npc := _make_npc(vp)
 	add_child(npc)
 	_add_ui()
 	_add_fps_label()
-	print("[game] připraveno: hráč + %d mincí, zvuků načteno: %d, dlaždice: %s, úroveň: %s" % [
-		coin_total, sfx.size(), "ano" if _texture("tiles/grass") else "ne",
+	print("[game] připraveno: hráč + mapa, zvuků načteno: %d, dlaždice: %s, úroveň: %s" % [
+		sfx.size(), "ano" if _texture("tiles/grass") else "ne",
 		"%s %d×%d" % [level.level_name, level.width, level.height] if level else "ne"])
 
 
 func _update_hud() -> void:
-	if hud:
-		hud.text = "Skóre: %d / %d" % [score, coin_total]
-		hud.text += " HODNOTA: %d" % [_hodnota()]
+	"""HUD: hodnoty z registru komponent; bez registru „—“ (sandbox bez skóre).
+
+	Mince a skóre jsou pryč (rozhodnutí M0: hra je sandbox, ne sběračka) —
+	HUD zůstává, ale nesmí tvrdit číslo, které nikdo neměří.
+	"""
+	if hud == null:
+		return
+	var rodic: Node = get_parent()
+	var reg: Node = rodic.get_node_or_null("Registry") if rodic != null else null
+	if reg != null and reg.has_method("components"):
+		hud.text = "komponenty: %d" % reg.components().size()
+	else:
+		hud.text = "—"
 
 func _add_fps_label() -> void:
 	var fps_label := Label.new()
@@ -65,9 +70,6 @@ func _add_fps_label() -> void:
 func _process(delta: float) -> void:
 	if has_node("Fps"):
 		$Fps.text = "FPS: %d" % Engine.get_frames_per_second()
-
-func _hodnota() -> int:
-	return suroviny["ruda"] * 2 + suroviny["ingot"] * 8 + zbran_poskozeni * 5
 
 
 # ----------------------------------------------------------------- assety ----
@@ -138,9 +140,13 @@ func _clear_entities() -> void:
 		# Fade out the current level
 		var tween := create_tween()
 		tween.tween_property(level, "modulate:a", 0.0, 0.5)
-		tween.tween_property(hud, "modulate:a", 0.0, 0.5)
+		# HUD nemusí existovat: `_ready()` staví level DŘÍV, než `_add_ui()`
+		# vytvoří HUD (naměřeno 19. 10. 2026 — bez guardu to hází chybu při
+		# každém načtení scény a CI ji nechytí, protože hledá jen SCRIPT ERROR).
+		if hud != null:
+			tween.tween_property(hud, "modulate:a", 0.0, 0.5)
 		tween.tween_callback(level.queue_free.bind(level))
-	for group in ["coin", "enemy", "chest", "player"]:
+	for group in ["enemy", "chest", "player"]:
 		for entity in get_tree().get_nodes_in_group(group):
 			entity.queue_free()
 
@@ -178,19 +184,8 @@ func _add_level() -> void:
 	# Fade in the new level
 	var tween := create_tween()
 	tween.tween_property(level, "modulate:a", 1.0, 0.5)
-	tween.tween_property(hud, "modulate:a", 1.0, 0.5)
-
-
-func _coin_spots(vp: Vector2) -> Array:
-	"""Mince stojí tam, kde je vyznačila mapa (středy místností – ověřeně
-	průchozí). Bez mapy se rozhodí náhodně jako dřív."""
-	var spots: Array = []
-	if level:
-		spots = level.marker_positions("coin")
-	if spots.is_empty():
-		for i in COIN_COUNT:
-			spots.append(Vector2(randf_range(24.0, vp.x - 24.0), randf_range(24.0, vp.y - 24.0)))
-	return spots
+	if hud != null:
+		tween.tween_property(hud, "modulate:a", 1.0, 0.5)
 
 
 func _add_ui() -> void:
@@ -300,21 +295,6 @@ func _animation_visual(anim_name: String) -> Node2D:
 	return s
 
 
-func _make_coin(index: int, pos: Vector2) -> Area2D:
-	var c := Area2D.new()
-	c.name = "Coin%d" % (index + 1)
-	c.add_to_group("coin")
-	var shape := CollisionShape2D.new()
-	var circle := CircleShape2D.new()
-	circle.radius = 5.0
-	shape.shape = circle
-	c.add_child(shape)
-	c.add_child(_visual("coin", Color(1.0, 0.85, 0.2), Vector2(8, 8)))
-	c.position = pos
-	c.z_index = 3
-	c.area_entered.connect(_on_coin_touched.bind(c))
-	return c
-
 func _make_npc(vp: Vector2) -> Area2D:
 	var n := Area2D.new()
 	n.name = "Npc"
@@ -330,17 +310,6 @@ func _make_npc(vp: Vector2) -> Area2D:
 	n.area_entered.connect(_on_npc_touched.bind(n))
 	return n
 
-
-func _on_coin_touched(other: Area2D, coin: Area2D) -> void:
-	if other != player or not is_instance_valid(coin) or not coin.is_in_group("coin"):
-		return
-	score += 1
-	play_sfx("coin")
-	coin.remove_from_group("coin")
-	coin.queue_free()
-	_update_hud()
-	if score >= coin_total:
-		play_sfx("win")
 
 func _on_npc_touched(other: Area2D, npc: Area2D) -> void:
 	if other != player:

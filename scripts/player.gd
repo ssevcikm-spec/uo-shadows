@@ -31,12 +31,37 @@ extends Area2D
 ##
 ## SMLOUVA JE TEDY `move(dir)` – a `_physics_process` ji VOLÁ. Nejsou to dvě
 ## cesty k témuž: rozhraní je jedno a jen jedno místo mění pozici.
+##
+## ============================================================================
+## PLYNUÝ POHYB (M1 „entity.move.smooth“, dokončeno 19. 10. 2026)
+##
+## `move(dir, delta)` má DVĚ cesty a obě jsou součást smlouvy:
+##   · `delta < 0` = TESTOVACÍ volání: přesně JEDEN plný krok `SPEED/60` po
+##     izometrické ose (na tomhle stojí testy izometrie – zachovej to!).
+##   · `delta >= 0` = skutečný tik: rychlost se plynule rozjíždí a brzdí
+##     (`ACCEL`/`DECEL`), takže se hráč nerozjede skokem a nezastaví naráz.
+##     Mrtvá zóna 12 px (jen když směr dodá vstupní komponenta `smer()`),
+##     běh ubírá staminu, chůze ne; při vyčerpané stamině je rychlost poloviční.
+##   Hráč nikdy neskončí ve zdi – poslední krok dělá `_step()`, který klouže
+##   po jedné ose.
 ## ============================================================================
 
 signal collected(what: String)
 signal died()
 
 const SPEED := 130.0
+## Zrychlení/zpomalení v px/s². 130/650 ≈ 0,2 s do plné rychlosti,
+## 130/900 ≈ 0,14 s do zastavení (GDD §6: doba musí být měřitelná číslem).
+const ACCEL := 650.0
+const DECEL := 900.0
+## Mrtvá zóna kurzoru v px (GDD §6) — brání kmitání, když kurzor stojí na postavě.
+const DEAD_ZONE := 12.0
+## Od téhle vzdálenosti kurzoru od postavy se BĚŽÍ (a běh bere staminu).
+const RUN_DISTANCE := 160.0
+const MAX_STAMINA_DEFAULT := 100.0
+const STAMINA_RUN_PER_S := 20.0
+const STAMINA_REGEN_PER_S := 12.0
+const WALK_FACTOR := 0.5
 
 # Výchozí stav postavy. JEDINÉ místo, kde se stav mění, je níž – kdyby se
 # `hp` měnilo na dvou místech, rozejde se to s tím, co ukazuje HUD.
@@ -55,6 +80,13 @@ var equipped: Node = null
 var velocity := Vector2.ZERO
 var level: Node2D
 
+## Stav plynulého pohybu (M1): stamina + příznak běhu. `_bezim` nastavuje
+## `_physics_process`; testy ho smějí nastavit přímo (je to měřený vstup).
+var max_stamina: float = MAX_STAMINA_DEFAULT
+var stamina: float = MAX_STAMINA_DEFAULT
+var _bezim: bool = false
+var _vstup: Node = null
+
 
 func _ready() -> void:
 	add_to_group("player")
@@ -69,7 +101,40 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	# POHYB JE JEN TADY – jen se čtou klávesy a volá se smluvní `move()`.
+	# POHYB JE JEN TADY – jen se zjistí směr a zavolá se smluvní `move()`.
+	var dir := _smer_vstupu()
+	_bezim = _chce_bezet(dir)
+	move(dir, delta)
+
+
+func _vstupni_komponenta() -> Node:
+	"""Vstupní komponenta (`scripts/input.gd`), když je ve scéně.
+
+	Hledá se ve skupině `input` a pak jako sourozenec „Input" – hráč na ní
+	nesmí být závislý jménem (kdyby ji scéna neměla, hra musí jít hrát dál).
+	"""
+	if _vstup != null and is_instance_valid(_vstup):
+		return _vstup
+	if not is_inside_tree():
+		return null
+	var ve_skupine: Node = get_tree().get_first_node_in_group("input")
+	if ve_skupine != null:
+		_vstup = ve_skupine
+		return _vstup
+	var rodic: Node = get_parent()
+	if rodic != null:
+		var uzel: Node = rodic.get_node_or_null("Input")
+		if uzel != null and uzel.has_method("smer"):
+			_vstup = uzel
+		return _vstup
+	return null
+
+
+func _smer_vstupu() -> Vector2:
+	"""Směr pohybu: z input komponenty (`smer()`), jinak záložní klávesy/myš."""
+	var inp := _vstupni_komponenta()
+	if inp != null and inp.has_method("smer"):
+		return inp.smer()
 	var dir := Vector2.ZERO
 	if Input.is_key_pressed(KEY_LEFT) or Input.is_key_pressed(KEY_A):
 		dir.x -= 1.0
@@ -79,7 +144,23 @@ func _physics_process(delta: float) -> void:
 		dir.y -= 1.0
 	if Input.is_key_pressed(KEY_DOWN) or Input.is_key_pressed(KEY_S):
 		dir.y += 1.0
-	move(dir, delta)
+	# Záložní myš: pravé tlačítko = jdu; mrtvá zóna brání kmitání na místě.
+	if dir == Vector2.ZERO and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		var kurzor: Vector2 = get_global_mouse_position() - global_position
+		if kurzor.length() >= DEAD_ZONE:
+			dir = kurzor
+	return dir
+
+
+func _chce_bezet(dir: Vector2) -> bool:
+	"""Běh: buď to řekne vstupní komponenta, nebo je kurzor daleko od hráče."""
+	var inp := _vstupni_komponenta()
+	if inp != null and inp.has_method("chce_krok"):
+		return bool(inp.chce_krok()) and dir != Vector2.ZERO
+	if dir == Vector2.ZERO:
+		return false
+	var kurzor: Vector2 = get_global_mouse_position() - global_position
+	return kurzor.length() >= RUN_DISTANCE
 
 
 func move(dir: Vector2, delta: float = -1.0) -> void:
@@ -93,9 +174,10 @@ func move(dir: Vector2, delta: float = -1.0) -> void:
 	potřebují měřitelný posun, ale nesmějí čekat na snímek. Je to schválně
 	viditelný default, ne skrytá konstanta: kdo volá `move(dir)` bez času,
 	dostane přesně jeden krok `SPEED/60`.
+
+	S `delta >= 0` se rychlost plynule rozjíždí/brzdí (`ACCEL`/`DECEL`),
+	běh ubírá staminu a při vyčerpané stamině je maximální rychlost poloviční.
 	"""
-	if delta < 0.0:
-		delta = 1.0 / 60.0
 	var d := dir
 	if d != Vector2.ZERO:
 		d = d.normalized()
@@ -103,13 +185,37 @@ func move(dir: Vector2, delta: float = -1.0) -> void:
 	var iso := Vector2((d.x - d.y) * 0.5, (d.x + d.y) * 0.25)
 	if iso.length() > 0.0:
 		iso = iso.normalized()
-	velocity = iso * SPEED
+
+	if delta < 0.0:
+		# TESTOVACÍ cesta: jeden plný krok. Sem se nesmí dostat vyhlazení.
+		velocity = iso * SPEED
+		position = _step(position + velocity * (1.0 / 60.0))
+		_drz_v_obrazovce()
+		return
+
+	# Skutečný tik: cílová rychlost podle chůze/běhu a stavu staminy.
+	var cilova_rychlost := SPEED * (1.0 if _bezim else WALK_FACTOR)
+	if stamina <= 0.0:
+		cilova_rychlost *= 0.5
+	var cilova := iso * cilova_rychlost
+	# Běh ubírá staminu, chůze ji regeneruje.
+	if _bezim and d != Vector2.ZERO:
+		stamina = maxf(stamina - STAMINA_RUN_PER_S * delta, 0.0)
+	else:
+		stamina = minf(stamina + STAMINA_REGEN_PER_S * delta, max_stamina)
+	var zmena := ACCEL if cilova.length() > velocity.length() else DECEL
+	velocity = velocity.move_toward(cilova, zmena * delta)
 	position = _step(position + velocity * delta)
-	# drž hráče v obrazovce
-	if is_inside_tree():
-		var vp := get_viewport_rect().size
-		position.x = clampf(position.x, 8.0, vp.x - 8.0)
-		position.y = clampf(position.y, 8.0, vp.y - 8.0)
+	_drz_v_obrazovce()
+
+
+func _drz_v_obrazovce() -> void:
+	"""Hráč nesmí zmizet z obrazovky (kamera zatím není)."""
+	if not is_inside_tree():
+		return
+	var vp := get_viewport_rect().size
+	position.x = clampf(position.x, 8.0, vp.x - 8.0)
+	position.y = clampf(position.y, 8.0, vp.y - 8.0)
 
 
 func _step(target: Vector2) -> Vector2:

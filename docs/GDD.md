@@ -549,6 +549,16 @@ s postupem, odkud bylo čteno.
 | Smlouvy | `ARCHITEKTURA.md` má 18 smluv, **tvar dat 3** | **dnes platí `TDD` §3** — smlouvy **s tvarem dat** jsou tam (počet je v nadpisu oddílu; `Registry` přibyla 15. 10. 2026); `ARCHITEKTURA.md` je od 8. 10. 2026 **historie** (`_analyza/PRACE-2026-10-15/ROZPORY.md` R19). Naměřeno 15. 10. 2026 čtením: tabulka smluv v `ARCHITEKTURA.md` §2 má **18** komponent a tvar dat popisuje u **3** z nich |
 | Známé vady běhu (ne design) | — | `game.gd:181` tweenuje `hud` dřív, než ho `_add_ui()` vytvoří (chyba při každém načtení scény; CI hledá jen `SCRIPT ERROR`, takže ji nechytí) a `economy.price()` vrací **0** pro oba předměty, přitom hlásí chybu na `economy.gd:21`. **Nezapisuje se sem podrobně** — seznam a postup je v `TDD` §10 a v `FAKTA.md` #92–#99 (naměřeno 15. 10. 2026) |
 
+> **⚠ ZMĚNA 19. 10. 2026 (append-only; tabulka výš je stav k 15. 10. a
+> nepřepisuje se):** dokončeny granule **`shell.nocoins`** (game.gd už nemá
+> mince ani skóre — hra je sandbox, HUD bez registru ukazuje „—“; testy měří
+> **0 mincí** a **žádné skóre**) a **`entity.move.smooth`** (plynulý pohyb:
+> `ACCEL/DECEL`, mrtvá zóna 12 px, stamina, `_step()`; testovací cesta
+> `move(dir)` bez času zůstává jeden plný krok — naměřeno **123/0** v
+> `tests/run_tests.gd`, dřív 113/0). Opravena i známá vada výš: tween na `hud`
+> má guard (`game.gd`). Stav hry se tím mění z „sběračka mincí“ na **sandbox
+> s mapou a hráčem** (M0 dokončen, M1 pohyb hotový).
+
 ---
 
 ## 14. Co v tomhle dokumentu ZÁMĚRNĚ NENÍ

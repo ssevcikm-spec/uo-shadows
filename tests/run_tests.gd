@@ -77,29 +77,27 @@ func _run() -> void:
 	var player = main.get_node_or_null("Player")
 	_check(player != null, "scéna vytvořila uzel Player")
 
-	var expected := 5
-	var consts = main_script.get_script_constant_map()
-	if consts.has("COIN_COUNT"):
-		expected = consts["COIN_COUNT"]
-	# S úrovní určuje počet mincí mapa, ne konstanta.
-	var ct = main.get("coin_total")
-	if ct != null:
-		expected = int(ct)
+	# M0 „shell.nocoins“ (19. 10. 2026): hra je SANDBOX, ne sběračka mincí.
+	# Testy proto měří OPAK staré dohody: žádné mince, žádné skóre, a HUD
+	# bez registru nesmí tvrdit číslo — musí ukázat „—“ (jinak by HUD lhal
+	# hodnotou, kterou nikdo neměří).
 	var coins := get_nodes_in_group("coin")
-	_check(coins.size() == expected,
-		"počet mincí odpovídá očekávání (%d, nalezeno %d)" % [expected, coins.size()])
+	_check(coins.size() == 0,
+		"sandbox nemá mince (nalezeno %d uzlů ve skupině coin)" % coins.size())
+	_check(main.get("score") == null, "game.gd už nemá skóre (M0: pryč s mincemi)")
+	_check(main.get("coin_total") == null, "game.gd už nemá coin_total")
 
 	var hud = main.get_node_or_null("Hud")
 	_check(hud != null, "HUD s výsledkem existuje")
 	if hud != null:
-		_check(String(hud.text).contains("0"), "HUD ukazuje počáteční skóre: '%s'" % hud.text)
+		_check(String(hud.text).contains("—"),
+			"HUD bez registru ukazuje „—“ (má '%s')" % hud.text)
 
-	if player != null and coins.size() > 0:
-		var before: int = main.score
-		main._on_coin_touched(player, coins[0])
-		await process_frame
-		_check(main.score == before + 1,
-			"sebrání mince zvýší skóre (%d -> %d)" % [before, main.score])
+	# Zdroj se nesmí vrátit k mincím ani ke skóre — kontrola čte KÓD, ne komentář.
+	var zdroj_hry := FileAccess.get_file_as_string("res://scripts/game.gd")
+	_check(not zdroj_hry.contains("_on_coin_touched"),
+		"game.gd neobsahuje obsluhu mincí (_on_coin_touched)")
+	_check(zdroj_hry.contains("func _update_hud"), "HUD zůstal (jen bez skóre)")
 
 	# Všechno, co je v projektu k dispozici, musí jít načíst.
 	var missing := 0
@@ -1031,6 +1029,79 @@ func _run() -> void:
 		var zdroj_hrace := FileAccess.get_file_as_string("res://scripts/player.gd")
 		_check(zdroj_hrace.contains("move(dir, delta)"),
 			"_physics_process volá move() (smlouva je jedna cesta, ne dvě)")
+
+		# ── M1 „entity.move.smooth“ (19. 10. 2026): VYHLAZENÍ MĚŘENÉ ČÍSLEM ──
+		# Test se ptá na chování, které zadání granulе vyžaduje: rychlost se
+		# nerozjede skokem a směr NULA neposune ani o pixel. Testovací cesta
+		# `move(dir)` (bez delta) zůstává plný krok – na tom stojí izometrie výš.
+		var posun_nula_pred: Vector2 = player.position
+		player.move(Vector2.ZERO)
+		_check(player.position.distance_to(posun_nula_pred) < 0.001,
+			"move(Vector2.ZERO) hráčem nepohne (posun %.4f px)"
+			% player.position.distance_to(posun_nula_pred))
+
+		player.position = puvodni_pos
+		player.velocity = Vector2.ZERO
+		player.stamina = player.max_stamina
+		player._bezim = false
+		var start_vyhlazeni: Vector2 = player.position
+		for i in 10:
+			player.move(Vector2(1, 0), 1.0 / 60.0)
+		var posun_10: float = player.position.distance_to(start_vyhlazeni)
+		_check(posun_10 > 0.0 and posun_10 < 10.0 * player.SPEED,
+			"vyhlazení: 10 tiků stejným směrem ujde MÉNĚ než 10×SPEED=%.0f px (změřeno %.2f px)"
+			% [10.0 * player.SPEED, posun_10])
+		_check(player.velocity.length() > 0.0 and player.velocity.length() < player.SPEED,
+			"vyhlazení: po 10 ticích rychlost NENÍ hned plná (%.1f < %.1f)"
+			% [player.velocity.length(), player.SPEED])
+
+		# Stamina: běh ubírá, chůze ne (a při nule je rychlost poloviční).
+		player.position = puvodni_pos
+		player.velocity = Vector2.ZERO
+		player.stamina = player.max_stamina
+		player._bezim = true
+		for i in 30:
+			player.move(Vector2(1, 0), 1.0 / 60.0)
+		_check(player.stamina < player.max_stamina,
+			"běh ubírá staminu (%.1f z %.1f)" % [player.stamina, player.max_stamina])
+		player._bezim = false
+		player.velocity = Vector2.ZERO
+		var stamina_pred: float = player.stamina
+		for i in 10:
+			player.move(Vector2(1, 0), 1.0 / 60.0)
+		_check(player.stamina > stamina_pred,
+			"chůze staminu regeneruje (%.1f → %.1f)" % [stamina_pred, player.stamina])
+
+		player.position = puvodni_pos
+		player.velocity = Vector2.ZERO
+		player.stamina = player.max_stamina
+		player._bezim = true
+		for i in 30:
+			player.move(Vector2(1, 0), 1.0 / 60.0)
+		var rychlost_plna: float = player.velocity.length()
+		player.stamina = 0.0
+		player.velocity = Vector2.ZERO
+		for i in 30:
+			player.move(Vector2(1, 0), 1.0 / 60.0)
+		var rychlost_vycerpana: float = player.velocity.length()
+		_check(rychlost_vycerpana < rychlost_plna,
+			"vyčerpaná stamina sníží rychlost (%.1f < %.1f)"
+			% [rychlost_vycerpana, rychlost_plna])
+
+		# Hráč se nikdy nesmí dostat mimo průchodná políčka – ani po mnoha ticích
+		# do strany (`_step` klouže po jedné ose, ale nikdy dovnitř zdi).
+		if uroven_hry != null and uroven_hry.has_method("is_walkable_at"):
+			player.position = puvodni_pos
+			player.velocity = Vector2.ZERO
+			player.stamina = player.max_stamina
+			player._bezim = false
+			for i in 90:
+				player.move(Vector2(1, 0), 1.0 / 60.0)
+			_check(uroven_hry.is_walkable_at(player.position),
+				"po 90 ticích do strany je hráč pořád na průchozím políčku %s"
+				% str(uroven_hry.cell_at(player.position)))
+			player.position = puvodni_pos
+			player.velocity = Vector2.ZERO
 
 	# Stav hráče, který UŽ VOLAJÍ jiné komponenty (A4/A5 zadání): `assist.gd`
 	# čte `player.hp`, `max_hp`, `mana`, `max_mana`, `target`, `economy.gd`

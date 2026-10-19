@@ -389,12 +389,25 @@ název(argument: Typ) -> NávratovýTyp
 
 - **odkud čísla:** `SPEED = 130.0` (konstanta hráče, naměřeno `player.gd:39`);
   izo poměr `(dx−dy)·0,5`, `(dx+dy)·0,25` je **týž poměr, jaký má kreslení
-  dlaždic v `level.gd`** — hráč proto chodí po stejných osách jako mapa
+  dlaždic v `level.gd`** — hráč proto chodí po stejných osách jako mapa;
+  `ACCEL 650`, `DECEL 900`, `DEAD_ZONE 12 px`, `RUN_DISTANCE 160 px`,
+  `stamina 100` (`STAMINA_RUN_PER_S 20`, regen 12/s) — **dokončeno 19. 10. 2026**
+  (M1 `entity.move.smooth`; hodnoty jsou laditelné, smlouva je měřitelnost)
+- **dvě cesty `move()` (smlouva):** `delta < 0` = **jeden plný krok**
+  `SPEED/60` po izo ose (testovací cesta; na ní stojí acceptance níž);
+  `delta >= 0` = skutečný tik s **vyhlazením** (rychlost se rozjíždí/brzdí
+  přes `velocity.move_toward`), mrtvou zónou (jen ze vstupní komponenty nebo
+  záložní myši), staminou (běh ubírá, chůze regeneruje, při 0 je rychlost
+  poloviční) a `_step()` (hráč nikdy neskončí ve zdi)
 - **acceptance:** test **ZAVOLÁ `move()`**, změří **posun** a porovná jeho sklon
   se sklonem osy dlaždice, který si **PŘEČTE z `level.cell_center`** (ne
-  z konstanty opsané do testu); dále ZAVOLÁ `die()` a ověří, že vznikl uzel ve
-  skupině `corpse`, inventář se vyprázdnil a hráč stojí na `level.spawn_cell`
-- **status:** `hotovo` (`scripts/player.gd`, 191 řádků; smlouva `move` je závazná od 3. 10. 2026)
+  z konstanty opsané do testu); dále ověří, že `move(Vector2.ZERO)` neposune,
+  že po 10 ticích je posun **menší** než 10×`SPEED` (vyhlazení), že běh ubírá
+  staminu a vyčerpaná stamina rychlost **sníží**, a že po 90 ticích je hráč
+  pořád na průchodném políčku; nakonec ZAVOLÁ `die()` a ověří, že vznikl uzel
+  ve skupině `corpse`, inventář se vyprázdnil a hráč stojí na `level.spawn_cell`
+- **status:** `hotovo` (`scripts/player.gd`, ~270 řádků; smlouva `move` je
+  závazná od 3. 10. 2026, rozšířená o vyhlazení 19. 10. 2026)
 
 ### 3.8 `Npc` — `scripts/npc.gd` (**soubor v repu není**)
 
@@ -890,6 +903,14 @@ co dokument odhalí, **zapíše**, neopraví mimochodem. Vady 1–10 jsou **nam�
 | 9 | **`done` není měření: dřívější podoba plánu hlásila hotovost u 16 položek, ale hra používá 2** | **PŘEPOČÍTÁNO 15. 10. 2026:** dnešní `.forge/roadmap.json` má **11 granulí** a `done: true` u **6** — `done` je nově **měřené** (soubor v `main` A volá ho produkční cesta, nástroj `_analyza/PRACE-2026-10-15/zmer-produkci.py`). Historická čísla (16, předtím 15 a 13) byla **ve svém čase správná** a jsou v archivu plánu | „hotovo“ dnes není měření (definice hotovo to mění) |
 | 10 | **`assets/data/*.json` nemá klíč `material`** | `items.json`: `id`, `name`, `durability`, `damage`, `armor_rating`; `item.gd:25` ho čte jako nepovinný | viz vada 1 |
 | 11 | **`game.gd:181` tweenuje `hud` dřív, než ho `_add_ui()` vytvoří** | naměřeno 15. 10. 2026 během testů: `ERROR: Required object "rp_target" is null.` s backtrace `_add_level (res://scripts/game.gd:181)` ← `_ready (res://scripts/game.gd:33)`; `_ready()` volá `_add_level()` na `:33`, ale `_add_ui()` (které `hud` teprve vytvoří) až na `:45` → `hud` je v tu chvíli `null` | **`ERROR` při každém načtení scény**; CI to **nechytí** — krok smoke hledá jen řetězec `SCRIPT ERROR`, ale naměřená chyba začíná `ERROR:` (`ci.yml:105`) |
+
+> **⚠ DOPLNĚNÍ 19. 10. 2026 (append-only; tabulka výš je záznam, nepřepisuje se):**
+> **vada 11 je OPRAVENA** — tween na `hud` má v `game.gd` guard
+> (`if hud != null`) v `_clear_entities()` i `_add_level()`, takže chyba při
+> načtení scény zmizela (ověřeno testy hry). **Vady 1–10 zůstávají** (mimo
+> rozsah M0/M1). Zároveň dokončeny granule `shell.nocoins` (bez mincí/skóre;
+> testy **123/0**) a `entity.move.smooth` (smlouva `move` rozšířená o
+> vyhlazení — viz §3.7).
 
 **Co z toho plyne pro plán:** vady 1–4 jsou na kritické cestě milníků `M0`
 (kostra a registr) a `M3` (výroba a ekonomika). **Nejsou to úkoly TDD** — TDD
