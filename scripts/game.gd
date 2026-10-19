@@ -24,6 +24,8 @@ var zbran_trvanlivost := 20
 var zbran_poskozeni := 5
 var cas_dne := 0.25
 
+var registry: Node
+
 
 func _ready() -> void:
 	randomize()
@@ -33,6 +35,25 @@ func _ready() -> void:
 	_add_level()
 	player = _make_player()
 	add_child(player)
+
+	registry = Node.new()
+	registry.name = "Registry"
+	add_child(registry)
+
+	var economy = load("res://scripts/economy.gd").new()
+	economy.name = "Economy"
+	registry.add_child(economy)
+
+	var skills = load("res://scripts/skills.gd").new()
+	skills.name = "Skills"
+	registry.add_child(skills)
+
+	var attributes = load("res://scripts/attributes.gd").new()
+	attributes.name = "Attributes"
+	registry.add_child(attributes)
+
+	var missing_components = ["World", "Mining", "Crafting", "Combat", "Hud", "Offline", "Assist"]
+	print("[shell] chybí komponenty: %s" % ", ".join(missing_components))
 
 	var vp := get_viewport_rect().size
 	var npc := _make_npc(vp)
