@@ -911,6 +911,15 @@ co dokument odhalí, **zapíše**, neopraví mimochodem. Vady 1–10 jsou **nam�
 > rozsah M0/M1). Zároveň dokončeny granule `shell.nocoins` (bez mincí/skóre;
 > testy **123/0**) a `entity.move.smooth` (smlouva `move` rozšířená o
 > vyhlazení — viz §3.7).
+>
+> **⚠ DOPLNĚNÍ 20. 10. 2026:** **vada 3 je OPRAVENA** — `sim.wire` (PR #39
+> orchestry, merge `d4d55e7`) přidal do `game.gd` registr a komponenty
+> `Economy`/`Skills`/`Attributes`; při ověření se ale ukázalo, že PR
+> **nezavolal `registry.register()`** a registr byl holý `Node` bez skriptu
+> (vada **H240** v orchestra kronice). Doplněno: registr má skript
+> `registry.gd`, komponenty jsou zaregistrované pod smluvními id a **test to
+> nově měří** (`[test] 130 kontrol, 0 selhání`). `hud.gd`/`save.gd` tak už
+> dostanou komponentu, ne `null`.
 
 **Co z toho plyne pro plán:** vady 1–4 jsou na kritické cestě milníků `M0`
 (kostra a registr) a `M3` (výroba a ekonomika). **Nejsou to úkoly TDD** — TDD

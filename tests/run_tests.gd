@@ -90,14 +90,34 @@ func _run() -> void:
 	var hud = main.get_node_or_null("Hud")
 	_check(hud != null, "HUD s výsledkem existuje")
 	if hud != null:
-		_check(String(hud.text).contains("—"),
-			"HUD bez registru ukazuje „—“ (má '%s')" % hud.text)
+		# Po M0 sim.wire registr existuje, takže HUD čte z něj; „—“ je fallback
+		# pro případ bez registru (viz `_update_hud` v game.gd).
+		_check(String(hud.text).contains("komponenty: 3"),
+			"HUD ukazuje počet komponent z registru (má '%s')" % hud.text)
+		_check(not String(hud.text).contains("Skóre"),
+			"HUD už neukazuje skóre (má '%s')" % hud.text)
 
 	# Zdroj se nesmí vrátit k mincím ani ke skóre — kontrola čte KÓD, ne komentář.
 	var zdroj_hry := FileAccess.get_file_as_string("res://scripts/game.gd")
 	_check(not zdroj_hry.contains("_on_coin_touched"),
 		"game.gd neobsahuje obsluhu mincí (_on_coin_touched)")
 	_check(zdroj_hry.contains("func _update_hud"), "HUD zůstal (jen bez skóre)")
+
+	# M0 „sim.wire“: registr v BĚŽÍCÍ hře musí komponenty ZNÁT (ne jen mít jako
+	# děti). Naměřeno 20. 10. 2026 na PR #39: model komponenty přidal přes
+	# `add_child`, ale nezavolal `registry.register()` → `component("Skills")`
+	# vrátilo null a test to nechytil. Tenhle test to zavírá.
+	var registr_hry = main.get("registry")
+	_check(registr_hry != null, "hra vytvořila registr (M0 sim.wire)")
+	if registr_hry != null:
+		for id in ["Economy", "Skills", "Attributes"]:
+			_check(registr_hry.component(id) != null,
+				"registr zná komponentu '%s' (ne jen dítě uzlu)" % id)
+		_check(registr_hry.components().size() >= 3,
+			"registr má aspoň 3 komponenty (má %d)" % registr_hry.components().size())
+		if hud != null:
+			_check(String(hud.text).contains("3"),
+				"HUD čte počet komponent z registru: '%s'" % hud.text)
 
 	# Všechno, co je v projektu k dispozici, musí jít načíst.
 	var missing := 0

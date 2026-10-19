@@ -36,24 +36,41 @@ func _ready() -> void:
 	player = _make_player()
 	add_child(player)
 
+	# ── M0 „sim.wire“: registr + komponenty, které dnes existují a mají smlouvu
+	# v docs/TDD.md §3. Komponenta musí být (a) DÍTĚ registru, aby ji `hud.gd`
+	# a spol. našly přes `get_parent().component(id)`, a (b) ZAREGISTROVANÁ
+	# pod smluvním id — samotné `add_child` nestačí (naměřeno 20. 10. 2026:
+	# PR #39 komponenty přidal, ale `register()` nezavolal, takže
+	# `component("Skills")` vracelo null; test to nechytil → doplněn test).
+	# Registr NENÍ holý `Node`: musí mít skript `registry.gd`, jinak nemá
+	# `register()`/`component()` (naměřeno při ověřování PR #39).
+	var skript_registru = load("res://scripts/registry.gd")
 	registry = Node.new()
+	registry.set_script(skript_registru)
 	registry.name = "Registry"
 	add_child(registry)
 
-	var economy = load("res://scripts/economy.gd").new()
+	var economy: Node = load("res://scripts/economy.gd").new()
 	economy.name = "Economy"
 	registry.add_child(economy)
+	registry.register("Economy", economy)
 
-	var skills = load("res://scripts/skills.gd").new()
+	var skills: Node = load("res://scripts/skills.gd").new()
 	skills.name = "Skills"
 	registry.add_child(skills)
+	registry.register("Skills", skills)
 
-	var attributes = load("res://scripts/attributes.gd").new()
+	var attributes: Node = load("res://scripts/attributes.gd").new()
 	attributes.name = "Attributes"
 	registry.add_child(attributes)
+	registry.register("Attributes", attributes)
 
-	var missing_components = ["World", "Mining", "Crafting", "Combat", "Hud", "Offline", "Assist"]
-	print("[shell] chybí komponenty: %s" % ", ".join(missing_components))
+	# Co v repu NENÍ, se NEVYMÝŠLÍ — jen se to jednou ohlásí (zadání sim.wire).
+	var chybi: Array = []
+	for id in ["World", "Mining", "Crafting", "Combat", "Hud", "Offline", "Assist"]:
+		if registry.component(id) == null:
+			chybi.append(id)
+	print("[shell] chybí komponenty: %s" % ", ".join(chybi))
 
 	var vp := get_viewport_rect().size
 	var npc := _make_npc(vp)
@@ -73,8 +90,13 @@ func _update_hud() -> void:
 	"""
 	if hud == null:
 		return
-	var rodic: Node = get_parent()
-	var reg: Node = rodic.get_node_or_null("Registry") if rodic != null else null
+	# Registr je DÍTĚ téhle scény (M0 sim.wire); fallback na sourozence z rodiče
+	# je pro případ, že by ho stavěla až scéna výš (main.tscn).
+	var reg: Node = get_node_or_null("Registry")
+	if reg == null:
+		var rodic: Node = get_parent()
+		if rodic != null:
+			reg = rodic.get_node_or_null("Registry")
 	if reg != null and reg.has_method("components"):
 		hud.text = "komponenty: %d" % reg.components().size()
 	else:

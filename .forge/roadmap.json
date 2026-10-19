@@ -118,7 +118,7 @@
     {
       "id": "sim.wire",
       "title": "Komponenty do registru: dnešek zapojený, zbytek ohlášený (M0 — registr přestane být mrtvý kód)",
-      "done": null,
+      "done": true,
       "kind": "code",
       "owns": [
         "scripts/game.gd"
